@@ -87,3 +87,42 @@ Prompt 2 (per plan): professional FAQ translation pass, real-device microphone Q
 `public/og-image.svg` if the platform needs raster, then Cloudflare Pages deploy config
 (`dist/` static, `404.html` as not-found). Re-run `npx tsc --noEmit` + `npm run build` after
 any change.
+
+## Prompt 3 changes (2026-09-15, negative-decibel fix + meter rebuild)
+
+Root cause: the panel rendered raw digital dBFS (`stats.current`, negative) next to
+`dB (estimated)` on a 30–120 LED scale while ignoring the engine's `display`/`mode`/`unit`;
+it also called the nonexistent `engine.setCalibrationOffset`, read `s.spectrum`
+(snapshot carries `spectrumDb`), and used the legacy export signature — so calibration
+silently never worked. Full account: `docs/POST-PROMPT-2-FIXES.md`.
+
+- **Engine (`src/lib/`)**: `types.ts` gains strict `MeasurementResult`
+  (`digital`/`relative`/`calibrated`/`uncalibrated`, the last with no numeric dB) plus
+  snapshot `result`, `inputStrengthPct` (0–100 visual only, never exported) and
+  `calibrationValid`; `DisplayUnit` is now `dBFS|dB|dBA|dBC|dBZ`. `dsp.ts` gains
+  `digitalToInputStrength()` (−100…0 dBFS → 0…100%). `calibration.ts` plausibility
+  window ±60 → ±120 dB. `engine.ts`: `splUnitFor()`, `buildResult()`
+  (`estimatedSPL = rawDbfs + offset` only with a compatible profile),
+  auto-apply of saved compatible profiles on `start()`, ranges digital
+  `[-100, 0]` / calibrated `[20, 120]`, persistence failure no longer blocks
+  calibration (in-memory profile). `export-format.ts` legacy unit → `dBA`.
+- **Tests**: `engine.test.ts` sineFixture seconds-vs-samples hang fixed, 31
+  reference-capture batches, `dBA` expectation, new `strict typed results` block;
+  `calibration.test.ts` absurd-offset expectations match ±120.
+- **UI**: `MeterPanel.astro` rewritten — centred semicircular SVG gauge
+  (`-- dBA` + `Calibration required` + input-strength % + CTA when uncalibrated;
+  positive `62.4 dBA`-style estimate when calibrated; negative dBFS only inside
+  Customize → Digital Input with a −100…0 scale), state-exclusive transport
+  (Start opens no popup; Customize is the only options opener), Customize modal
+  (Calibrate / Digital / Relative / Microphone / A-C-Z / Fast-Slow), compact
+  stats grid, real-data-only ~30 FPS rAF interpolation (single loop, cancelled on
+  stop/unmount), reduced-motion + mobile fallbacks. LED-bar styles removed from
+  `global.css`. New i18n keys; English complete, 7 locales on English fallback
+  pending translation.
+- Commands (actual): `npx tsc --noEmit` — pass; `npx vitest run` — **46/46 pass**
+  (suite previously hung before finishing engine tests); `npm run build` — pass,
+  20 pages; `dist/index.html` check — new gauge/CTA strings present, `dB
+  (estimated)`/`rdm-led`/`dB SPL (est.)` zero hits.
+- Still pending (no browser tooling here): visual render QA all viewports/themes,
+  permission-flow QA on real devices, translation of new strings + FAQ, OG PNG,
+  Pages deploy config.

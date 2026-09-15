@@ -76,8 +76,11 @@ export function applyOffset(measuredDigitalDb: number, offsetDb: number): number
 
 export function validateCalibration(offsetDb: number): { ok: boolean; reason: string } {
   if (!Number.isFinite(offsetDb)) return { ok: false, reason: 'Offset must be a number.' };
-  if (Math.abs(offsetDb) > 60) {
-    return { ok: false, reason: 'Offset is outside the plausible ±60 dB range. Check the reference value.' };
+  // Realistic range: digital −100…0 dBFS mapped to environmental 20…120 dB
+  // SPL needs offsets roughly +20…+120 dB (e.g. −30 dBFS + 100 dB = 70 dBA).
+  // ±120 keeps fantasy values out while accepting genuine USB/phone mics.
+  if (Math.abs(offsetDb) > 120) {
+    return { ok: false, reason: 'Offset is outside the plausible ±120 dB range. Check the reference value.' };
   }
   return { ok: true, reason: '' };
 }

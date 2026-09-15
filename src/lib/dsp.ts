@@ -453,6 +453,21 @@ export function formatDb(v: number | null, digits = 1): string {
   return v.toFixed(digits);
 }
 
+/**
+ * Visual-only microphone input strength (0–100%).
+ * Maps the digital range ≈ −100…0 dBFS to 0…100%.
+ * DISPLAY ONLY: never export this as a decibel measurement, never feed it
+ * back into DSP, and never use Math.abs()/clamping tricks on dB values —
+ * this is a separate percentage scale for the uncalibrated meter visual.
+ */
+export function digitalToInputStrength(dbfs: number | null): number | null {
+  if (dbfs == null || !Number.isFinite(dbfs)) return null;
+  const pct = ((dbfs + 100) / 100) * 100;
+  if (pct <= 0) return 0;
+  if (pct >= 100) return 100;
+  return pct;
+}
+
 /** Explicit non-numeric state label for below-floor / invalid readings. */
 export function floorLabel(v: number | null): string {
   if (v == null || !Number.isFinite(v)) return 'Below digital floor';

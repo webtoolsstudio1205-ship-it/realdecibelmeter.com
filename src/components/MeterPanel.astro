@@ -8,51 +8,207 @@ interface Props {
 const { dict } = Astro.props;
 ---
 
-<section id="measure" aria-label={dict.liveRegion} class="scroll-mt-20" data-st-idle={dict.statusIdle} data-st-req={dict.statusRequesting} data-st-run={dict.statusRunning} data-st-pause={dict.statusPaused} data-st-stop={dict.statusStopped} data-st-err={dict.statusError} data-p-unknown={dict.permUnknown} data-p-granted={dict.permGranted} data-p-denied={dict.permDenied} data-p-prompt={dict.permPrompt} data-cal-u={dict.calibrationUncal} data-cal-c={dict.calibrationCal} data-mic-default={dict.micDefault}>
-  <div id="rdm-panel" class="panel meter-live p-4 sm:p-6 md:p-8" data-live="false" style="box-shadow: 0 1px 2px rgba(0,0,0,.08)">
+<section id="measure" aria-label={dict.liveRegion} class="scroll-mt-20" data-st-idle={dict.statusIdle} data-st-req={dict.statusRequesting} data-st-run={dict.statusRunning} data-st-pause={dict.statusPaused} data-st-stop={dict.statusStopped} data-st-err={dict.statusError} data-p-unknown={dict.permUnknown} data-p-granted={dict.permGranted} data-p-denied={dict.permDenied} data-p-prompt={dict.permPrompt} data-cal-u={dict.calibrationUncal} data-cal-c={dict.calibrationCal} data-mic-default={dict.micDefault} data-s-calreq={dict.statusCalRequired} data-s-strength={dict.inputStrength} data-s-cta={dict.calibrateCta} data-s-dignote={dict.digitalNote} data-s-envavg={dict.statEnergyAvg} data-s-digavg={dict.statDigitalAvg} data-s-digpeak={dict.statDigitalPeak} data-s-cur={dict.statSoundCurrent} data-s-min={dict.statMin} data-s-max={dict.statMax}>
+  <div id="rdm-panel" class="panel meter-card p-4 sm:p-6 md:p-8" data-live="false" data-state="idle">
     <div id="rdm-announcer" class="sr-only" role="status" aria-live="polite"></div>
 
-    <div class="flex flex-wrap items-center gap-2">
-      <span id="rdm-state-badge" class="inline-flex items-center gap-2 text-[13px] font-medium rounded-full px-3 py-1.5" style="border:1px solid var(--border);background:var(--raised)">
+    <div class="flex flex-wrap items-center gap-2" aria-label="Status">
+      <span class="chip chip-1 inline-flex items-center gap-2 text-[13px] font-medium rounded-full px-3 py-1.5" style="border:1px solid var(--border);background:var(--raised)">
         <span id="rdm-state-dot" class="inline-block rounded-full" style="width:8px;height:8px;background:var(--muted)" aria-hidden="true"></span>
         <span id="rdm-state-text">{dict.statusIdle}</span>
       </span>
-      <span id="rdm-cal-badge" class="inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
+      <span id="rdm-cal-badge" class="chip chip-2 inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
         {dict.calibrationUncal}
       </span>
-      <span class="inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
+      <span class="chip chip-3 inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
         <span>{dict.micPermission}: </span><strong id="rdm-perm-text" class="font-semibold">{dict.permUnknown}</strong>
       </span>
     </div>
 
-    <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
-      <div>
-        <p class="eyebrow">{dict.statCurrent}</p>
-        <div id="rdm-halo" class="big-halo flex items-baseline gap-3 mt-1" data-live="false" style="isolation:isolate">
-          <span id="rdm-big" class="tabular font-semibold tracking-tight" style="font-size:clamp(56px,12vw,96px);line-height:1" aria-live="off">--</span>
-          <span class="text-sm font-medium" style="color:var(--muted)">{dict.unit}</span>
-        </div>
+    <div class="meter-wrap">
+      <div class="rdm-grid-bg" aria-hidden="true"></div>
+      <div class="hero-glow meter-glow" aria-hidden="true"></div>
+      <p id="rdm-view-label" class="eyebrow meter-eyebrow">{dict.statSoundCurrent}</p>
 
-        <div class="mt-4" aria-hidden="true">
-          <div id="rdm-led" class="led">
-            {Array.from({ length: 24 }).map(() => (<span></span>))}
-          </div>
-          <div class="flex justify-between mt-1">
-            <span class="tabular text-[11px]" style="color:var(--muted)">30</span>
-            <span class="tabular text-[11px]" style="color:var(--muted)">120</span>
-          </div>
-        </div>
+      <svg id="rdm-gauge" viewBox="0 0 320 196" role="img" aria-label="Level gauge">
+        <defs>
+          <linearGradient id="rdm-arc-grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#22D3EE" />
+            <stop offset="0.5" stop-color="#3B82F6" />
+            <stop offset="1" stop-color="#8B5CF6" />
+          </linearGradient>
+        </defs>
+        <path d="M 24 172 A 136 136 0 0 1 296 172" fill="none" stroke="currentColor" opacity="0.14" stroke-width="14" stroke-linecap="round" />
+        <path id="rdm-arc" d="M 24 172 A 136 136 0 0 1 296 172" fill="none" stroke="url(#rdm-arc-grad)" stroke-width="14" stroke-linecap="round" stroke-dasharray="428" stroke-dashoffset="428" />
+        <g id="rdm-ticks" class="tabular" style="font-size:11px;fill:var(--muted)">
+          <text id="rdm-tick-lo" x="24" y="192" text-anchor="start">20</text>
+          <text id="rdm-tick-mid" x="160" y="192" text-anchor="middle">70</text>
+          <text id="rdm-tick-hi" x="296" y="192" text-anchor="end">120</text>
+        </g>
+      </svg>
+      <div id="rdm-gauge-glow" aria-hidden="true"></div>
 
-        <div class="mt-3" aria-hidden="true">
-          <div id="rdm-spec" class="spec">
-            {Array.from({ length: 10 }).map(() => (<span class="spec-bar"><span class="spec-fill"></span></span>))}
-          </div>
-        </div>
+      <div id="rdm-halo" class="big-halo flex items-baseline justify-center gap-3 mt-1" data-live="false" style="isolation:isolate">
+        <span id="rdm-big" class="tabular font-semibold tracking-tight" style="font-size:clamp(56px,12vw,92px);line-height:1" aria-live="off">--</span>
+        <span id="rdm-unit" class="text-sm font-medium" style="color:var(--muted)">dBA</span>
+      </div>
+      <p id="rdm-mode-status" class="meter-status">{dict.statusCalRequired}</p>
 
-        <div class="mt-4 flex flex-col sm:flex-row gap-2">
-          <label for="rdm-mic" class="sr-only">{dict.micSelect}</label>
+      <div id="rdm-strength-wrap" class="strength">
+        <div class="flex justify-between items-baseline gap-2">
+          <span class="text-[13px] font-medium">{dict.inputStrength}</span>
+          <span id="rdm-strength-pct" class="tabular text-[13px]" style="color:var(--muted)">--</span>
+        </div>
+        <div class="strength-track" role="img" aria-label={dict.inputStrength}>
+          <div id="rdm-strength-fill"></div>
+        </div>
+      </div>
+
+      <button id="rdm-cta-cal" type="button" class="btn-secondary focus-ring grad-edge mt-4">{dict.calibrateCta}</button>
+    </div>
+
+    <div class="mt-5 flex flex-wrap justify-center gap-2" role="group" aria-label="Transport">
+      <button id="rdm-start" type="button" class="btn-primary focus-ring grad-edge">{dict.btnStartMeasuring}</button>
+      <button id="rdm-req" type="button" class="btn-primary focus-ring" disabled hidden>
+        <svg class="mic-pulse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
+        <span id="rdm-req-text">{dict.statusRequesting}</span>
+      </button>
+      <button id="rdm-pause" type="button" class="btn-square focus-ring" hidden>{dict.btnPause}</button>
+      <button id="rdm-resume" type="button" class="btn-square focus-ring" hidden>{dict.btnResume}</button>
+      <button id="rdm-stop" type="button" class="btn-square focus-ring" hidden>{dict.btnStop}</button>
+      <button id="rdm-start-new" type="button" class="btn-primary focus-ring grad-edge" hidden>{dict.btnStartNew}</button>
+      <button id="rdm-save" type="button" class="btn-secondary focus-ring" hidden>{dict.btnSave}</button>
+      <button id="rdm-reset" type="button" class="btn-square focus-ring" hidden>{dict.btnReset}</button>
+      <button id="rdm-retry" type="button" class="btn-square focus-ring" hidden>{dict.btnRetry}</button>
+      <button id="rdm-dismiss" type="button" class="btn-square focus-ring" hidden>{dict.btnDismiss}</button>
+      <button id="rdm-customize" type="button" class="btn-secondary focus-ring">{dict.btnCustomize}</button>
+    </div>
+    <p id="rdm-save-msg" class="text-xs text-center mt-2" style="color:var(--muted)" role="status"></p>
+
+    <div id="rdm-error" class="hidden mt-4 rounded-xl p-4" role="alert" style="border:1px solid var(--border);background:var(--raised)">
+      <p id="rdm-error-title" class="font-semibold text-[15px]"></p>
+      <p id="rdm-error-msg" class="text-sm mt-1" style="color:var(--muted)"></p>
+      <p class="text-sm mt-2"><strong>Recovery: </strong><span id="rdm-error-fix"></span></p>
+    </div>
+
+    <div class="mt-5" aria-hidden="true">
+      <div id="rdm-spec" class="spec">
+        {Array.from({ length: 10 }).map(() => (<span class="spec-bar"><span class="spec-fill"></span></span>))}
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <div class="flex items-baseline justify-between gap-2">
+        <h3 class="text-sm font-semibold">{dict.graphLabel}</h3>
+        <span id="rdm-graph-meta" class="tabular text-xs" style="color:var(--muted)"></span>
+      </div>
+      <div class="panel-raised mt-2 p-2" style="overflow:hidden">
+        <svg id="rdm-graph" viewBox="0 0 600 160" class="w-full" style="height:160px;display:block" role="img" aria-label={dict.graphLabel} preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="rdm-edge" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#22D3EE" />
+              <stop offset="0.5" stop-color="#3B82F6" />
+              <stop offset="1" stop-color="#8B5CF6" />
+            </linearGradient>
+          </defs>
+          <g id="rdm-grid" stroke="currentColor" opacity="0.12">
+            <line x1="0" y1="40" x2="600" y2="40" /><line x1="0" y1="80" x2="600" y2="80" /><line x1="0" y1="120" x2="600" y2="120" />
+          </g>
+          <path id="rdm-path" d="" fill="none" stroke="url(#rdm-edge)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+        </svg>
+        <p id="rdm-graph-empty" class="text-xs px-2 py-1" style="color:var(--muted)">{dict.graphEmpty}</p>
+      </div>
+    </div>
+
+    <dl id="rdm-stats" class="stats-grid mt-6">
+      <div class="panel-raised p-3"><dt id="rdm-l1" class="eyebrow">{dict.statSoundCurrent}</dt><dd id="rdm-s1" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+      <div class="panel-raised p-3"><dt id="rdm-l2" class="eyebrow">{dict.statMin}</dt><dd id="rdm-s2" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+      <div class="panel-raised p-3"><dt id="rdm-l3" class="eyebrow">{dict.statEnergyAvg}</dt><dd id="rdm-s3" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+      <div class="panel-raised p-3"><dt id="rdm-l4" class="eyebrow">{dict.statMax}</dt><dd id="rdm-s4" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+      <div class="panel-raised p-3 stats-wide"><dt class="eyebrow">{dict.statDuration}</dt><dd id="rdm-s-dur" class="tabular text-2xl font-semibold mt-1">00:00</dd></div>
+    </dl>
+
+    <div class="mt-6 panel-raised p-4">
+      <h4 class="eyebrow mb-2">{dict.exportTitle}</h4>
+      <div class="flex flex-wrap gap-2">
+        <button id="rdm-exp-csv" type="button" class="btn-square focus-ring" disabled>{dict.exportCsv}</button>
+        <button id="rdm-exp-json" type="button" class="btn-square focus-ring" disabled>{dict.exportJson}</button>
+      </div>
+      <h4 class="eyebrow mt-4 mb-2">{dict.historyTitle}</h4>
+      <p id="rdm-storage-warn" class="hidden text-xs mb-2" style="color:var(--muted)">Session history unavailable: storage is blocked. Export CSV instead.</p>
+      <ul id="rdm-history" class="text-sm space-y-1"></ul>
+      <p id="rdm-history-empty" class="text-xs" style="color:var(--muted)">{dict.historyEmpty}</p>
+      <button id="rdm-history-clear" type="button" class="btn-square focus-ring mt-2">{dict.historyClear}</button>
+    </div>
+  </div>
+
+  <div id="rdm-modal-wrap" hidden>
+    <div id="rdm-modal-veil"></div>
+    <div id="rdm-modal" role="dialog" aria-modal="true" aria-labelledby="rdm-modal-title">
+      <div class="flex items-center justify-between gap-2 mb-3">
+        <h3 id="rdm-modal-title" class="text-base font-semibold">{dict.customizeTitle}</h3>
+        <button id="rdm-modal-close" type="button" class="btn-square focus-ring">{dict.customizeClose}</button>
+      </div>
+
+      <div class="modal-view" role="group" aria-label="Meter view">
+        <button type="button" data-view="spl" class="view-btn focus-ring" aria-pressed="true">dBA</button>
+        <button type="button" data-view="digital" class="view-btn focus-ring" aria-pressed="false">{dict.digitalTitle}</button>
+        <button type="button" data-view="relative" class="view-btn focus-ring" aria-pressed="false">dB Δ</button>
+      </div>
+
+      <section class="modal-sec" aria-labelledby="rdm-m-cal">
+        <h4 id="rdm-m-cal" class="eyebrow mb-2">{dict.calTitle}</h4>
+        <p id="rdm-cal-state" class="text-sm" style="color:var(--muted)"></p>
+        <p id="rdm-cal-stale" class="hidden text-xs mt-1" style="color:#fbbf24"></p>
+        <div class="flex flex-wrap items-center gap-2 mt-2 text-sm">
+          <span>Reference capture:</span>
+          <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-refdur" value="30" checked /> 30 s</label>
+          <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-refdur" value="60" /> 60 s</label>
+          <button id="rdm-ref-start" type="button" class="btn-square focus-ring">Capture</button>
+          <button id="rdm-ref-cancel" type="button" class="btn-square focus-ring">Cancel</button>
+        </div>
+        <p id="rdm-ref-progress" class="text-xs mt-1" style="color:var(--muted)"></p>
+        <div class="grid gap-2 sm:grid-cols-2 mt-2">
+          <label class="block text-sm">{dict.calOffset}<input id="rdm-ref-reading" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="number" step="0.1" min="-20" max="160" placeholder="94.0" /></label>
+          <label class="block text-sm">Method<select id="rdm-ref-method" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"><option value="">—</option><option value="reference-meter">Reference meter</option><option value="acoustic-calibrator">Acoustic calibrator</option><option value="other-documented">Other (documented)</option></select></label>
+        </div>
+        <label class="block text-sm mt-2" for="rdm-ref-note">Note (max 200 chars)<input id="rdm-ref-note" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="text" maxlength="200" /></label>
+        <label class="block text-sm mt-2" for="rdm-cal-label">{dict.calLabel}<input id="rdm-cal-label" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="text" maxlength="80" /></label>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <button id="rdm-cal-apply" type="button" class="btn-square focus-ring">{dict.calApply}</button>
+          <button id="rdm-cal-reset" type="button" class="btn-square focus-ring">{dict.calReset}</button>
+        </div>
+        <p id="rdm-cal-msg" class="text-xs mt-2" style="color:var(--muted)"></p>
+        <ul id="rdm-profiles" class="text-sm space-y-1 mt-2"></ul>
+      </section>
+
+      <section class="modal-sec" aria-labelledby="rdm-m-dig">
+        <h4 id="rdm-m-dig" class="eyebrow mb-2">{dict.digitalTitle} (dBFS)</h4>
+        <dl class="dig-grid text-sm">
+          <div><dt style="color:var(--muted)">Current</dt><dd id="rdm-d-cur" class="tabular">--</dd></div>
+          <div><dt style="color:var(--muted)">Minimum</dt><dd id="rdm-d-min" class="tabular">--</dd></div>
+          <div><dt style="color:var(--muted)">{dict.statDigitalAvg}</dt><dd id="rdm-d-avg" class="tabular">--</dd></div>
+          <div><dt style="color:var(--muted)">Maximum</dt><dd id="rdm-d-max" class="tabular">--</dd></div>
+          <div><dt style="color:var(--muted)">{dict.statDigitalPeak}</dt><dd id="rdm-d-peak" class="tabular">--</dd></div>
+        </dl>
+        <p class="text-xs mt-2" style="color:var(--muted)">{dict.digitalNote} · −100…0 dBFS scale.</p>
+      </section>
+
+      <section class="modal-sec" aria-labelledby="rdm-m-rel">
+        <h4 id="rdm-m-rel" class="eyebrow mb-2">Relative Level (dB)</h4>
+        <p id="rdm-rel-state" class="text-sm" style="color:var(--muted)">No baseline captured.</p>
+        <div class="mt-2 flex flex-wrap gap-2">
+          <button id="rdm-rel-cap" type="button" class="btn-square focus-ring">Capture baseline</button>
+          <button id="rdm-rel-clear" type="button" class="btn-square focus-ring">Clear</button>
+        </div>
+        <p id="rdm-rel-msg" class="text-xs mt-2" style="color:var(--muted)"></p>
+      </section>
+
+      <section class="modal-sec" aria-labelledby="rdm-m-mic">
+        <h4 id="rdm-m-mic" class="eyebrow mb-2">{dict.micSelect}</h4>
+        <div class="flex gap-2">
           <div class="select-wrap flex-1">
-            <select id="rdm-mic" class="select focus-ring text-sm rounded-lg w-full" style="min-height:44px;background:var(--raised);border:1px solid var(--border);color:var(--text);padding:0 36px 0 12px">
+            <select id="rdm-mic" class="select focus-ring text-sm rounded-lg w-full" style="min-height:44px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0 36px 0 12px">
               <option value="">{dict.micDefault}</option>
             </select>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
@@ -61,110 +217,34 @@ const { dict } = Astro.props;
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg>
           </button>
         </div>
+        <dl class="text-sm space-y-1 mt-3">
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Device</dt><dd id="rdm-dev" class="tabular text-right">—</dd></div>
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Sample rate</dt><dd id="rdm-rate" class="tabular text-right">—</dd></div>
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Channels</dt><dd id="rdm-chan" class="tabular text-right">—</dd></div>
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Processing</dt><dd id="rdm-proc" class="tabular text-right">—</dd></div>
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Samples</dt><dd id="rdm-meta-n" class="tabular text-right">0</dd></div>
+        </dl>
+        <p id="rdm-relaxed" class="text-xs mt-2" style="color:var(--muted)"></p>
+      </section>
 
-        <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Transport">
-          <button id="rdm-start" type="button" class="btn-primary focus-ring">{dict.btnStart}</button>
-          <button id="rdm-pause" type="button" class="btn-square focus-ring" disabled title={dict.btnPause}>{dict.btnPause}</button>
-          <button id="rdm-resume" type="button" class="btn-square focus-ring hidden">{dict.btnResume}</button>
-          <button id="rdm-stop" type="button" class="btn-square focus-ring" disabled>{dict.btnStop}</button>
-          <button id="rdm-reset" type="button" class="btn-square focus-ring">{dict.btnReset}</button>
+      <section class="modal-sec" aria-labelledby="rdm-m-w">
+        <h4 id="rdm-m-w" class="eyebrow mb-2">{dict.weighting}</h4>
+        <div class="flex flex-col gap-2 text-sm">
+          <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-w" value="A" checked /> {dict.weightA}</label>
+          <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-w" value="C" /> {dict.weightC}</label>
+          <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-w" value="Z" /> {dict.weightZ}</label>
         </div>
+      </section>
 
-        <div id="rdm-error" class="hidden mt-4 rounded-xl p-4" role="alert" style="border:1px solid var(--border);background:var(--raised)">
-          <p id="rdm-error-title" class="font-semibold text-[15px]"></p>
-          <p id="rdm-error-msg" class="text-sm mt-1" style="color:var(--muted)"></p>
-          <p class="text-sm mt-2"><strong>Recovery: </strong><span id="rdm-error-fix"></span></p>
-          <div class="mt-3 flex flex-wrap gap-2">
-            <button id="rdm-retry" type="button" class="btn-square focus-ring">{dict.btnRetry}</button>
-            <button id="rdm-dismiss" type="button" class="btn-square focus-ring">{dict.btnDismiss}</button>
-          </div>
+      <section class="modal-sec" aria-labelledby="rdm-m-r">
+        <h4 id="rdm-m-r" class="eyebrow mb-2">{dict.response}</h4>
+        <div class="flex flex-col gap-2 text-sm">
+          <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-r" value="fast" checked /> {dict.respFast}</label>
+          <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-r" value="slow" /> {dict.respSlow}</label>
         </div>
-
-        <div class="mt-6">
-          <div class="flex items-baseline justify-between gap-2">
-            <h3 class="text-sm font-semibold">{dict.graphLabel}</h3>
-            <span id="rdm-graph-meta" class="tabular text-xs" style="color:var(--muted)"></span>
-          </div>
-          <div class="panel-raised mt-2 p-2" style="overflow:hidden">
-            <svg id="rdm-graph" viewBox="0 0 600 160" class="w-full" style="height:160px;display:block" role="img" aria-label={dict.graphLabel} preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="rdm-edge" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0" stop-color="#22D3EE" />
-                  <stop offset="0.5" stop-color="#3B82F6" />
-                  <stop offset="1" stop-color="#8B5CF6" />
-                </linearGradient>
-              </defs>
-              <g id="rdm-grid" stroke="currentColor" opacity="0.12">
-                <line x1="0" y1="40" x2="600" y2="40" /><line x1="0" y1="80" x2="600" y2="80" /><line x1="0" y1="120" x2="600" y2="120" />
-              </g>
-              <path id="rdm-path" d="" fill="none" stroke="url(#rdm-edge)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
-            </svg>
-            <p id="rdm-graph-empty" class="text-xs px-2 py-1" style="color:var(--muted)">{dict.graphEmpty}</p>
-          </div>
-        </div>
-      </div>
-
-      <dl class="grid grid-cols-2 lg:grid-cols-1 gap-2 content-start">
-        <div class="panel-raised p-3"><dt class="eyebrow">{dict.statCurrent}</dt><dd id="rdm-s-current" class="tabular text-2xl font-semibold mt-1">--</dd></div>
-        <div class="panel-raised p-3"><dt class="eyebrow">{dict.statMin}</dt><dd id="rdm-s-min" class="tabular text-2xl font-semibold mt-1">--</dd></div>
-        <div class="panel-raised p-3"><dt class="eyebrow">{dict.statLeq}</dt><dd id="rdm-s-leq" class="tabular text-2xl font-semibold mt-1">--</dd></div>
-        <div class="panel-raised p-3"><dt class="eyebrow">{dict.statMax}</dt><dd id="rdm-s-max" class="tabular text-2xl font-semibold mt-1">--</dd></div>
-        <div class="panel-raised p-3 col-span-2 lg:col-span-1"><dt class="eyebrow">{dict.statDuration}</dt><dd id="rdm-s-dur" class="tabular text-2xl font-semibold mt-1">00:00</dd></div>
-      </dl>
+        <p class="text-xs mt-2" style="color:var(--muted)">Weighting: <span id="rdm-meta-w">A</span> · Response: <span id="rdm-meta-r">fast</span></p>
+      </section>
     </div>
-
-    <details id="rdm-advanced" class="mt-6 rounded-xl" style="border:1px solid var(--border);background:var(--raised)">
-      <summary class="cursor-pointer focus-ring rounded-xl px-4 font-semibold text-[15px]" style="min-height:44px;display:flex;align-items:center">{dict.advanced}</summary>
-      <div class="px-4 pb-4 grid gap-6 md:grid-cols-2">
-        <fieldset>
-          <legend class="eyebrow mb-2">{dict.weighting}</legend>
-          <div class="flex flex-col gap-2 text-sm">
-            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-w" value="A" checked /> {dict.weightA}</label>
-            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-w" value="C" /> {dict.weightC}</label>
-            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-w" value="Z" /> {dict.weightZ}</label>
-          </div>
-        </fieldset>
-        <fieldset>
-          <legend class="eyebrow mb-2">{dict.response}</legend>
-          <div class="flex flex-col gap-2 text-sm">
-            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-r" value="fast" checked /> {dict.respFast}</label>
-            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-r" value="slow" /> {dict.respSlow}</label>
-          </div>
-        </fieldset>
-        <div>
-          <h4 class="eyebrow mb-2">{dict.calTitle}</h4>
-          <label class="block text-sm" for="rdm-offset">{dict.calOffset}</label>
-          <input id="rdm-offset" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="number" step="0.1" min="-40" max="40" value="0" />
-          <label class="block text-sm mt-3" for="rdm-cal-label">{dict.calLabel}</label>
-          <input id="rdm-cal-label" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="text" maxlength="80" />
-          <div class="mt-3 flex flex-wrap gap-2">
-            <button id="rdm-cal-apply" type="button" class="btn-square focus-ring">{dict.calApply}</button>
-            <button id="rdm-cal-reset" type="button" class="btn-square focus-ring">{dict.calReset}</button>
-          </div>
-          <p id="rdm-cal-msg" class="text-xs mt-2" style="color:var(--muted)"></p>
-        </div>
-        <div>
-          <h4 class="eyebrow mb-2">{dict.sessionDetails} · {dict.deviceInfo}</h4>
-          <dl class="text-sm space-y-1">
-            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Device</dt><dd id="rdm-dev" class="tabular text-right">—</dd></div>
-            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Sample rate</dt><dd id="rdm-rate" class="tabular text-right">—</dd></div>
-            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Weighting</dt><dd id="rdm-meta-w" class="text-right">A</dd></div>
-            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Response</dt><dd id="rdm-meta-r" class="text-right">fast</dd></div>
-            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Samples</dt><dd id="rdm-meta-n" class="tabular text-right">0</dd></div>
-          </dl>
-          <h4 class="eyebrow mt-4 mb-2">{dict.exportTitle}</h4>
-          <div class="flex flex-wrap gap-2">
-            <button id="rdm-exp-csv" type="button" class="btn-square focus-ring" disabled>{dict.exportCsv}</button>
-            <button id="rdm-exp-json" type="button" class="btn-square focus-ring" disabled>{dict.exportJson}</button>
-          </div>
-          <h4 class="eyebrow mt-4 mb-2">{dict.historyTitle}</h4>
-          <p id="rdm-storage-warn" class="hidden text-xs mb-2" style="color:var(--muted)">Session history unavailable: storage is blocked. Export CSV instead.</p>
-          <ul id="rdm-history" class="text-sm space-y-1"></ul>
-          <p id="rdm-history-empty" class="text-xs" style="color:var(--muted)">{dict.historyEmpty}</p>
-          <button id="rdm-history-clear" type="button" class="btn-square focus-ring mt-2">{dict.historyClear}</button>
-        </div>
-      </div>
-    </details>
   </div>
 </section>
 
@@ -172,7 +252,7 @@ const { dict } = Astro.props;
   import { DecibelEngine } from '../lib/engine.js';
   import { formatDb, formatDuration } from '../lib/dsp.js';
   import { seriesToPath } from '../lib/graph.js';
-  import { sessionToCsv, sessionToJson, downloadText } from '../lib/export-format.js';
+  import { buildExportSession, sessionToCsv, sessionToJson, downloadText } from '../lib/export-format.js';
   import { loadHistory, saveSession, clearHistory } from '../lib/history.js';
   import { describeError } from '../lib/errors.js';
   import { MicCapture } from '../lib/microphone.js';
@@ -195,71 +275,210 @@ const { dict } = Astro.props;
     denied: T('data-p-denied', 'Denied'),
     prompt: T('data-p-prompt', 'Prompt'),
   });
-
-  const els = {
-    announcer: $('rdm-announcer'), stateText: $('rdm-state-text'), stateDot: $('rdm-state-dot'),
-    calBadge: $('rdm-cal-badge'), permText: $('rdm-perm-text'), big: $('rdm-big'),
-    mic: $('rdm-mic'), refresh: $('rdm-refresh-mics'),
-    start: $('rdm-start'), pause: $('rdm-pause'), resume: $('rdm-resume'), stop: $('rdm-stop'), reset: $('rdm-reset'),
-    err: $('rdm-error'), errTitle: $('rdm-error-title'), errMsg: $('rdm-error-msg'), errFix: $('rdm-error-fix'),
-    retry: $('rdm-retry'), dismiss: $('rdm-dismiss'),
-    path: $('rdm-path'), graphEmpty: $('rdm-graph-empty'), graphMeta: $('rdm-graph-meta'),
-    sCur: $('rdm-s-current'), sMin: $('rdm-s-min'), sLeq: $('rdm-s-leq'), sMax: $('rdm-s-max'), sDur: $('rdm-s-dur'),
-    dev: $('rdm-dev'), rate: $('rdm-rate'), metaW: $('rdm-meta-w'), metaR: $('rdm-meta-r'), metaN: $('rdm-meta-n'),
-    expCsv: $('rdm-exp-csv'), expJson: $('rdm-exp-json'),
-    history: $('rdm-history'), historyEmpty: $('rdm-history-empty'), historyClear: $('rdm-history-clear'),
-    storageWarn: $('rdm-storage-warn'), offset: $('rdm-offset'), calLabel: $('rdm-cal-label'),
-    calApply: $('rdm-cal-apply'), calReset: $('rdm-cal-reset'), calMsg: $('rdm-cal-msg'),
+  const STR = {
+    calReq: () => T('data-s-calreq', 'Calibration required'),
+    strength: () => T('data-s-strength', 'Microphone input strength'),
+    digNote: () => T('data-s-dignote', 'Digital signal — normally negative'),
+    envAvg: () => T('data-s-envavg', 'Energy average'),
+    digAvg: () => T('data-s-digavg', 'Digital energy average'),
+    digPeak: () => T('data-s-digpeak', 'Digital peak'),
+    cur: () => T('data-s-cur', 'Current sound level'),
+    min: () => T('data-s-min', 'Minimum'),
+    max: () => T('data-s-max', 'Maximum'),
   };
 
-  let lastAnnounced = '';
+  const els = {
+    announcer: $('rdm-announcer'), panel: $('rdm-panel'),
+    stateText: $('rdm-state-text'), stateDot: $('rdm-state-dot'),
+    calBadge: $('rdm-cal-badge'), permText: $('rdm-perm-text'),
+    viewLabel: $('rdm-view-label'), arc: $('rdm-arc'), gaugeGlow: $('rdm-gauge-glow'),
+    tickLo: $('rdm-tick-lo'), tickMid: $('rdm-tick-mid'), tickHi: $('rdm-tick-hi'),
+    big: $('rdm-big'), unit: $('rdm-unit'), modeStatus: $('rdm-mode-status'),
+    strengthPct: $('rdm-strength-pct'), strengthFill: $('rdm-strength-fill'),
+    ctaCal: $('rdm-cta-cal'),
+    start: $('rdm-start'), req: $('rdm-req'), pause: $('rdm-pause'), resume: $('rdm-resume'),
+    stop: $('rdm-stop'), startNew: $('rdm-start-new'), save: $('rdm-save'), reset: $('rdm-reset'),
+    retry: $('rdm-retry'), dismiss: $('rdm-dismiss'), customize: $('rdm-customize'), saveMsg: $('rdm-save-msg'),
+    err: $('rdm-error'), errTitle: $('rdm-error-title'), errMsg: $('rdm-error-msg'), errFix: $('rdm-error-fix'),
+    path: $('rdm-path'), graphEmpty: $('rdm-graph-empty'), graphMeta: $('rdm-graph-meta'),
+    l1: $('rdm-l1'), l2: $('rdm-l2'), l3: $('rdm-l3'), l4: $('rdm-l4'),
+    s1: $('rdm-s1'), s2: $('rdm-s2'), s3: $('rdm-s3'), s4: $('rdm-s4'), sDur: $('rdm-s-dur'),
+    stats: $('rdm-stats'),
+    expCsv: $('rdm-exp-csv'), expJson: $('rdm-exp-json'),
+    history: $('rdm-history'), historyEmpty: $('rdm-history-empty'), historyClear: $('rdm-history-clear'),
+    storageWarn: $('rdm-storage-warn'),
+    modalWrap: $('rdm-modal-wrap'), modal: $('rdm-modal'), modalClose: $('rdm-modal-close'),
+    mic: $('rdm-mic'), refresh: $('rdm-refresh-mics'),
+    dev: $('rdm-dev'), rate: $('rdm-rate'), chan: $('rdm-chan'), proc: $('rdm-proc'),
+    metaN: $('rdm-meta-n'), relaxed: $('rdm-relaxed'), metaW: $('rdm-meta-w'), metaR: $('rdm-meta-r'),
+    calState: $('rdm-cal-state'), calStale: $('rdm-cal-stale'), calMsg: $('rdm-cal-msg'),
+    refReading: $('rdm-ref-reading'), refMethod: $('rdm-ref-method'), refNote: $('rdm-ref-note'),
+    calLabel: $('rdm-cal-label'), calApply: $('rdm-cal-apply'), calReset: $('rdm-cal-reset'),
+    refStart: $('rdm-ref-start'), refCancel: $('rdm-ref-cancel'), refProgress: $('rdm-ref-progress'),
+    profiles: $('rdm-profiles'),
+    dCur: $('rdm-d-cur'), dMin: $('rdm-d-min'), dAvg: $('rdm-d-avg'), dMax: $('rdm-d-max'), dPeak: $('rdm-d-peak'),
+    relState: $('rdm-rel-state'), relCap: $('rdm-rel-cap'), relClear: $('rdm-rel-clear'), relMsg: $('rdm-rel-msg'),
+  };
+
+  const specFills = Array.from(document.querySelectorAll('#rdm-spec .spec-fill'));
+  const ARC_LEN = 428;
+  const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let latest = null;
+  let gaugeView = 'spl';
+  let prevState = 'idle';
   let historyEntries = [];
+  let lastAnnounced = '';
 
-  /* Interactive meter visuals — all derived from the real engine snapshot. */
-  const SEGS = 24;
-  const ledEl = $('rdm-led');
-  const ledSegs = ledEl ? Array.from(ledEl.children) : [];
-  const specEl = $('rdm-spec');
-  const specFills = specEl ? Array.from(specEl.querySelectorAll('.spec-fill')) : [];
-  const panelEl = $('rdm-panel');
-  const haloEl = $('rdm-halo');
-  let lastLit = -1;
-  let peakSeg = -1;
-  let peakAt = 0;
+  // Single rAF loop (~30 FPS) for number/arc/strength interpolation.
+  // DSP quanta arrive via engine subscription independently of this rate.
+  // Stored/exported measurements are NEVER smoothed — only these display vars.
+  let rafId = 0;
+  let lastFrame = 0;
+  let shownMain = null;
+  let shownFrac = 0;
+  let shownStrength = 0;
 
-  function levelToLit(db) {
-    if (db == null || !Number.isFinite(db)) return 0;
-    const t = Math.min(1, Math.max(0, (db - 30) / 90));
-    return Math.round(t * SEGS);
+  function envUnitFor(s) {
+    if (s.result && s.result.kind === 'calibrated') return s.result.unit;
+    if (s.result && s.result.kind === 'uncalibrated') return s.result.unit;
+    return s.weighting === 'C' ? 'dBC' : s.weighting === 'Z' ? 'dBZ' : 'dBA';
   }
 
-  function renderMeter(s) {
-    const live = s.state === 'running' && s.stats.current != null;
-    const lit = live ? levelToLit(s.stats.current) : 0;
-    if (panelEl) panelEl.setAttribute('data-live', live ? 'true' : 'false');
-    if (haloEl) haloEl.setAttribute('data-live', live ? 'true' : 'false');
-    if (lit !== lastLit) {
-      for (let i = 0; i < ledSegs.length; i++) {
-        ledSegs[i].classList.toggle('lit', i < lit);
-      }
-      lastLit = lit;
+  function mainTarget(s) {
+    if (gaugeView === 'digital') {
+      return { value: s.stats.current, lo: -100, hi: 0, unit: 'dBFS' };
     }
-    const now = Date.now();
-    if (live && lit >= peakSeg) {
-      peakSeg = lit;
-      peakAt = now;
-    } else if (!live || now - peakAt > 1200) {
-      peakSeg = live ? lit : -1;
-      peakAt = now;
+    if (gaugeView === 'relative') {
+      const v = s.mode === 'relative' ? s.display.current : null;
+      return { value: v, lo: -30, hi: 30, unit: 'dB' };
     }
-    for (let i = 0; i < ledSegs.length; i++) {
-      ledSegs[i].classList.toggle('peak', i === peakSeg - 1 && peakSeg > 0);
+    // Environmental SPL view: ONLY a compatible calibrated profile yields a number.
+    if (s.calibrationValid && s.result && s.result.kind === 'calibrated') {
+      return { value: s.result.spl, lo: 20, hi: 120, unit: s.result.unit };
     }
-    const spec = live && s.spectrum.length ? s.spectrum : [];
-    for (let i = 0; i < specFills.length; i++) {
-      const v = spec[i] ?? 0;
-      specFills[i].style.height = `${Math.round(Math.min(1, Math.max(0, v)) * 100)}%`;
+    return { value: null, lo: 20, hi: 120, unit: envUnitFor(s) };
+  }
+
+  function fracFor(value, lo, hi) {
+    if (value == null || !Number.isFinite(value)) return 0;
+    const t = (value - lo) / (hi - lo);
+    return Math.min(1, Math.max(0, t));
+  }
+
+  function paintMain(target, immediate) {
+    const txt = target.value == null || !Number.isFinite(target.value) ? '--' : formatDb(target.value);
+    if (els.big.textContent !== txt) els.big.textContent = txt;
+    if (els.unit.textContent !== target.unit) els.unit.textContent = target.unit;
+    const frac = fracFor(target.value, target.lo, target.hi);
+    if (immediate || REDUCED) {
+      shownMain = target.value;
+      shownFrac = frac;
+      els.arc.style.strokeDashoffset = String(ARC_LEN * (1 - frac));
     }
+  }
+
+  function tickLabels() {
+    if (gaugeView === 'digital') {
+      els.tickLo.textContent = '-100'; els.tickMid.textContent = '-50'; els.tickHi.textContent = '0';
+      els.viewLabel.textContent = T('data-s-strength', 'Microphone input strength') + ' · dBFS';
+    } else if (gaugeView === 'relative') {
+      els.tickLo.textContent = '-30'; els.tickMid.textContent = '0'; els.tickHi.textContent = '+30';
+      els.viewLabel.textContent = 'Relative Level · dB';
+    } else {
+      els.tickLo.textContent = '20'; els.tickMid.textContent = '70'; els.tickHi.textContent = '120';
+      els.viewLabel.textContent = STR.cur();
+    }
+  }
+
+  function rafTick(now) {
+    rafId = 0;
+    if (!latest) return;
+    if (now - lastFrame < 33 && !REDUCED) {
+      rafId = requestAnimationFrame(rafTick);
+      return;
+    }
+    lastFrame = now;
+    const t = mainTarget(latest);
+    const frac = fracFor(t.value, t.lo, t.hi);
+    if (REDUCED || t.value == null) {
+      paintMain(t, true);
+    } else {
+      const cur = shownMain == null || !Number.isFinite(shownMain) ? t.value : shownMain;
+      const next = cur + (t.value - cur) * 0.35;
+      // Snap when close (sign-preserving comparison — never alters the value's sign).
+      const gap = next > t.value ? next - t.value : t.value - next;
+      shownMain = gap < 0.02 ? t.value : next;
+      shownFrac = shownFrac + (frac - shownFrac) * 0.35;
+      const txt = formatDb(shownMain);
+      if (els.big.textContent !== txt) els.big.textContent = txt;
+      if (els.unit.textContent !== t.unit) els.unit.textContent = t.unit;
+      els.arc.style.strokeDashoffset = String(ARC_LEN * (1 - shownFrac));
+    }
+    // Strength fill + gauge glow react to visual-only input strength.
+    const sp = latest.inputStrengthPct;
+    const targetS = sp == null ? 0 : sp / 100;
+    shownStrength = shownStrength + (targetS - shownStrength) * (REDUCED ? 1 : 0.35);
+    els.strengthFill.style.transform = `scaleX(${shownStrength.toFixed(3)})`;
+    els.gaugeGlow.style.opacity = (0.15 + shownStrength * 0.55).toFixed(2);
+    const st = latest.state;
+    if (st === 'running' || st === 'paused' || st === 'requesting-permission') {
+      rafId = requestAnimationFrame(rafTick);
+    }
+  }
+
+  function ensureRaf() {
+    if (rafId || REDUCED || !latest) return;
+    const st = latest.state;
+    if (st === 'running' || st === 'paused' || st === 'requesting-permission') {
+      lastFrame = 0;
+      rafId = requestAnimationFrame(rafTick);
+    }
+  }
+
+  function cancelRaf() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
+  }
+
+  function buildExport(s) {
+    return buildExportSession({
+      stats: {
+        current: s.display.current, min: s.display.min, leq: s.display.leq, max: s.display.max,
+        peakDb: s.display.peakDb, gapMs: s.gapMs, recordedSec: s.stats.recordedSec, durationSec: s.stats.durationSec,
+      },
+      gaps: s.gaps,
+      segments: s.segments,
+      unit: s.unit,
+      mode: s.mode,
+      weighting: s.weighting,
+      response: s.response,
+      deviceLabel: s.deviceLabel,
+      deviceId: s.deviceId,
+      sampleRate: s.sampleRate,
+      channelCount: s.channelCount,
+      processing: { ...s.processing },
+      relaxedConstraints: s.relaxedConstraints,
+      calibration: s.calibration,
+      calibrationMethod: s.activeProfile ? s.activeProfile.referenceMethod : 'none',
+      calibrationDateIso: s.activeProfile ? s.activeProfile.calibrationDateIso : null,
+      startedAtIso: engine.getStartedAtIso() || new Date().toISOString(),
+      invalidSamples: engine.getInvalidSampleCount(),
+    });
+  }
+
+  function renderHistory() {
+    els.history.innerHTML = '';
+    els.historyEmpty.style.display = historyEntries.length ? 'none' : '';
+    historyEntries.slice(0, 5).forEach((e) => {
+      const li = document.createElement('li');
+      li.className = 'tabular';
+      const sess = e.session || {};
+      // Never label raw dBFS averages as `Leq`.
+      const avgLabel = sess.mode === 'digital' || sess.unit === 'dBFS' ? 'Digital avg' : sess.mode === 'relative' ? 'Avg Δ' : 'Leq';
+      li.textContent = `${String(e.savedAtIso || '').slice(0, 16).replace('T', ' ')} · ${sess.unit || ''} ${avgLabel} ${formatDb(sess.leqDb)} · ${formatDuration(sess.activeSec || 0)}`;
+      els.history.appendChild(li);
+    });
   }
 
   async function refreshMics() {
@@ -280,53 +499,212 @@ const { dict } = Astro.props;
     if ([...sel.options].some((o) => o.value === prev)) sel.value = prev;
   }
 
-  function renderHistory() {
-    els.history.innerHTML = '';
-    els.historyEmpty.style.display = historyEntries.length ? 'none' : '';
-    historyEntries.slice(0, 5).forEach((e) => {
+  function renderProfiles(s) {
+    els.profiles.innerHTML = '';
+    const list = engine.listProfiles();
+    if (!list.length) {
       const li = document.createElement('li');
-      li.className = 'tabular';
-      li.textContent = `${e.endedAtIso.slice(0, 16).replace('T', ' ')} · Leq ${formatDb(e.stats.leq)} dB · ${formatDuration(e.stats.durationSec)}`;
-      els.history.appendChild(li);
+      li.style.color = 'var(--muted)';
+      li.textContent = 'No saved calibration profiles yet.';
+      els.profiles.appendChild(li);
+      return;
+    }
+    list.forEach((p) => {
+      const li = document.createElement('li');
+      li.className = 'profile-row';
+      const active = s.activeProfile && s.activeProfile.id === p.id;
+      li.textContent = `${p.label} (${p.offsetDb >= 0 ? '+' : ''}${p.offsetDb.toFixed(1)} dB)${active ? ' · active' : ''} `;
+      const apply = document.createElement('button');
+      apply.type = 'button';
+      apply.className = 'btn-square focus-ring btn-mini';
+      apply.textContent = 'Apply';
+      apply.addEventListener('click', () => {
+        const r = engine.applyProfile(p.id);
+        els.calMsg.textContent = r.ok ? `Applied ${p.label}. Main meter now shows estimated ${envUnitFor(engine.snapshot())}.` : r.reason;
+        if (r.ok) gaugeView = 'spl';
+      });
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'btn-square focus-ring btn-mini';
+      del.textContent = 'Delete';
+      del.addEventListener('click', () => { engine.deleteProfile(p.id); });
+      li.appendChild(apply);
+      li.appendChild(del);
+      els.profiles.appendChild(li);
     });
   }
 
+  function updateTransport(st) {
+    const show = (el, on) => { el.hidden = !on; };
+    show(els.start, st === 'idle');
+    show(els.req, st === 'requesting-permission');
+    show(els.pause, st === 'running');
+    show(els.resume, st === 'paused');
+    show(els.stop, st === 'running' || st === 'paused');
+    show(els.startNew, st === 'stopped');
+    show(els.save, st === 'stopped');
+    show(els.reset, st === 'stopped');
+    show(els.retry, st === 'error');
+    show(els.dismiss, st === 'error');
+    // Customize is persistent: the ONLY button that opens measurement options.
+    // Start never opens any popup — it requests permission and measures immediately.
+    els.customize.hidden = false;
+  }
+
+  function updateStats(s) {
+    const hasData = s.stats.current != null;
+    els.stats.classList.toggle('has-data', hasData);
+    if (gaugeView === 'relative') {
+      els.l1.textContent = 'Change now';
+      els.l2.textContent = 'Min change';
+      els.l3.textContent = 'Avg change';
+      els.l4.textContent = 'Max change';
+      els.s1.textContent = formatDb(s.display.current);
+      els.s2.textContent = formatDb(s.display.min);
+      els.s3.textContent = formatDb(s.display.leq);
+      els.s4.textContent = formatDb(s.display.max);
+    } else if (gaugeView === 'digital' || (!s.calibrationValid && gaugeView === 'spl' && s.mode !== 'calibrated')) {
+      // Digital naming only — never `Leq` for raw dBFS.
+      els.l1.textContent = STR.strength();
+      els.l2.textContent = STR.digAvg();
+      els.l3.textContent = STR.digPeak();
+      els.l4.textContent = 'Raw current';
+      els.s1.textContent = s.inputStrengthPct == null ? '--' : `${s.inputStrengthPct.toFixed(0)}%`;
+      els.s2.textContent = formatDb(s.stats.leq);
+      els.s3.textContent = formatDb(Number.isFinite(s.stats.peakDb) ? s.stats.peakDb : null);
+      els.s4.textContent = formatDb(s.stats.current);
+    } else {
+      els.l1.textContent = STR.cur();
+      els.l2.textContent = STR.min();
+      els.l3.textContent = STR.envAvg();
+      els.l4.textContent = STR.max();
+      els.s1.textContent = formatDb(s.display.current);
+      els.s2.textContent = formatDb(s.display.min);
+      els.s3.textContent = formatDb(s.display.leq);
+      els.s4.textContent = formatDb(s.display.max);
+    }
+    els.sDur.textContent = formatDuration(s.stats.durationSec);
+  }
+
+  function updateMainMeta(s) {
+    // Status line, CTA and strength block per calibration state and view.
+    const calibrated = s.calibrationValid && s.result && s.result.kind === 'calibrated';
+    if (gaugeView === 'digital') {
+      els.modeStatus.textContent = s.calibrationValid
+        ? `${STR.digNote()} · −100…0 dBFS scale.`
+        : `${STR.digNote()} · −100…0 dBFS scale. ${STR.calReq()} for sound level.`;
+      els.ctaCal.hidden = true;
+    } else if (gaugeView === 'relative') {
+      els.modeStatus.textContent = s.baseline
+        ? `Change from baseline (${formatDb(s.baseline.energyDb)} dBFS, ${s.baseline.weighting}-weighting). Not calibration.`
+        : 'Capture a baseline in Customize → Relative Level first.';
+      els.ctaCal.hidden = true;
+    } else if (calibrated) {
+      const r = s.result;
+      els.modeStatus.textContent = `Calibrated estimate · ${s.calibration.label} (${r.offsetDb >= 0 ? '+' : ''}${r.offsetDb.toFixed(1)} dB) · ${s.weighting}-weighting`;
+      els.ctaCal.hidden = true;
+    } else {
+      els.modeStatus.textContent = STR.calReq();
+      els.ctaCal.hidden = false;
+    }
+    // Strength percentage is visual-only feedback while measuring.
+    els.strengthPct.textContent = s.inputStrengthPct == null ? '--' : `${s.inputStrengthPct.toFixed(0)}%`;
+  }
+
+  function updateModal(s) {
+    // Calibration section
+    els.calState.textContent = s.activeProfile
+      ? `Active: ${s.activeProfile.label} (${s.activeProfile.offsetDb >= 0 ? '+' : ''}${s.activeProfile.offsetDb.toFixed(1)} dB, ${s.activeProfile.referenceMethod}, ${s.activeProfile.calibrationDateIso.slice(0, 10)})`
+      : 'No calibration profile active. Complete a reference comparison against a known sound source.';
+    if (s.calibrationStale && s.calibrationStaleReasons.length) {
+      els.calStale.classList.remove('hidden');
+      els.calStale.textContent = `Profile no longer matches this setup: ${s.calibrationStaleReasons.join(' ')}`;
+    } else {
+      els.calStale.classList.add('hidden');
+    }
+    if (s.referenceCapture) {
+      els.refProgress.textContent = `Capturing reference… ${s.referenceCapture.elapsedSec.toFixed(0)} / ${s.referenceCapture.durationSec} s (keep the sound steady)`;
+    } else {
+      const m = engine.getReferenceMeasuredLeq();
+      els.refProgress.textContent = m != null && Number.isFinite(m)
+        ? `Measured digital level: ${formatDb(m)} dBFS — enter the reference reading and apply.`
+        : '';
+    }
+    renderProfiles(s);
+    // Digital input card — the ONLY place raw negative dBFS is shown as a number.
+    els.dCur.textContent = formatDb(s.stats.current);
+    els.dMin.textContent = formatDb(s.stats.min);
+    els.dAvg.textContent = formatDb(s.stats.leq);
+    els.dMax.textContent = formatDb(s.stats.max);
+    els.dPeak.textContent = formatDb(Number.isFinite(s.stats.peakDb) ? s.stats.peakDb : null);
+    // Relative card
+    els.relState.textContent = s.baseline
+      ? `Baseline: ${formatDb(s.baseline.energyDb)} dBFS (${s.baseline.weighting}-weighting, ${s.baseline.capturedAtIso.slice(0, 16).replace('T', ' ')})`
+      : 'No baseline captured.';
+    // Mic card
+    els.dev.textContent = s.deviceLabel || '—';
+    els.rate.textContent = s.sampleRate ? `${s.sampleRate} Hz` : '—';
+    els.chan.textContent = s.sampleRate ? String(s.channelCount) : '—';
+    els.proc.textContent = s.sampleRate
+      ? `EC ${s.processing.echoCancellation} / NS ${s.processing.noiseSuppression} / AGC ${s.processing.autoGainControl}`
+      : '—';
+    els.metaN.textContent = String(s.stats.samples);
+    els.relaxed.textContent = s.relaxedConstraints.length ? s.relaxedConstraints.join(' ') : '';
+    els.metaW.textContent = s.weighting;
+    els.metaR.textContent = s.response;
+  }
+
   engine.subscribe((s) => {
+    latest = s;
     const st = s.state;
+    els.panel.dataset.state = st;
+    els.panel.setAttribute('data-live', st === 'running' && s.stats.current != null ? 'true' : 'false');
     els.stateText.textContent = STATUS()[st] ?? st;
     els.stateDot.style.background = st === 'running' ? '#22D3EE' : st === 'error' ? '#f87171' : st === 'paused' ? '#fbbf24' : 'var(--muted)';
     const permMap = PERM();
     els.permText.textContent = permMap[s.permission] ?? s.permission;
-    els.calBadge.textContent = s.calibration.isCalibrated
-      ? `${T('data-cal-c', 'Calibrated')} (${s.calibration.offsetDb >= 0 ? '+' : ''}${s.calibration.offsetDb.toFixed(1)} dB)` : T('data-cal-u', 'Uncalibrated — estimates only');
+    els.calBadge.textContent = s.calibrationValid && s.activeProfile
+      ? `${T('data-cal-c', 'Calibrated')} (${s.activeProfile.offsetDb >= 0 ? '+' : ''}${s.activeProfile.offsetDb.toFixed(1)} dB)`
+      : T('data-cal-u', 'Uncalibrated — estimates only');
 
-    const hasData = s.stats.current != null;
-    els.big.textContent = formatDb(s.stats.current);
-    els.sCur.textContent = formatDb(s.stats.current);
-    els.sMin.textContent = formatDb(s.stats.min);
-    els.sLeq.textContent = formatDb(s.stats.leq);
-    els.sMax.textContent = formatDb(s.stats.max);
-    els.sDur.textContent = formatDuration(s.stats.durationSec);
+    // Stop completion animation + pause dimming are CSS-driven via data-state/classes.
+    if (prevState !== 'stopped' && st === 'stopped') {
+      els.panel.classList.remove('just-stopped');
+      void els.panel.offsetWidth;
+      els.panel.classList.add('just-stopped');
+      setTimeout(() => els.panel.classList.remove('just-stopped'), 600);
+      cancelRaf();
+      paintMain(mainTarget(s), true);
+    }
+    if ((st === 'idle' || st === 'error') && prevState !== st) {
+      cancelRaf();
+      paintMain(mainTarget(s), true);
+    }
+    prevState = st;
 
-    els.start.disabled = st === 'requesting-permission' || st === 'running';
-    els.start.classList.toggle('attn', st === 'idle');
-    els.pause.disabled = st !== 'running';
-    els.stop.disabled = st !== 'running' && st !== 'paused';
-    els.resume.classList.toggle('hidden', st !== 'paused');
-    els.expCsv.disabled = !hasData;
-    els.expJson.disabled = !hasData;
-    renderMeter(s);
+    tickLabels();
+    updateTransport(st);
+    updateMainMeta(s);
+    updateStats(s);
+    updateModal(s);
 
-    els.dev.textContent = s.deviceLabel || '—';
-    els.rate.textContent = s.sampleRate ? `${s.sampleRate} Hz` : '—';
-    els.metaW.textContent = s.weighting;
-    els.metaR.textContent = s.response;
-    els.metaN.textContent = String(s.stats.samples);
+    // Spectrum bars rise from ACTUAL microphone FFT data only.
+    const live = st === 'running' && s.spectrumDb.length;
+    for (let i = 0; i < specFills.length; i++) {
+      const v = live ? s.spectrumDb[i] : null;
+      const h = v == null || !Number.isFinite(v) ? 0 : Math.min(1, Math.max(0, (v + 90) / 60));
+      specFills[i].style.height = `${Math.round(h * 100)}%`;
+    }
 
+    // Graph line draws progressively as real samples arrive.
     const series = engine.graph.series();
     els.path.setAttribute('d', seriesToPath(series.slice(-180), 600, 160));
     els.graphEmpty.style.display = series.length ? 'none' : '';
     els.graphMeta.textContent = series.length ? `${series.length} pts` : '';
+
+    const hasData = s.display.current != null || s.stats.current != null;
+    els.expCsv.disabled = !hasData;
+    els.expJson.disabled = !hasData;
 
     if (st === 'error') {
       const info = describeError(s.error, s.errorDetail);
@@ -344,21 +722,75 @@ const { dict } = Astro.props;
       els.announcer.textContent = announce;
     }
 
-    if ((st === 'stopped') && hasData) {
-      const res = saveSession(s.stats, `${s.weighting}/${s.response}`);
-      historyEntries = res.entries;
-      if (!res.ok) els.storageWarn.classList.remove('hidden');
-      renderHistory();
-    }
+    ensureRaf();
   });
 
-  els.start?.addEventListener('click', () => { els.start.blur(); engine.start(); });
+  // Transport: Start requests permission and measures immediately — no popup.
+  els.start?.addEventListener('click', () => { els.start.blur(); els.saveMsg.textContent = ''; engine.start(); });
+  els.startNew?.addEventListener('click', () => { els.saveMsg.textContent = ''; engine.reset(); engine.start(); });
   els.pause?.addEventListener('click', () => engine.pause());
   els.resume?.addEventListener('click', () => engine.resume());
   els.stop?.addEventListener('click', () => engine.stop());
-  els.reset?.addEventListener('click', () => engine.reset());
+  els.reset?.addEventListener('click', () => { els.saveMsg.textContent = ''; engine.reset(); });
   els.retry?.addEventListener('click', () => engine.start());
   els.dismiss?.addEventListener('click', () => engine.dismissError());
+  els.save?.addEventListener('click', () => {
+    const s = engine.snapshot();
+    const exported = buildExport(s);
+    const res = saveSession(exported, `${s.weighting}/${s.response} ${s.unit}`);
+    historyEntries = res.entries;
+    if (!res.ok) els.storageWarn.classList.remove('hidden');
+    els.saveMsg.textContent = res.ok ? 'Saved to local history.' : res.reason;
+    renderHistory();
+  });
+  els.ctaCal?.addEventListener('click', () => openModal());
+
+  // Customize modal — the ONLY opener of measurement options.
+  let lastFocus = null;
+  function openModal() {
+    lastFocus = document.activeElement;
+    els.modalWrap.hidden = false;
+    requestAnimationFrame(() => els.modalWrap.classList.add('open'));
+    els.modalClose.focus();
+  }
+  function closeModal() {
+    els.modalWrap.classList.remove('open');
+    setTimeout(() => { els.modalWrap.hidden = true; }, REDUCED ? 0 : 180);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  els.customize?.addEventListener('click', openModal);
+  els.modalClose?.addEventListener('click', closeModal);
+  $('rdm-modal-veil')?.addEventListener('click', closeModal);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !els.modalWrap.hidden) closeModal();
+  });
+  document.querySelectorAll('.view-btn').forEach((b) => {
+    b.addEventListener('click', () => {
+      const v = b.getAttribute('data-view');
+      if (v === 'relative') {
+        if (!latest || !latest.baseline) {
+          els.relMsg.textContent = 'Capture a baseline first — relative mode shows only the change from that baseline.';
+          return;
+        }
+        const r = engine.setMode('relative');
+        if (!r.ok) { els.relMsg.textContent = r.reason; return; }
+        gaugeView = 'relative';
+      } else if (v === 'digital') {
+        engine.setMode('digital');
+        gaugeView = 'digital';
+      } else {
+        if (latest && latest.activeProfile) {
+          const r = engine.setMode('calibrated');
+          if (!r.ok) { els.calMsg.textContent = r.reason; return; }
+        }
+        gaugeView = 'spl';
+      }
+      document.querySelectorAll('.view-btn').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+      tickLabels();
+      if (latest) { paintMain(mainTarget(latest), REDUCED); updateMainMeta(latest); updateStats(latest); }
+    });
+  });
+
   els.mic?.addEventListener('change', (e) => {
     const sel = e.target;
     engine.setDevice(sel.value, sel.options[sel.selectedIndex]?.textContent ?? '');
@@ -372,25 +804,51 @@ const { dict } = Astro.props;
     r.addEventListener('change', (e) => engine.setResponse(e.target.value));
   });
 
-  els.calApply?.addEventListener('click', () => {
-    const off = parseFloat(els.offset.value);
-    engine.setCalibrationOffset(Number.isFinite(off) ? off : NaN, els.calLabel.value, true);
+  els.refStart?.addEventListener('click', () => {
+    const dur = document.querySelector('input[name="rdm-refdur"]:checked')?.value === '60' ? 60 : 30;
+    const r = engine.startReferenceCapture(dur);
+    els.calMsg.textContent = r.ok ? `Capturing ${dur} s reference…` : r.reason;
   });
-  els.calReset?.addEventListener('click', () => { engine.resetCalibration(); els.offset.value = '0'; els.calLabel.value = ''; });
+  els.refCancel?.addEventListener('click', () => { engine.cancelReferenceCapture(); els.calMsg.textContent = 'Reference capture cancelled.'; });
+  els.calApply?.addEventListener('click', () => {
+    const reading = parseFloat(els.refReading.value);
+    const res = engine.applyReferenceCalibration(
+      {
+        referenceReadingDb: Number.isFinite(reading) ? reading : Number.NaN,
+        measuredDigitalLeqDb: Number.NaN,
+        method: els.refMethod.value,
+        durationSec: 30,
+        note: els.refNote.value ?? '',
+      },
+      els.calLabel.value ?? '',
+    );
+    els.calMsg.textContent = res.ok
+      ? `Calibrated. Main meter now shows estimated ${envUnitFor(engine.snapshot())} (raw dBFS + offset).`
+      : res.reasons.join(' ');
+    if (res.ok) {
+      gaugeView = 'spl';
+      document.querySelectorAll('.view-btn').forEach((x) => x.setAttribute('aria-pressed', x.getAttribute('data-view') === 'spl' ? 'true' : 'false'));
+    }
+  });
+  els.calReset?.addEventListener('click', () => {
+    engine.resetCalibration();
+    els.refReading.value = '';
+    els.calLabel.value = '';
+    els.calMsg.textContent = 'Reset to uncalibrated. Main meter shows -- with input strength.';
+  });
+  els.relCap?.addEventListener('click', () => {
+    const r = engine.setBaseline();
+    els.relMsg.textContent = r.ok ? 'Baseline captured. Switch the meter view to dB Δ to see relative change.' : r.reason;
+  });
+  els.relClear?.addEventListener('click', () => { engine.clearBaseline(); els.relMsg.textContent = 'Baseline cleared.'; });
 
   els.expCsv?.addEventListener('click', () => {
     const s = engine.snapshot();
-    downloadText(`decibel-session-${Date.now()}.csv`, sessionToCsv(s.stats, {
-      weighting: s.weighting, response: s.response, calibration: s.calibration,
-      deviceLabel: s.deviceLabel, startedAtIso: engine.getStartedAtIso() || new Date().toISOString(),
-    }), 'text/csv');
+    downloadText(`decibel-session-${Date.now()}.csv`, sessionToCsv(buildExport(s)), 'text/csv');
   });
   els.expJson?.addEventListener('click', () => {
     const s = engine.snapshot();
-    downloadText(`decibel-session-${Date.now()}.json`, sessionToJson(s.stats, {
-      weighting: s.weighting, response: s.response, calibration: s.calibration,
-      deviceLabel: s.deviceLabel, startedAtIso: engine.getStartedAtIso() || new Date().toISOString(),
-    }), 'application/json');
+    downloadText(`decibel-session-${Date.now()}.json`, sessionToJson(buildExport(s)), 'application/json');
   });
   els.historyClear?.addEventListener('click', () => {
     if (clearHistory()) { historyEntries = []; renderHistory(); }
@@ -406,9 +864,7 @@ const { dict } = Astro.props;
     if (!h.storageOk) els.storageWarn.classList.remove('hidden');
   } catch { els.storageWarn.classList.remove('hidden'); }
   renderHistory();
-
-  // Keyboard: Escape closes advanced disclosure.
-  document.getElementById('rdm-advanced')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') e.target.closest('details')?.removeAttribute('open');
-  });
+  tickLabels();
+  paintMain({ value: null, lo: 20, hi: 120, unit: 'dBA' }, true);
+  window.addEventListener('pagehide', cancelRaf);
 </script>

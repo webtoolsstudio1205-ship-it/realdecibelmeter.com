@@ -43,3 +43,30 @@ available in this environment, so no viewport was visually rendered.** Nothing b
 Render 320×800, 390×844, 768×1024, 1440×900 in both themes; exercise Start → pause →
 resume → stop → reset, denied/busy/no-device paths (via permission mocks), locale pages,
 and 404. Record screenshots before claiming responsive QA is complete.
+
+## Prompt 3 additions (code- and dist-verified, not browser-rendered)
+
+Negative-dB fix: uncalibrated main meter is `-- dBA` + `Calibration required` + 0–100%
+input-strength visual + CTA (verified: `dB (estimated)` 0 hits in `dist/index.html`,
+`rdm-led` removed, `dB SPL (est.)` 0 hits). Calibrated path shows weighting-carried
+`dBA/dBC/dBZ` from `rawDbfs + offset` only (engine unit tests assert the identity and
+that stored raw stays negative); digital negatives appear solely in Customize →
+Digital Input with the `Digital signal — normally negative` note; no `Leq` label
+anywhere near raw dBFS (stats/history use `Digital energy average`/`Digital peak`/
+`Energy average`/`Avg Δ` as appropriate); no `Math.abs`/clamp/sign-strip on displayed dB.
+
+Controls: Start opens no popup (direct `engine.start()`); Customize is the sole options
+opener (modal: Calibrate / Digital / Relative / Microphone / A-C-Z / Fast-Slow);
+transport sets are mutually exclusive per state (`hidden`-toggled groups; verified in
+source, not yet clicked in a browser). `stop()` disposes capture (mic released;
+covered by the Start → Stop → Start single-stream test). Single rAF loop guarded by
+`rafId`, cancelled on idle/stopped/error/pagehide; DSP quanta arrive via subscription
+independently of frame rate; exports are built from unsmoothed engine values only.
+
+Layout risk review (no overflow expected, not rendered): gauge `min(100%, 420px)`
+SVG viewBox scaling, modal `min(100%, 640px)`, stats `minmax(0, 1fr)` grid, strength
+`max-width: 420px`, `overflow-x: hidden` on body, `overflow: hidden` meter wrap.
+Reduced-motion disables interpolation, pulses, edge animation and modal transitions
+(both CSS and the JS `REDUCED` fast path); mobile drops blur/glow/edge animation.
+New i18n strings are English-fallback in de/it/ja/es/fr/pt/ko (same pending status as
+FAQ translation). Browser render checks for all of the above remain **pending**.

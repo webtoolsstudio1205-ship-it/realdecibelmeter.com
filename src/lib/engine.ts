@@ -25,6 +25,7 @@ import type {
   DisplayUnit,
   EngineSnapshot,
   ErrorCode,
+  MeasurementResult,
   MeasurementState,
   Response,
   Weighting,
@@ -34,7 +35,7 @@ import { SessionAccumulator } from './session.js';
 import { GraphData } from './graph.js';
 import { describeError, errorFromDomException } from './errors.js';
 import { MicCapture, type CaptureController, type QuantumMessage } from './microphone.js';
-import { designWeightingSos, EnergyAverager, tauFor } from './dsp.js';
+import { designWeightingSos, digitalToInputStrength, EnergyAverager, tauFor } from './dsp.js';
 
 export type { MeasurementState, ErrorCode };
 export { APP_VERSION };
@@ -55,8 +56,17 @@ const DEFAULT_PROCESSING: CaptureSettings = {
 
 function meterRangeFor(mode: CalibrationMode): [number, number] {
   if (mode === 'relative') return [-30, 30];
-  if (mode === 'calibrated') return [20, 130];
-  return [-80, 0];
+  // Calibrated environmental estimates use the 20–120 visual scale.
+  // Digital dBFS uses −100…0 (visual mapping only — never clamp stored values).
+  if (mode === 'calibrated') return [20, 120];
+  return [-100, 0];
+}
+
+/** Weighting-carrying environmental unit for calibrated estimates. */
+export function splUnitFor(weighting: Weighting): 'dBA' | 'dBC' | 'dBZ' {
+  if (weighting === 'C') return 'dBC';
+  if (weighting === 'Z') return 'dBZ';
+  return 'dBA';
 }
 
 /**
@@ -167,9 +177,48 @@ export class DecibelEngine {
   }
 
   private unit(): DisplayUnit {
-    if (this.mode === 'calibrated') return 'dB SPL (est.)';
+    if (this.mode === 'calibrated') return splUnitFor(this.weighting);
     if (this.mode === 'relative') return 'dB';
     return 'dBFS';
+  }
+
+  /** True only with an active profile compatible with the live configuration. */
+  private calibrationCompatible(): boolean {
+    if (!this.activeProfile || this.sampleRate <= 0) return false;
+    return checkProfileCompatibility(this.activeProfile, this.currentConfig()).ok;
+  }
+
+  /**
+   * Strict typed result. Environmental SPL exists ONLY as
+   * rawDbfs + profile.offset with a compatible profile — otherwise the
+   * `uncalibrated` variant carries no numeric dB so the UI cannot render
+   * raw dBFS as an environmental level. No Math.abs, no clamping of the
+   * stored value, no arbitrary offsets anywhere in this path.
+   */
+  private buildResult(rawCurrent: number | null): MeasurementResult {
+    if (this.mode === 'digital') {
+      return { kind: 'digital', valueDbfs: rawCurrent, unit: 'dBFS' };
+    }
+    if (this.mode === 'relative') {
+      const delta = this.baseline != null && rawCurrent != null && Number.isFinite(rawCurrent)
+        ? rawCurrent - this.baseline.energyDb
+        : null;
+      return { kind: 'relative', deltaDb: delta, unit: 'dB' };
+    }
+    // calibrated mode
+    if (this.activeProfile && this.calibrationCompatible()) {
+      const spl = rawCurrent != null && Number.isFinite(rawCurrent)
+        ? rawCurrent + this.activeProfile.offsetDb
+        : null;
+      return {
+        kind: 'calibrated',
+        spl,
+        unit: splUnitFor(this.weighting),
+        profileId: this.activeProfile.id,
+        offsetDb: this.activeProfile.offsetDb,
+      };
+    }
+    return { kind: 'uncalibrated', reason: 'calibration-required', unit: splUnitFor(this.weighting) };
   }
 
   private toDisplay(v: number | null): number | null {
@@ -223,6 +272,9 @@ export class DecibelEngine {
       response: this.response,
       mode: this.mode,
       unit: this.unit(),
+      result: this.buildResult(s.current),
+      inputStrengthPct: digitalToInputStrength(s.current),
+      calibrationValid: this.mode === 'calibrated' && this.calibrationCompatible(),
       display: { current: disp(s.current), min: disp(s.min), leq: disp(s.leq), max: disp(s.max), peakDb: peakDisp },
       calibration: cal,
       activeProfile: this.activeProfile ? { ...this.activeProfile } : null,
@@ -380,8 +432,12 @@ export class DecibelEngine {
       setActiveProfileId(profile.id);
       this.profiles = loadProfiles();
     } catch {
+      // Persistence is best-effort (e.g. private mode): the profile still
+      // applies to this live session in memory so measurement is unaffected.
       this.storageOk = false;
-      return { ok: false, reasons: ['Calibration profile could not be saved: browser storage is unavailable or full.'] };
+      if (!this.profiles.some((p) => p.id === profile.id)) {
+        this.profiles = [profile, ...this.profiles].slice(0, 10);
+      }
     }
     this.activeProfile = profile;
     this.staleReasons = [];
@@ -526,6 +582,17 @@ export class DecibelEngine {
       capture.setWeighting(real.sos as number[][], real.gain);
       this.averager = new EnergyAverager(tauFor(this.response), this.sampleRate);
       this.permission = 'granted';
+      // Auto-apply a saved compatible profile: with a valid profile the
+      // session measures estimated SPL (rawDbfs + offset); without one it
+      // stays digital and the UI shows `--` + input strength (never raw
+      // dBFS labelled as environmental dB).
+      if (this.activeProfile) {
+        const compat = checkProfileCompatibility(this.activeProfile, this.currentConfig());
+        if (compat.ok) {
+          this.mode = 'calibrated';
+          this.staleReasons = [];
+        }
+      }
       this.state = 'running';
       const now = this.nowFn();
       this.startedAtMs = now;

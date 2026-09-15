@@ -164,16 +164,17 @@ describe('engine measurement integrity', () => {
   it('pause excludes samples; seq jumps become gaps', async () => {
     const { engine, fakes, advance } = harness();
     await engine.start();
-    fakes[0]?.feed(sineFixture(1000, 48000, 4800, 0.5));
+    // NOTE: sineFixture duration is SECONDS (not samples): 0.1 s ≈ 4800 frames.
+    fakes[0]?.feed(sineFixture(1000, 48000, 0.1, 0.5));
     const before = engine.snapshot().stats.samples;
     engine.pause();
-    fakes[0]?.feed(sineFixture(1000, 48000, 4800, 0.9)); // ignored while paused
+    fakes[0]?.feed(sineFixture(1000, 48000, 0.1, 0.9)); // ignored while paused
     advance(5000);
     engine.resume();
     const mid = engine.snapshot();
     expect(mid.stats.samples).toBe(before);
     fakes[0]?.dropNext(10); // 10 missing quanta
-    fakes[0]?.feed(sineFixture(1000, 48000, 128, 0.5));
+    fakes[0]?.feed(sineFixture(1000, 48000, 128 / 48000, 0.5));
     const after = engine.snapshot();
     expect(after.gapMs).toBeGreaterThan(0);
     expect(after.gaps[after.gaps.length - 1]?.reason).toBe('missing-quanta');
@@ -182,7 +183,7 @@ describe('engine measurement integrity', () => {
   it('relative mode shows change from baseline in dB (not calibration)', async () => {
     const { engine, fakes, advance } = harness();
     await engine.start();
-    fakes[0]?.feed(sineFixture(1000, 48000, 4800 * 4, 0.5));
+    fakes[0]?.feed(sineFixture(1000, 48000, 0.4, 0.5));
     advance(400);
     expect(engine.setBaseline().ok).toBe(true);
     expect(engine.setMode('relative').ok).toBe(true);
@@ -191,12 +192,13 @@ describe('engine measurement integrity', () => {
     expect(Math.abs(s.display.current as number)).toBeLessThan(1.5);
   });
 
-  it('calibrated mode adds the reference offset and labels Estimated dB SPL', async () => {
+  it('calibrated mode adds the reference offset and labels the weighting unit', async () => {
     const { engine, fakes, advance } = harness();
     await engine.start();
     expect(engine.startReferenceCapture(30).ok).toBe(true);
-    for (let s = 0; s < 30; s++) {
-      fakes[0]?.feed(sineFixture(1000, 48000, 4800, 0.5));
+    // 31 quanta batches so the final batch arrives at elapsed >= 30 s.
+    for (let s = 0; s < 31; s++) {
+      fakes[0]?.feed(sineFixture(1000, 48000, 0.1, 0.5));
       advance(1000);
       engine.snapshot(); // progress ticks
     }
@@ -210,17 +212,110 @@ describe('engine measurement integrity', () => {
     const s = engine.snapshot();
     expect(engine['activeProfile']).not.toBeNull();
     expect(s.mode).toBe('calibrated');
-    expect(s.unit).toBe('dB SPL (est.)');
+    expect(s.unit).toBe('dBA');
     expect(Math.abs((s.display.leq as number) - ((s.stats.leq as number) + 94 - (measured as number)))).toBeLessThan(1e-9);
   });
 
   it('weighting switch mid-run segments the session', async () => {
     const { engine, fakes } = harness();
     await engine.start();
-    fakes[0]?.feed(sineFixture(1000, 48000, 2400, 0.5));
+    fakes[0]?.feed(sineFixture(1000, 48000, 0.05, 0.5));
     engine.setWeighting('C');
-    fakes[0]?.feed(sineFixture(1000, 48000, 2400, 0.5));
+    fakes[0]?.feed(sineFixture(1000, 48000, 0.05, 0.5));
     expect(engine.snapshot().segments.length).toBe(1);
     expect(engine.snapshot().segments[0]?.weighting).toBe('A');
+  });
+});
+
+describe('strict typed results (negative-dB bug fix)', () => {
+  it('uncalibrated run exposes NO environmental number: raw dBFS stays negative, strength is 0–100%', async () => {
+    const { engine, fakes } = harness();
+    await engine.start();
+    fakes[0]?.feed(sineFixture(1000, 48000, 0.5, 0.5));
+    const s = engine.snapshot();
+    // No valid calibration → never a calibrated environmental value.
+    expect(s.calibrationValid).toBe(false);
+    expect(s.result.kind).not.toBe('calibrated');
+    // Raw digital level is mathematically negative (never abs/clamped).
+    expect(s.stats.current).not.toBeNull();
+    expect(s.stats.current as number).toBeLessThan(0);
+    expect(s.stats.leq as number).toBeLessThan(0);
+    // Visual-only input strength is a percentage, not a decibel value.
+    expect(s.inputStrengthPct).not.toBeNull();
+    expect(s.inputStrengthPct as number).toBeGreaterThanOrEqual(0);
+    expect(s.inputStrengthPct as number).toBeLessThanOrEqual(100);
+    // Visual scale for digital is −100…0 (never 30–120 for raw dBFS).
+    expect(s.meterRange).toEqual([-100, 0]);
+  });
+
+  it('calibrated SPL equals raw dBFS plus the valid profile offset; stored raw stays negative', async () => {
+    const { engine, fakes, advance } = harness();
+    await engine.start();
+    expect(engine.startReferenceCapture(30).ok).toBe(true);
+    for (let i = 0; i < 31; i++) {
+      fakes[0]?.feed(sineFixture(1000, 48000, 0.1, 0.5));
+      advance(1000);
+    }
+    const measured = engine.getReferenceMeasuredLeq() as number;
+    const res = engine.applyReferenceCalibration(
+      { referenceReadingDb: 94, measuredDigitalLeqDb: Number.NaN, method: 'reference-meter', durationSec: 30, note: 'test' },
+      'Test comparison',
+    );
+    expect(res.ok).toBe(true);
+    fakes[0]?.feed(sineFixture(1000, 48000, 0.2, 0.5));
+    const s = engine.snapshot();
+    expect(s.calibrationValid).toBe(true);
+    expect(s.result.kind).toBe('calibrated');
+    if (s.result.kind === 'calibrated') {
+      expect(s.result.unit).toBe('dBA');
+      // estimatedSPL = rawDbfs + offset, no arbitrary component.
+      expect(s.result.offsetDb).toBeCloseTo(94 - measured, 9);
+      expect(s.result.spl as number).toBeCloseTo((s.stats.current as number) + s.result.offsetDb, 9);
+      expect(s.result.spl as number).toBeGreaterThan(0);
+    }
+    // Stored raw value is NOT clamped to the 20–120 visual scale.
+    expect(s.stats.current as number).toBeLessThan(0);
+    expect(s.meterRange).toEqual([20, 120]);
+    expect(s.unit).toBe('dBA');
+  });
+
+  it('a saved compatible profile is applied automatically on start', async () => {
+    const { engine, fakes } = harness();
+    engine['activeProfile'] = {
+      id: 'cal-saved',
+      label: 'Saved comparison',
+      offsetDb: 100,
+      isCalibrated: true,
+      mode: 'calibrated',
+      referenceReadingDb: 94,
+      referenceMethod: 'reference-meter',
+      referenceNote: '',
+      calibrationDateIso: new Date(0).toISOString(),
+      measuredDigitalLeqDb: -6,
+      referenceDurationSec: 30,
+      config: {
+        sampleRate: 48000,
+        weighting: 'A',
+        deviceId: '',
+        deviceLabel: 'Fake Mic',
+        channelCount: 1,
+        processing: { echoCancellation: 'disabled', noiseSuppression: 'disabled', autoGainControl: 'disabled' },
+        relaxed: [],
+      },
+      appVersion: '1.0.0',
+    };
+    await engine.start();
+    expect(engine.snapshot().mode).toBe('calibrated');
+    expect(engine.snapshot().calibrationValid).toBe(true);
+  });
+
+  it('digitalToInputStrength maps −100…0 dBFS to 0…100% (display only)', async () => {
+    const { digitalToInputStrength } = await import('./dsp.js');
+    expect(digitalToInputStrength(null)).toBeNull();
+    expect(digitalToInputStrength(Number.NEGATIVE_INFINITY)).toBeNull();
+    expect(digitalToInputStrength(-100)).toBe(0);
+    expect(digitalToInputStrength(0)).toBe(100);
+    expect(digitalToInputStrength(-50)).toBeCloseTo(50, 9);
+    expect(digitalToInputStrength(-200)).toBe(0);
   });
 });

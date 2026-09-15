@@ -46,6 +46,21 @@ export interface Dict {
   btnReset: string;
   btnRetry: string;
   btnDismiss: string;
+  btnCustomize: string;
+  btnStartMeasuring: string;
+  btnStartNew: string;
+  btnSave: string;
+  statusCalRequired: string;
+  inputStrength: string;
+  calibrateCta: string;
+  digitalNote: string;
+  digitalTitle: string;
+  statSoundCurrent: string;
+  statEnergyAvg: string;
+  statDigitalAvg: string;
+  statDigitalPeak: string;
+  customizeTitle: string;
+  customizeClose: string;
   statCurrent: string;
   statMin: string;
   statLeq: string;
@@ -137,6 +152,12 @@ export const dicts: Record<Locale, Dict> = {
     micSelect: 'Microphone input', micDefault: 'Default microphone',
     btnStart: 'Start', btnPause: 'Pause', btnResume: 'Resume', btnStop: 'Stop', btnReset: 'Reset',
     btnRetry: 'Try again', btnDismiss: 'Dismiss',
+    btnCustomize: 'Customize', btnStartMeasuring: 'Start Measuring', btnStartNew: 'Start New Measurement', btnSave: 'Save',
+    statusCalRequired: 'Calibration required', inputStrength: 'Microphone input strength',
+    calibrateCta: 'Calibrate for sound level', digitalNote: 'Digital signal — normally negative',
+    digitalTitle: 'Digital Input', statSoundCurrent: 'Current sound level', statEnergyAvg: 'Energy average',
+    statDigitalAvg: 'Digital energy average', statDigitalPeak: 'Digital peak',
+    customizeTitle: 'Customize measurement', customizeClose: 'Close',
     statCurrent: 'Current', statMin: 'Minimum', statLeq: 'Energy average (Leq)', statMax: 'Maximum', statDuration: 'Duration',
     graphLabel: 'Level history', graphEmpty: 'Press Start to record the live graph. Past levels appear here.',
     advanced: 'Advanced controls', weighting: 'Frequency weighting', weightA: 'A-weighting (speech-like)',
@@ -172,6 +193,12 @@ export const dicts: Record<Locale, Dict> = {
     micSelect: 'Mikrofoneingang', micDefault: 'Standardmikrofon',
     btnStart: 'Start', btnPause: 'Pause', btnResume: 'Fortsetzen', btnStop: 'Stopp', btnReset: 'Zurücksetzen',
     btnRetry: 'Erneut versuchen', btnDismiss: 'Schließen',
+    btnCustomize: 'Customize', btnStartMeasuring: 'Start Measuring', btnStartNew: 'Start New Measurement', btnSave: 'Save',
+    statusCalRequired: 'Calibration required', inputStrength: 'Microphone input strength',
+    calibrateCta: 'Calibrate for sound level', digitalNote: 'Digital signal — normally negative',
+    digitalTitle: 'Digital Input', statSoundCurrent: 'Current sound level', statEnergyAvg: 'Energy average',
+    statDigitalAvg: 'Digital energy average', statDigitalPeak: 'Digital peak',
+    customizeTitle: 'Customize measurement', customizeClose: 'Close',
     statCurrent: 'Aktuell', statMin: 'Minimum', statLeq: 'Energiemittel (Leq)', statMax: 'Maximum', statDuration: 'Dauer',
     graphLabel: 'Pegelverlauf', graphEmpty: 'Drücken Sie Start, um den Live-Graphen aufzuzeichnen.',
     advanced: 'Erweiterte Steuerung', weighting: 'Frequenzbewertung', weightA: 'A-Bewertung (gehörähnlich)',
@@ -208,6 +235,12 @@ export const dicts: Record<Locale, Dict> = {
     micSelect: 'Ingresso microfono', micDefault: 'Microfono predefinito',
     btnStart: 'Avvia', btnPause: 'Pausa', btnResume: 'Riprendi', btnStop: 'Ferma', btnReset: 'Azzera',
     btnRetry: 'Riprova', btnDismiss: 'Chiudi',
+    btnCustomize: 'Customize', btnStartMeasuring: 'Start Measuring', btnStartNew: 'Start New Measurement', btnSave: 'Save',
+    statusCalRequired: 'Calibration required', inputStrength: 'Microphone input strength',
+    calibrateCta: 'Calibrate for sound level', digitalNote: 'Digital signal — normally negative',
+    digitalTitle: 'Digital Input', statSoundCurrent: 'Current sound level', statEnergyAvg: 'Energy average',
+    statDigitalAvg: 'Digital energy average', statDigitalPeak: 'Digital peak',
+    customizeTitle: 'Customize measurement', customizeClose: 'Close',
     statCurrent: 'Attuale', statMin: 'Minimo', statLeq: 'Media energetica (Leq)', statMax: 'Massimo', statDuration: 'Durata',
     graphLabel: 'Cronologia livelli', graphEmpty: 'Premi Avvia per registrare il grafico live.',
     advanced: 'Controlli avanzati', weighting: 'Ponderazione', weightA: 'Ponderazione A',
@@ -244,6 +277,12 @@ export const dicts: Record<Locale, Dict> = {
     micSelect: 'マイク入力', micDefault: '既定のマイク',
     btnStart: '開始', btnPause: '一時停止', btnResume: '再開', btnStop: '停止', btnReset: 'リセット',
     btnRetry: '再試行', btnDismiss: '閉じる',
+    btnCustomize: 'Customize', btnStartMeasuring: 'Start Measuring', btnStartNew: 'Start New Measurement', btnSave: 'Save',
+    statusCalRequired: 'Calibration required', inputStrength: 'Microphone input strength',
+    calibrateCta: 'Calibrate for sound level', digitalNote: 'Digital signal — normally negative',
+    digitalTitle: 'Digital Input', statSoundCurrent: 'Current sound level', statEnergyAvg: 'Energy average',
+    statDigitalAvg: 'Digital energy average', statDigitalPeak: 'Digital peak',
+    customizeTitle: 'Customize measurement', customizeClose: 'Close',
     statCurrent: '現在', statMin: '最小', statLeq: 'エネルギー平均 (Leq)', statMax: '最大', statDuration: '時間',
     graphLabel: 'レベル履歴', graphEmpty: '開始を押すとライブグラフが記録されます。',
     advanced: '詳細設定', weighting: '周波数重み付け', weightA: 'A特性',
@@ -280,6 +319,12 @@ export const dicts: Record<Locale, Dict> = {
     micSelect: 'Entrada de micrófono', micDefault: 'Micrófono predeterminado',
     btnStart: 'Iniciar', btnPause: 'Pausar', btnResume: 'Reanudar', btnStop: 'Detener', btnReset: 'Restablecer',
     btnRetry: 'Reintentar', btnDismiss: 'Cerrar',
+    btnCustomize: 'Customize', btnStartMeasuring: 'Start Measuring', btnStartNew: 'Start New Measurement', btnSave: 'Save',
+    statusCalRequired: 'Calibration required', inputStrength: 'Microphone input strength',
+    calibrateCta: 'Calibrate for sound level', digitalNote: 'Digital signal — normally negative',
+    digitalTitle: 'Digital Input', statSoundCurrent: 'Current sound level', statEnergyAvg: 'Energy average',
+    statDigitalAvg: 'Digital energy average', statDigitalPeak: 'Digital peak',
+    customizeTitle: 'Customize measurement', customizeClose: 'Close',
     statCurrent: 'Actual', statMin: 'Mínimo', statLeq: 'Promedio energético (Leq)', statMax: 'Máximo', statDuration: 'Duración',
     graphLabel: 'Historial de nivel', graphEmpty: 'Pulsa Iniciar para registrar el gráfico en vivo.',
     advanced: 'Controles avanzados', weighting: 'Ponderación', weightA: 'Ponderación A',
@@ -316,6 +361,12 @@ export const dicts: Record<Locale, Dict> = {
     micSelect: 'Entrée microphone', micDefault: 'Microphone par défaut',
     btnStart: 'Démarrer', btnPause: 'Pause', btnResume: 'Reprendre', btnStop: 'Arrêter', btnReset: 'Réinitialiser',
     btnRetry: 'Réessayer', btnDismiss: 'Fermer',
+    btnCustomize: 'Customize', btnStartMeasuring: 'Start Measuring', btnStartNew: 'Start New Measurement', btnSave: 'Save',
+    statusCalRequired: 'Calibration required', inputStrength: 'Microphone input strength',
+    calibrateCta: 'Calibrate for sound level', digitalNote: 'Digital signal — normally negative',
+    digitalTitle: 'Digital Input', statSoundCurrent: 'Current sound level', statEnergyAvg: 'Energy average',
+    statDigitalAvg: 'Digital energy average', statDigitalPeak: 'Digital peak',
+    customizeTitle: 'Customize measurement', customizeClose: 'Close',
     statCurrent: 'Actuel', statMin: 'Minimum', statLeq: 'Moyenne énergétique (Leq)', statMax: 'Maximum', statDuration: 'Durée',
     graphLabel: 'Historique du niveau', graphEmpty: 'Appuyez sur Démarrer pour enregistrer le graphique.',
     advanced: 'Contrôles avancés', weighting: 'Pondération', weightA: 'Pondération A',
@@ -352,6 +403,12 @@ export const dicts: Record<Locale, Dict> = {
     micSelect: 'Entrada de microfone', micDefault: 'Microfone padrão',
     btnStart: 'Iniciar', btnPause: 'Pausar', btnResume: 'Continuar', btnStop: 'Parar', btnReset: 'Redefinir',
     btnRetry: 'Tentar de novo', btnDismiss: 'Fechar',
+    btnCustomize: 'Customize', btnStartMeasuring: 'Start Measuring', btnStartNew: 'Start New Measurement', btnSave: 'Save',
+    statusCalRequired: 'Calibration required', inputStrength: 'Microphone input strength',
+    calibrateCta: 'Calibrate for sound level', digitalNote: 'Digital signal — normally negative',
+    digitalTitle: 'Digital Input', statSoundCurrent: 'Current sound level', statEnergyAvg: 'Energy average',
+    statDigitalAvg: 'Digital energy average', statDigitalPeak: 'Digital peak',
+    customizeTitle: 'Customize measurement', customizeClose: 'Close',
     statCurrent: 'Atual', statMin: 'Mínimo', statLeq: 'Média energética (Leq)', statMax: 'Máximo', statDuration: 'Duração',
     graphLabel: 'Histórico de nível', graphEmpty: 'Prima Iniciar para registar o gráfico ao vivo.',
     advanced: ' controlos avançados', weighting: 'Ponderação', weightA: 'Ponderação A',
@@ -388,6 +445,12 @@ export const dicts: Record<Locale, Dict> = {
     micSelect: '마이크 입력', micDefault: '기본 마이크',
     btnStart: '시작', btnPause: '일시정지', btnResume: '계속', btnStop: '정지', btnReset: '초기화',
     btnRetry: '다시 시도', btnDismiss: '닫기',
+    btnCustomize: 'Customize', btnStartMeasuring: 'Start Measuring', btnStartNew: 'Start New Measurement', btnSave: 'Save',
+    statusCalRequired: 'Calibration required', inputStrength: 'Microphone input strength',
+    calibrateCta: 'Calibrate for sound level', digitalNote: 'Digital signal — normally negative',
+    digitalTitle: 'Digital Input', statSoundCurrent: 'Current sound level', statEnergyAvg: 'Energy average',
+    statDigitalAvg: 'Digital energy average', statDigitalPeak: 'Digital peak',
+    customizeTitle: 'Customize measurement', customizeClose: 'Close',
     statCurrent: '현재', statMin: '최소', statLeq: '에너지 평균 (Leq)', statMax: '최대', statDuration: '시간',
     graphLabel: '레벨 기록', graphEmpty: '시작을 눌러 라이브 그래프를 기록하세요.',
     advanced: '고급 설정', weighting: '주파수 가중', weightA: 'A 가중',

@@ -251,7 +251,7 @@ export function legacyToCsv(
       stats: { ...stats, peakDb: Number.NEGATIVE_INFINITY, gapMs: 0, recordedSec: 0, durationSec: 0 },
       gaps: [],
       segments: [],
-      unit: meta.calibration.isCalibrated ? 'dB SPL (est.)' : 'dBFS',
+      unit: meta.calibration.isCalibrated ? 'dBA' : 'dBFS',
       mode: meta.calibration.isCalibrated ? 'calibrated' : 'digital',
       weighting: meta.weighting,
       response: meta.response,

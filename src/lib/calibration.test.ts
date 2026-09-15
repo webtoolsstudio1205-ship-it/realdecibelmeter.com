@@ -114,7 +114,11 @@ describe('calibration', () => {
 
   it('absurd offsets are rejected', () => {
     expect(validateCalibration(Number.NaN).ok).toBe(false);
-    expect(validateCalibration(61).ok).toBe(false);
+    // Genuine USB/phone mics need offsets up to ~+110 dB
+    // (−30 dBFS + 100 dB = 70 dBA), so ±120 is the plausible window.
+    expect(validateCalibration(121).ok).toBe(false);
+    expect(validateCalibration(-121).ok).toBe(false);
+    expect(validateCalibration(100).ok).toBe(true);
     expect(validateCalibration(-60).ok).toBe(true);
   });
 });

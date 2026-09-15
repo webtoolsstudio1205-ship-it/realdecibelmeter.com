@@ -15,8 +15,9 @@ export type MeasurementState =
 export type Weighting = 'A' | 'C' | 'Z';
 export type Response = 'fast' | 'slow';
 
-/** Display unit. Uncalibrated digital readings are NEVER labelled dB SPL. */
-export type DisplayUnit = 'dBFS' | 'dB' | 'dB SPL (est.)';
+/** Display unit. Uncalibrated digital readings are NEVER labelled dB SPL.
+ * Calibrated environmental estimates carry the weighting: dBA, dBC or dBZ. */
+export type DisplayUnit = 'dBFS' | 'dB' | 'dBA' | 'dBC' | 'dBZ';
 
 export type ErrorCode =
   | 'unsupported-browser'
@@ -63,6 +64,18 @@ export interface EngineSnapshot {
   /** Measurement mode: digital dBFS, relative change, or calibrated estimate. */
   mode: CalibrationMode;
   unit: DisplayUnit;
+  /** Strict typed measurement result. Only `calibrated` carries an
+   * environmental sound level (estimatedSPL = rawDbfs + profile.offset).
+   * `uncalibrated` is used for the main environmental meter when no
+   * compatible calibration profile exists — the UI must render `--`
+   * (never a negative dBFS value labelled as environmental dB). */
+  result: MeasurementResult;
+  /** Visual-only microphone input strength 0–100% (mapped from digital
+   * −100…0 dBFS). NEVER export this as a decibel measurement. */
+  inputStrengthPct: number | null;
+  /** True only when mode is calibrated, a profile is active and the profile
+   * is compatible with the current capture configuration. */
+  calibrationValid: boolean;
   /** Display-transformed values (mode applied) for the panel. */
   display: {
     current: number | null;
@@ -103,6 +116,23 @@ export interface EngineEvent {
   type: 'snapshot';
   snapshot: EngineSnapshot;
 }
+
+/**
+ * Strict typed measurement results.
+ *
+ * - `digital`: raw digital level in dBFS (negative values are correct).
+ * - `relative`: change in dB from the captured baseline (not calibration).
+ * - `calibrated`: environmental estimate, estimatedSPL = rawDbfs + offset,
+ *   unit carries the weighting (dBA / dBC / dBZ).
+ * - `uncalibrated`: main environmental meter with NO valid calibration —
+ *   there is deliberately NO numeric dB value here, so the UI cannot render
+ *   raw dBFS as an environmental level.
+ */
+export type MeasurementResult =
+  | { kind: 'digital'; valueDbfs: number | null; unit: 'dBFS' }
+  | { kind: 'relative'; deltaDb: number | null; unit: 'dB' }
+  | { kind: 'calibrated'; spl: number | null; unit: 'dBA' | 'dBC' | 'dBZ'; profileId: string; offsetDb: number }
+  | { kind: 'uncalibrated'; reason: 'calibration-required'; unit: 'dBA' | 'dBC' | 'dBZ' };
 
 export const INITIAL_STATS: SessionStats = {
   current: null,
