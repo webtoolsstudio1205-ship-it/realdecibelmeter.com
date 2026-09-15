@@ -1,0 +1,30 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+const rows = [
+  ['30 dBA', 'Quiet bedroom at night'],
+  ['40 dBA', 'Quiet library'],
+  ['50 dBA', 'Moderate rainfall / quiet office'],
+  ['60 dBA', 'Normal conversation'],
+  ['70 dBA', 'Busy traffic at close range'],
+  ['80 dBA', 'Loud restaurant / alarm clock'],
+  ['90 dBA', 'Lawn mower / motorcycle'],
+  ['100 dBA', 'Concert front rows'],
+  ['110 dBA', 'Rock concert / power tools'],
+  ['120 dBA', 'Siren at close range'],
+];
+---
+
+<Layout locale="en" dict={dict} title="Decibel Chart — Real Decibel Meter" description="Typical everyday sound levels for context. Browser readings remain estimates." path="/decibel-chart/">
+  <Article title="Decibel chart" intro="Reference levels for everyday sounds. Use for context only — your browser reading is an estimate, not a certified measurement.">
+    <table class="w-full text-sm mt-2" style="border-collapse:collapse">
+      <thead><tr style="border-bottom:1px solid var(--border)"><th class="text-left py-2 pr-4">Level</th><th class="text-left py-2">Example</th></tr></thead>
+      <tbody>
+        {rows.map((r) => (<tr style="border-bottom:1px solid var(--border)"><td class="tabular py-2 pr-4 font-semibold">{r[0]}</td><td class="py-2">{r[1]}</td></tr>))}
+      </tbody>
+    </table>
+    <p class="mt-4 text-sm">No hearing-safety verdicts are shown on this site because uncalibrated browser readings cannot support them.</p>
+  </Article>
+</Layout>

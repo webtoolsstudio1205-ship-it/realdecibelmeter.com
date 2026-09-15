@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#08090B"/>
+  <radialGradient id="g" cx="0.5" cy="0.35" r="0.7">
+    <stop offset="0" stop-color="#3B82F6" stop-opacity="0.35"/>
+    <stop offset="0.5" stop-color="#22D3EE" stop-opacity="0.12"/>
+    <stop offset="1" stop-color="#8B5CF6" stop-opacity="0.10"/>
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <g transform="translate(120,200)">
+    <rect x="0" y="46" width="20" height="34" rx="10" fill="#F5F5F7" opacity="0.45"/>
+    <rect x="30" y="28" width="20" height="70" rx="10" fill="#F5F5F7" opacity="0.65"/>
+    <rect x="60" y="4" width="20" height="118" rx="10" fill="#F5F5F7"/>
+    <rect x="90" y="32" width="20" height="62" rx="10" fill="#3B82F6"/>
+    <rect x="120" y="54" width="20" height="18" rx="9" fill="#22D3EE"/>
+  </g>
+  <text x="300" y="290" font-family="Arial, sans-serif" font-size="72" font-weight="700" fill="#F5F5F7" letter-spacing="-2">Real Decibel Meter</text>
+  <text x="300" y="345" font-family="Arial, sans-serif" font-size="30" fill="#A5AAB6">Online decibel meter — local browser measurement</text>
+  <text x="300" y="395" font-family="monospace" font-size="26" fill="#3B82F6">-- dB · uncalibrated estimate</text>
+</svg>

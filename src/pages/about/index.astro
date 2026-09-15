@@ -1,0 +1,13 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="About — Real Decibel Meter" description="A static, local-first browser sound meter. No accounts, no uploads." path="/about/">
+  <Article title="About" intro="Real Decibel Meter is a static web app that estimates ambient sound levels with your microphone, entirely inside your browser.">
+    <p class="mt-2">There are no accounts, no servers receiving audio, and no published claims of laboratory testing, certification or accuracy percentages — because none apply to browser microphones. The tool is intentionally honest: the idle reading is “--”, estimates are labelled as estimates, and safety verdicts are never shown.</p>
+    <p class="mt-3">The interface is original work styled with restraint: high-contrast surfaces, thin borders, tabular numerals and one restrained gradient accent.</p>
+  </Article>
+</Layout>

@@ -1,0 +1,20 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="Microphone Not Working — Real Decibel Meter" description="Fix denied permissions, missing devices, busy or disconnected microphones." path="/microphone-not-working/">
+  <Article title="Microphone not working?" intro="Each failure on this site has its own message. Match yours below and follow the recovery.">
+    <ul class="space-y-4 mt-2">
+      <li><strong class="text-white">Permission denied.</strong> Open the lock/tune icon in the address bar → allow the microphone → press Start again.</li>
+      <li><strong class="text-white">No microphone detected.</strong> Connect a device, check OS sound settings, reload, press Start.</li>
+      <li><strong class="text-white">Microphone is busy.</strong> Close video calls, recorders or other tabs using the mic, then retry.</li>
+      <li><strong class="text-white">Device disconnected.</strong> Reconnect, reselect it in the microphone list, press Start.</li>
+      <li><strong class="text-white">Browser not supported.</strong> Use a recent Chrome, Edge, Firefox or Safari on HTTPS or localhost.</li>
+      <li><strong class="text-white">Still stuck?</strong> Reload the page, try another microphone, and check OS-level mic privacy switches.</li>
+    </ul>
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Back to the meter →</a></p>
+  </Article>
+</Layout>

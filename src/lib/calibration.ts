@@ -1,0 +1,253 @@
+import type { CalibrationProfile } from './types.js';
+
+/**
+ * CALIBRATION MODES
+ * 1. `digital`     — uncalibrated digital dBFS. Never called "dB SPL".
+ * 2. `relative`    — change (dB) from a user-captured baseline. Not calibration.
+ * 3. `calibrated`  — device-specific offset from a real reference comparison.
+ *                     Labelled "Calibrated estimate" / "Estimated dB SPL".
+ *
+ * A quiet-room preset is NOT calibration. Another browser website is NOT a
+ * reference. A phone app is NOT automatically a reference. A downloadable tone
+ * through an ordinary speaker does NOT produce known sound pressure.
+ */
+
+export type CalibrationMode = 'digital' | 'relative' | 'calibrated';
+export type TriState = 'enabled' | 'disabled' | 'unknown';
+export type ReferenceMethod = 'reference-meter' | 'acoustic-calibrator' | 'other-documented';
+
+export interface CaptureSettings {
+  echoCancellation: TriState;
+  noiseSuppression: TriState;
+  autoGainControl: TriState;
+}
+
+export interface CaptureConfig {
+  sampleRate: number;
+  weighting: string;
+  deviceId: string;
+  deviceLabel: string;
+  channelCount: number;
+  processing: CaptureSettings;
+  /** Constraints the browser could not honor (relayed to the user). */
+  relaxed: string[];
+}
+
+export interface CalibrationProfileFull extends CalibrationProfile {
+  mode: 'calibrated';
+  referenceReadingDb: number;
+  referenceMethod: ReferenceMethod;
+  referenceNote: string;
+  calibrationDateIso: string;
+  measuredDigitalLeqDb: number;
+  referenceDurationSec: number;
+  config: CaptureConfig;
+  appVersion: string;
+}
+
+export interface RelativeBaseline {
+  energyDb: number;
+  capturedAtIso: string;
+  weighting: string;
+  sampleRate: number;
+  deviceLabel: string;
+}
+
+export const UNCALIBRATED: CalibrationProfile = {
+  id: 'uncalibrated',
+  label: 'Digital dBFS (uncalibrated)',
+  offsetDb: 0,
+  isCalibrated: false,
+};
+
+export const CALIBRATION_SCHEMA = 1;
+const PROFILE_KEY = 'rdm.calibration-profiles.v1';
+const ACTIVE_KEY = 'rdm.calibration-active.v1';
+
+/** offset = referenceLeq − measuredDigitalEnergyLevel (both same weighting). */
+export function computeOffset(referenceLeqDb: number, measuredDigitalLeqDb: number): number {
+  return referenceLeqDb - measuredDigitalLeqDb;
+}
+
+/** estimatedLevel = measuredDigitalLevel + calibrationOffset. */
+export function applyOffset(measuredDigitalDb: number, offsetDb: number): number {
+  return measuredDigitalDb + offsetDb;
+}
+
+export function validateCalibration(offsetDb: number): { ok: boolean; reason: string } {
+  if (!Number.isFinite(offsetDb)) return { ok: false, reason: 'Offset must be a number.' };
+  if (Math.abs(offsetDb) > 60) {
+    return { ok: false, reason: 'Offset is outside the plausible ±60 dB range. Check the reference value.' };
+  }
+  return { ok: true, reason: '' };
+}
+
+export interface ReferenceInput {
+  referenceReadingDb: number;
+  measuredDigitalLeqDb: number;
+  method: ReferenceMethod | '';
+  durationSec: number;
+  note: string;
+}
+
+export function validateReferenceInput(inp: ReferenceInput): { ok: boolean; reasons: string[] } {
+  const reasons: string[] = [];
+  if (!Number.isFinite(inp.referenceReadingDb) || inp.referenceReadingDb < -20 || inp.referenceReadingDb > 160) {
+    reasons.push('Reference reading must be a number between −20 and 160 dB.');
+  }
+  if (!Number.isFinite(inp.measuredDigitalLeqDb)) {
+    reasons.push('No valid measured digital level was captured. Run the 30–60 s reference capture first.');
+  }
+  if (inp.method !== 'reference-meter' && inp.method !== 'acoustic-calibrator' && inp.method !== 'other-documented') {
+    reasons.push('Choose how the reference was obtained.');
+  }
+  if (inp.durationSec !== 30 && inp.durationSec !== 60) {
+    reasons.push('Reference capture must last 30 or 60 seconds.');
+  }
+  if (inp.note.trim().length > 200) reasons.push('Reference note must be 200 characters or fewer.');
+  return { ok: reasons.length === 0, reasons };
+}
+
+export function createProfile(
+  label: string,
+  offsetDb: number,
+  isCalibrated: boolean,
+): CalibrationProfile {
+  const check = validateCalibration(offsetDb);
+  if (!check.ok) throw new Error(check.reason);
+  return {
+    id: `custom-${Date.now().toString(36)}`,
+    label: label.trim() || 'Custom reference',
+    offsetDb,
+    isCalibrated,
+  };
+}
+
+export function applyCalibration(rawDb: number, profile: CalibrationProfile): number {
+  return rawDb + profile.offsetDb;
+}
+
+export function calibrationStatusText(p: CalibrationProfile): string {
+  if (!p.isCalibrated) return 'Digital dBFS — uncalibrated, not dB SPL';
+  return `Calibrated estimate (${p.offsetDb >= 0 ? '+' : ''}${p.offsetDb.toFixed(1)} dB): ${p.label}`;
+}
+
+export function fingerprintConfig(c: CaptureConfig): string {
+  return [c.sampleRate, c.weighting, c.deviceId || c.deviceLabel, c.channelCount,
+    c.processing.echoCancellation, c.processing.noiseSuppression, c.processing.autoGainControl].join('|');
+}
+
+/**
+ * Never silently apply a profile to an incompatible configuration.
+ * Any mismatch invalidates the profile for the current setup.
+ */
+export function checkProfileCompatibility(
+  profile: CalibrationProfileFull,
+  current: CaptureConfig,
+): { ok: boolean; reasons: string[] } {
+  const reasons: string[] = [];
+  if (profile.config.sampleRate !== current.sampleRate) {
+    reasons.push(`Sample rate changed (${profile.config.sampleRate} Hz → ${current.sampleRate} Hz).`);
+  }
+  const oldId = profile.config.deviceId || profile.config.deviceLabel;
+  const newId = current.deviceId || current.deviceLabel;
+  if (oldId !== newId) reasons.push('Microphone device changed.');
+  if (profile.config.weighting !== current.weighting) {
+    reasons.push(`Frequency weighting changed (${profile.config.weighting} → ${current.weighting}).`);
+  }
+  if (profile.config.channelCount !== current.channelCount) reasons.push('Input channel count changed.');
+  for (const k of ['echoCancellation', 'noiseSuppression', 'autoGainControl'] as const) {
+    if (profile.config.processing[k] !== current.processing[k]) {
+      reasons.push(`Browser processing changed (${k}: ${profile.config.processing[k]} → ${current.processing[k]}).`);
+    }
+  }
+  if (profile.appVersion !== APP_VERSION) {
+    reasons.push(`App version changed (${profile.appVersion} → ${APP_VERSION}); revalidate the offset.`);
+  }
+  return { ok: reasons.length === 0, reasons };
+}
+
+export const APP_VERSION = '1.0.0';
+
+// ---- persistence (profiles + active id, versioned, validated) ----
+
+interface ProfileStore {
+  schema: number;
+  profiles: CalibrationProfileFull[];
+}
+
+function ambientStorage(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> | undefined {
+  try {
+    if (typeof localStorage !== 'undefined') return localStorage;
+  } catch { /* unavailable */ }
+  return undefined;
+}
+
+function readStore(storage: Pick<Storage, 'getItem'> | undefined): ProfileStore {
+  try {
+    const raw = storage?.getItem(PROFILE_KEY);
+    if (!raw) return { schema: CALIBRATION_SCHEMA, profiles: [] };
+    const parsed = JSON.parse(raw) as Partial<ProfileStore>;
+    if (parsed.schema !== CALIBRATION_SCHEMA || !Array.isArray(parsed.profiles)) {
+      return { schema: CALIBRATION_SCHEMA, profiles: [] };
+    }
+    const profiles = parsed.profiles.filter(isValidProfile);
+    return { schema: CALIBRATION_SCHEMA, profiles };
+  } catch {
+    return { schema: CALIBRATION_SCHEMA, profiles: [] };
+  }
+}
+
+function isValidProfile(p: unknown): p is CalibrationProfileFull {
+  if (typeof p !== 'object' || p == null) return false;
+  const o = p as Record<string, unknown>;
+  return (
+    typeof o.id === 'string' && typeof o.offsetDb === 'number' && Number.isFinite(o.offsetDb) &&
+    typeof o.referenceReadingDb === 'number' && typeof o.measuredDigitalLeqDb === 'number' &&
+    typeof o.config === 'object' && o.config !== null &&
+    typeof (o.config as Record<string, unknown>).sampleRate === 'number'
+  );
+}
+
+export function loadProfiles(storage: Pick<Storage, 'getItem'> | undefined = ambientStorage()): CalibrationProfileFull[] {
+  return readStore(storage).profiles;
+}
+
+export function storeProfile(
+  profile: CalibrationProfileFull,
+  storage: Pick<Storage, 'getItem' | 'setItem'> | undefined = ambientStorage(),
+): void {
+  if (!storage) throw new Error('storage unavailable');
+  const store = readStore(storage);
+  const rest = store.profiles.filter((p) => p.id !== profile.id);
+  storage.setItem(PROFILE_KEY, JSON.stringify({ schema: CALIBRATION_SCHEMA, profiles: [profile, ...rest].slice(0, 10) }));
+}
+
+export function deleteProfile(id: string, storage: Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> | undefined = ambientStorage()): CalibrationProfileFull[] {
+  const store = readStore(storage);
+  const profiles = store.profiles.filter((p) => p.id !== id);
+  try {
+    storage?.setItem(PROFILE_KEY, JSON.stringify({ schema: CALIBRATION_SCHEMA, profiles }));
+  } catch { /* storage errors surface at save time */ }
+  if (getActiveProfileId(storage) === id) clearActiveProfileId(storage);
+  return profiles;
+}
+
+export function getActiveProfileId(storage: Pick<Storage, 'getItem'> | undefined = ambientStorage()): string | null {
+  try {
+    return storage?.getItem(ACTIVE_KEY) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function setActiveProfileId(id: string, storage: Pick<Storage, 'setItem'> | undefined = ambientStorage()): void {
+  if (!storage) throw new Error('storage unavailable');
+  storage.setItem(ACTIVE_KEY, id);
+}
+
+export function clearActiveProfileId(storage: Pick<Storage, 'removeItem'> | undefined = ambientStorage()): void {
+  try {
+    storage?.removeItem(ACTIVE_KEY);
+  } catch { /* noop */ }
+}

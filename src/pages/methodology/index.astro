@@ -1,0 +1,21 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="Methodology — Real Decibel Meter" description="How RMS blocks become displayed dB: weighting, time response, session stats." path="/methodology/">
+  <Article title="Methodology" intro="Every displayed number comes from one typed engine — no component computes levels on its own.">
+    <h2 class="text-white font-semibold">Pipeline</h2>
+    <ol class="list-decimal pl-5 mt-2 space-y-1">
+      <li>Microphone stream → AudioContext → AnalyserNode (4096-pt FFT, time-domain blocks). Input is never connected to speakers.</li>
+      <li>RMS of each block → dB estimate (full-scale sine ≈ 100 dB reference) plus frequency-weighting correction (A/C/Z approximation by dominant band).</li>
+      <li>Exponential time weighting: Fast (125 ms) or Slow (1 s).</li>
+      <li>Calibration offset added; range clamped to 20–130 dB for display.</li>
+      <li>Session accumulator tracks current, min, energy-average Leq and max plus duration; graph keeps the last 240 points.</li>
+    </ol>
+    <h2 class="text-white font-semibold mt-6">States</h2>
+    <p class="mt-2">idle → requesting-permission → running ⇄ paused → stopped, plus a typed error state (unsupported browser, denied, no device, disconnected, busy, invalid calibration, storage blocked, processing fault). Each error carries its own message and recovery action.</p>
+  </Article>
+</Layout>

@@ -1,0 +1,16 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="Terms — Real Decibel Meter" description="Estimates only; not for safety, workplace or legal decisions." path="/terms/">
+  <Article title="Terms" intro="By using the meter you accept that its readings are uncalibrated browser estimates.">
+    <ul class="list-disc pl-5 mt-2 space-y-1">
+      <li>Readings are estimates from consumer microphones, not certified measurements.</li>
+      <li>Do not rely on them for hearing-safety, workplace-compliance, legal or medical decisions.</li>
+      <li>The app runs as-is, without warranty. Audio processing stays on your device; you are responsible for permissions and local laws on recording.</li>
+    </ul>
+  </Article>
+</Layout>

@@ -1,0 +1,21 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="Calibration — Real Decibel Meter" description="Add a reference offset to browser level estimates. Honest, explicit, reversible." path="/calibration/">
+  <Article title="Calibration" intro="Calibration here means one thing: adding a fixed dB offset measured against a reference you trust.">
+    <h2 class="text-white font-semibold">How to calibrate</h2>
+    <ol class="list-decimal pl-5 mt-2 space-y-1">
+      <li>Play a stable reference tone of known level near the microphone.</li>
+      <li>Read the uncalibrated value on this site.</li>
+      <li>Enter the difference (reference − shown) as the offset in Advanced controls.</li>
+    </ol>
+    <p class="mt-2">The status badge changes from “Uncalibrated — readings are estimates only” to “Calibrated (+/− dB)”. Reset any time to return to the raw estimate.</p>
+    <h2 class="text-white font-semibold mt-6">Limits</h2>
+    <p class="mt-2">An offset corrects overall gain, not frequency response or distortion. Offsets beyond ±40 dB are rejected as invalid. Even calibrated, a browser is not a certified instrument.</p>
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the meter →</a></p>
+  </Article>
+</Layout>

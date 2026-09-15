@@ -1,0 +1,18 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="How to Use — Real Decibel Meter" description="Grant permission, place the device well, read the panel, export the session." path="/how-to-use/">
+  <Article title="How to use" intro="Three steps: allow the microphone, watch the live panel, tune and export.">
+    <h2 class="text-white font-semibold">1. Allow the microphone</h2>
+    <p class="mt-2">Press Start and accept the browser prompt. Use HTTPS or localhost; file:// and plain HTTP origins may block capture. Pick the input in the selector if you have several.</p>
+    <h2 class="text-white font-semibold mt-6">2. Place the device</h2>
+    <p class="mt-2">Set the device on a stable surface at ear height, away from wind, vents and handling. Avoid covering the mic port. Wait a few seconds for Fast/Slow smoothing to settle.</p>
+    <h2 class="text-white font-semibold mt-6">3. Read and export</h2>
+    <p class="mt-2">Current is the smoothed live value; Leq is the energy average; min/max bracket the session. Export CSV for spreadsheets or JSON for code. History stays in this browser only.</p>
+    <p class="mt-4"><a class="underline underline-offset-4" href="/microphone-not-working/">Microphone not working? →</a></p>
+  </Article>
+</Layout>

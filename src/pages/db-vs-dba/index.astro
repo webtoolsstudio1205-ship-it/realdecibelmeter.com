@@ -1,0 +1,17 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="dB vs dBA — Real Decibel Meter" description="What dB, dBA, dBC and dBZ mean, and which weighting to pick." path="/db-vs-dba/">
+  <Article title="dB vs dBA" intro="dB is the unit; the trailing letter says which frequency weighting was applied.">
+    <ul class="space-y-3 mt-2">
+      <li><strong class="text-white">dB (Z-weighted).</strong> Flat: all frequencies count equally. Best for comparing spectra.</li>
+      <li><strong class="text-white">dBA.</strong> A-weighting roughly follows human hearing at moderate levels — quiet lows count less. Default on this meter for everyday environments.</li>
+      <li><strong class="text-white">dBC.</strong> Flatter than A; closer to how loud peaks feel. Useful near loud machinery or music.</li>
+    </ul>
+    <p class="mt-3">Fast (125 ms) follows peaks; Slow (1 s) smooths them. Neither changes the underlying estimate — only how quickly the display follows it.</p>
+  </Article>
+</Layout>

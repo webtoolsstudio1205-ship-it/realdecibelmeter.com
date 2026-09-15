@@ -1,0 +1,414 @@
+---
+import type { Dict } from '../i18n/dictionaries';
+
+interface Props {
+  dict: Dict;
+}
+
+const { dict } = Astro.props;
+---
+
+<section id="measure" aria-label={dict.liveRegion} class="scroll-mt-20" data-st-idle={dict.statusIdle} data-st-req={dict.statusRequesting} data-st-run={dict.statusRunning} data-st-pause={dict.statusPaused} data-st-stop={dict.statusStopped} data-st-err={dict.statusError} data-p-unknown={dict.permUnknown} data-p-granted={dict.permGranted} data-p-denied={dict.permDenied} data-p-prompt={dict.permPrompt} data-cal-u={dict.calibrationUncal} data-cal-c={dict.calibrationCal} data-mic-default={dict.micDefault}>
+  <div id="rdm-panel" class="panel meter-live p-4 sm:p-6 md:p-8" data-live="false" style="box-shadow: 0 1px 2px rgba(0,0,0,.08)">
+    <div id="rdm-announcer" class="sr-only" role="status" aria-live="polite"></div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <span id="rdm-state-badge" class="inline-flex items-center gap-2 text-[13px] font-medium rounded-full px-3 py-1.5" style="border:1px solid var(--border);background:var(--raised)">
+        <span id="rdm-state-dot" class="inline-block rounded-full" style="width:8px;height:8px;background:var(--muted)" aria-hidden="true"></span>
+        <span id="rdm-state-text">{dict.statusIdle}</span>
+      </span>
+      <span id="rdm-cal-badge" class="inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
+        {dict.calibrationUncal}
+      </span>
+      <span class="inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
+        <span>{dict.micPermission}: </span><strong id="rdm-perm-text" class="font-semibold">{dict.permUnknown}</strong>
+      </span>
+    </div>
+
+    <div class="mt-6 grid gap-6 lg:grid-cols-[1fr_320px]">
+      <div>
+        <p class="eyebrow">{dict.statCurrent}</p>
+        <div id="rdm-halo" class="big-halo flex items-baseline gap-3 mt-1" data-live="false" style="isolation:isolate">
+          <span id="rdm-big" class="tabular font-semibold tracking-tight" style="font-size:clamp(56px,12vw,96px);line-height:1" aria-live="off">--</span>
+          <span class="text-sm font-medium" style="color:var(--muted)">{dict.unit}</span>
+        </div>
+
+        <div class="mt-4" aria-hidden="true">
+          <div id="rdm-led" class="led">
+            {Array.from({ length: 24 }).map(() => (<span></span>))}
+          </div>
+          <div class="flex justify-between mt-1">
+            <span class="tabular text-[11px]" style="color:var(--muted)">30</span>
+            <span class="tabular text-[11px]" style="color:var(--muted)">120</span>
+          </div>
+        </div>
+
+        <div class="mt-3" aria-hidden="true">
+          <div id="rdm-spec" class="spec">
+            {Array.from({ length: 10 }).map(() => (<span class="spec-bar"><span class="spec-fill"></span></span>))}
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-col sm:flex-row gap-2">
+          <label for="rdm-mic" class="sr-only">{dict.micSelect}</label>
+          <div class="select-wrap flex-1">
+            <select id="rdm-mic" class="select focus-ring text-sm rounded-lg w-full" style="min-height:44px;background:var(--raised);border:1px solid var(--border);color:var(--text);padding:0 36px 0 12px">
+              <option value="">{dict.micDefault}</option>
+            </select>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <button id="rdm-refresh-mics" type="button" class="btn-square focus-ring refresh-btn" title="Refresh microphone list" aria-label="Refresh microphone list">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg>
+          </button>
+        </div>
+
+        <div class="mt-3 flex flex-wrap gap-2" role="group" aria-label="Transport">
+          <button id="rdm-start" type="button" class="btn-primary focus-ring">{dict.btnStart}</button>
+          <button id="rdm-pause" type="button" class="btn-square focus-ring" disabled title={dict.btnPause}>{dict.btnPause}</button>
+          <button id="rdm-resume" type="button" class="btn-square focus-ring hidden">{dict.btnResume}</button>
+          <button id="rdm-stop" type="button" class="btn-square focus-ring" disabled>{dict.btnStop}</button>
+          <button id="rdm-reset" type="button" class="btn-square focus-ring">{dict.btnReset}</button>
+        </div>
+
+        <div id="rdm-error" class="hidden mt-4 rounded-xl p-4" role="alert" style="border:1px solid var(--border);background:var(--raised)">
+          <p id="rdm-error-title" class="font-semibold text-[15px]"></p>
+          <p id="rdm-error-msg" class="text-sm mt-1" style="color:var(--muted)"></p>
+          <p class="text-sm mt-2"><strong>Recovery: </strong><span id="rdm-error-fix"></span></p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button id="rdm-retry" type="button" class="btn-square focus-ring">{dict.btnRetry}</button>
+            <button id="rdm-dismiss" type="button" class="btn-square focus-ring">{dict.btnDismiss}</button>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <div class="flex items-baseline justify-between gap-2">
+            <h3 class="text-sm font-semibold">{dict.graphLabel}</h3>
+            <span id="rdm-graph-meta" class="tabular text-xs" style="color:var(--muted)"></span>
+          </div>
+          <div class="panel-raised mt-2 p-2" style="overflow:hidden">
+            <svg id="rdm-graph" viewBox="0 0 600 160" class="w-full" style="height:160px;display:block" role="img" aria-label={dict.graphLabel} preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="rdm-edge" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#22D3EE" />
+                  <stop offset="0.5" stop-color="#3B82F6" />
+                  <stop offset="1" stop-color="#8B5CF6" />
+                </linearGradient>
+              </defs>
+              <g id="rdm-grid" stroke="currentColor" opacity="0.12">
+                <line x1="0" y1="40" x2="600" y2="40" /><line x1="0" y1="80" x2="600" y2="80" /><line x1="0" y1="120" x2="600" y2="120" />
+              </g>
+              <path id="rdm-path" d="" fill="none" stroke="url(#rdm-edge)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+            </svg>
+            <p id="rdm-graph-empty" class="text-xs px-2 py-1" style="color:var(--muted)">{dict.graphEmpty}</p>
+          </div>
+        </div>
+      </div>
+
+      <dl class="grid grid-cols-2 lg:grid-cols-1 gap-2 content-start">
+        <div class="panel-raised p-3"><dt class="eyebrow">{dict.statCurrent}</dt><dd id="rdm-s-current" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3"><dt class="eyebrow">{dict.statMin}</dt><dd id="rdm-s-min" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3"><dt class="eyebrow">{dict.statLeq}</dt><dd id="rdm-s-leq" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3"><dt class="eyebrow">{dict.statMax}</dt><dd id="rdm-s-max" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3 col-span-2 lg:col-span-1"><dt class="eyebrow">{dict.statDuration}</dt><dd id="rdm-s-dur" class="tabular text-2xl font-semibold mt-1">00:00</dd></div>
+      </dl>
+    </div>
+
+    <details id="rdm-advanced" class="mt-6 rounded-xl" style="border:1px solid var(--border);background:var(--raised)">
+      <summary class="cursor-pointer focus-ring rounded-xl px-4 font-semibold text-[15px]" style="min-height:44px;display:flex;align-items:center">{dict.advanced}</summary>
+      <div class="px-4 pb-4 grid gap-6 md:grid-cols-2">
+        <fieldset>
+          <legend class="eyebrow mb-2">{dict.weighting}</legend>
+          <div class="flex flex-col gap-2 text-sm">
+            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-w" value="A" checked /> {dict.weightA}</label>
+            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-w" value="C" /> {dict.weightC}</label>
+            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-w" value="Z" /> {dict.weightZ}</label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend class="eyebrow mb-2">{dict.response}</legend>
+          <div class="flex flex-col gap-2 text-sm">
+            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-r" value="fast" checked /> {dict.respFast}</label>
+            <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-r" value="slow" /> {dict.respSlow}</label>
+          </div>
+        </fieldset>
+        <div>
+          <h4 class="eyebrow mb-2">{dict.calTitle}</h4>
+          <label class="block text-sm" for="rdm-offset">{dict.calOffset}</label>
+          <input id="rdm-offset" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="number" step="0.1" min="-40" max="40" value="0" />
+          <label class="block text-sm mt-3" for="rdm-cal-label">{dict.calLabel}</label>
+          <input id="rdm-cal-label" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="text" maxlength="80" />
+          <div class="mt-3 flex flex-wrap gap-2">
+            <button id="rdm-cal-apply" type="button" class="btn-square focus-ring">{dict.calApply}</button>
+            <button id="rdm-cal-reset" type="button" class="btn-square focus-ring">{dict.calReset}</button>
+          </div>
+          <p id="rdm-cal-msg" class="text-xs mt-2" style="color:var(--muted)"></p>
+        </div>
+        <div>
+          <h4 class="eyebrow mb-2">{dict.sessionDetails} · {dict.deviceInfo}</h4>
+          <dl class="text-sm space-y-1">
+            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Device</dt><dd id="rdm-dev" class="tabular text-right">—</dd></div>
+            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Sample rate</dt><dd id="rdm-rate" class="tabular text-right">—</dd></div>
+            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Weighting</dt><dd id="rdm-meta-w" class="text-right">A</dd></div>
+            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Response</dt><dd id="rdm-meta-r" class="text-right">fast</dd></div>
+            <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Samples</dt><dd id="rdm-meta-n" class="tabular text-right">0</dd></div>
+          </dl>
+          <h4 class="eyebrow mt-4 mb-2">{dict.exportTitle}</h4>
+          <div class="flex flex-wrap gap-2">
+            <button id="rdm-exp-csv" type="button" class="btn-square focus-ring" disabled>{dict.exportCsv}</button>
+            <button id="rdm-exp-json" type="button" class="btn-square focus-ring" disabled>{dict.exportJson}</button>
+          </div>
+          <h4 class="eyebrow mt-4 mb-2">{dict.historyTitle}</h4>
+          <p id="rdm-storage-warn" class="hidden text-xs mb-2" style="color:var(--muted)">Session history unavailable: storage is blocked. Export CSV instead.</p>
+          <ul id="rdm-history" class="text-sm space-y-1"></ul>
+          <p id="rdm-history-empty" class="text-xs" style="color:var(--muted)">{dict.historyEmpty}</p>
+          <button id="rdm-history-clear" type="button" class="btn-square focus-ring mt-2">{dict.historyClear}</button>
+        </div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<script>
+  import { DecibelEngine } from '../lib/engine.js';
+  import { formatDb, formatDuration } from '../lib/dsp.js';
+  import { seriesToPath } from '../lib/graph.js';
+  import { sessionToCsv, sessionToJson, downloadText } from '../lib/export-format.js';
+  import { loadHistory, saveSession, clearHistory } from '../lib/history.js';
+  import { describeError } from '../lib/errors.js';
+  import { MicCapture } from '../lib/microphone.js';
+
+  const $ = (id) => document.getElementById(id);
+  const engine = new DecibelEngine();
+  const section = document.getElementById('measure');
+  const T = (k, fb) => section?.getAttribute(k) ?? fb;
+  const STATUS = () => ({
+    idle: T('data-st-idle', 'Idle'),
+    'requesting-permission': T('data-st-req', 'Requesting permission…'),
+    running: T('data-st-run', 'Measuring'),
+    paused: T('data-st-pause', 'Paused'),
+    stopped: T('data-st-stop', 'Stopped'),
+    error: T('data-st-err', 'Attention needed'),
+  });
+  const PERM = () => ({
+    unknown: T('data-p-unknown', 'Not requested'),
+    granted: T('data-p-granted', 'Granted'),
+    denied: T('data-p-denied', 'Denied'),
+    prompt: T('data-p-prompt', 'Prompt'),
+  });
+
+  const els = {
+    announcer: $('rdm-announcer'), stateText: $('rdm-state-text'), stateDot: $('rdm-state-dot'),
+    calBadge: $('rdm-cal-badge'), permText: $('rdm-perm-text'), big: $('rdm-big'),
+    mic: $('rdm-mic'), refresh: $('rdm-refresh-mics'),
+    start: $('rdm-start'), pause: $('rdm-pause'), resume: $('rdm-resume'), stop: $('rdm-stop'), reset: $('rdm-reset'),
+    err: $('rdm-error'), errTitle: $('rdm-error-title'), errMsg: $('rdm-error-msg'), errFix: $('rdm-error-fix'),
+    retry: $('rdm-retry'), dismiss: $('rdm-dismiss'),
+    path: $('rdm-path'), graphEmpty: $('rdm-graph-empty'), graphMeta: $('rdm-graph-meta'),
+    sCur: $('rdm-s-current'), sMin: $('rdm-s-min'), sLeq: $('rdm-s-leq'), sMax: $('rdm-s-max'), sDur: $('rdm-s-dur'),
+    dev: $('rdm-dev'), rate: $('rdm-rate'), metaW: $('rdm-meta-w'), metaR: $('rdm-meta-r'), metaN: $('rdm-meta-n'),
+    expCsv: $('rdm-exp-csv'), expJson: $('rdm-exp-json'),
+    history: $('rdm-history'), historyEmpty: $('rdm-history-empty'), historyClear: $('rdm-history-clear'),
+    storageWarn: $('rdm-storage-warn'), offset: $('rdm-offset'), calLabel: $('rdm-cal-label'),
+    calApply: $('rdm-cal-apply'), calReset: $('rdm-cal-reset'), calMsg: $('rdm-cal-msg'),
+  };
+
+  let lastAnnounced = '';
+  let historyEntries = [];
+
+  /* Interactive meter visuals — all derived from the real engine snapshot. */
+  const SEGS = 24;
+  const ledEl = $('rdm-led');
+  const ledSegs = ledEl ? Array.from(ledEl.children) : [];
+  const specEl = $('rdm-spec');
+  const specFills = specEl ? Array.from(specEl.querySelectorAll('.spec-fill')) : [];
+  const panelEl = $('rdm-panel');
+  const haloEl = $('rdm-halo');
+  let lastLit = -1;
+  let peakSeg = -1;
+  let peakAt = 0;
+
+  function levelToLit(db) {
+    if (db == null || !Number.isFinite(db)) return 0;
+    const t = Math.min(1, Math.max(0, (db - 30) / 90));
+    return Math.round(t * SEGS);
+  }
+
+  function renderMeter(s) {
+    const live = s.state === 'running' && s.stats.current != null;
+    const lit = live ? levelToLit(s.stats.current) : 0;
+    if (panelEl) panelEl.setAttribute('data-live', live ? 'true' : 'false');
+    if (haloEl) haloEl.setAttribute('data-live', live ? 'true' : 'false');
+    if (lit !== lastLit) {
+      for (let i = 0; i < ledSegs.length; i++) {
+        ledSegs[i].classList.toggle('lit', i < lit);
+      }
+      lastLit = lit;
+    }
+    const now = Date.now();
+    if (live && lit >= peakSeg) {
+      peakSeg = lit;
+      peakAt = now;
+    } else if (!live || now - peakAt > 1200) {
+      peakSeg = live ? lit : -1;
+      peakAt = now;
+    }
+    for (let i = 0; i < ledSegs.length; i++) {
+      ledSegs[i].classList.toggle('peak', i === peakSeg - 1 && peakSeg > 0);
+    }
+    const spec = live && s.spectrum.length ? s.spectrum : [];
+    for (let i = 0; i < specFills.length; i++) {
+      const v = spec[i] ?? 0;
+      specFills[i].style.height = `${Math.round(Math.min(1, Math.max(0, v)) * 100)}%`;
+    }
+  }
+
+  async function refreshMics() {
+    const devices = await MicCapture.listDevices();
+    const sel = els.mic;
+    const prev = sel.value;
+    sel.innerHTML = '';
+    const def = document.createElement('option');
+    def.value = '';
+    def.textContent = T('data-mic-default', 'Default microphone');
+    sel.appendChild(def);
+    devices.forEach((d, i) => {
+      const o = document.createElement('option');
+      o.value = d.deviceId;
+      o.textContent = d.label || `Microphone ${i + 1}`;
+      sel.appendChild(o);
+    });
+    if ([...sel.options].some((o) => o.value === prev)) sel.value = prev;
+  }
+
+  function renderHistory() {
+    els.history.innerHTML = '';
+    els.historyEmpty.style.display = historyEntries.length ? 'none' : '';
+    historyEntries.slice(0, 5).forEach((e) => {
+      const li = document.createElement('li');
+      li.className = 'tabular';
+      li.textContent = `${e.endedAtIso.slice(0, 16).replace('T', ' ')} · Leq ${formatDb(e.stats.leq)} dB · ${formatDuration(e.stats.durationSec)}`;
+      els.history.appendChild(li);
+    });
+  }
+
+  engine.subscribe((s) => {
+    const st = s.state;
+    els.stateText.textContent = STATUS()[st] ?? st;
+    els.stateDot.style.background = st === 'running' ? '#22D3EE' : st === 'error' ? '#f87171' : st === 'paused' ? '#fbbf24' : 'var(--muted)';
+    const permMap = PERM();
+    els.permText.textContent = permMap[s.permission] ?? s.permission;
+    els.calBadge.textContent = s.calibration.isCalibrated
+      ? `${T('data-cal-c', 'Calibrated')} (${s.calibration.offsetDb >= 0 ? '+' : ''}${s.calibration.offsetDb.toFixed(1)} dB)` : T('data-cal-u', 'Uncalibrated — estimates only');
+
+    const hasData = s.stats.current != null;
+    els.big.textContent = formatDb(s.stats.current);
+    els.sCur.textContent = formatDb(s.stats.current);
+    els.sMin.textContent = formatDb(s.stats.min);
+    els.sLeq.textContent = formatDb(s.stats.leq);
+    els.sMax.textContent = formatDb(s.stats.max);
+    els.sDur.textContent = formatDuration(s.stats.durationSec);
+
+    els.start.disabled = st === 'requesting-permission' || st === 'running';
+    els.start.classList.toggle('attn', st === 'idle');
+    els.pause.disabled = st !== 'running';
+    els.stop.disabled = st !== 'running' && st !== 'paused';
+    els.resume.classList.toggle('hidden', st !== 'paused');
+    els.expCsv.disabled = !hasData;
+    els.expJson.disabled = !hasData;
+    renderMeter(s);
+
+    els.dev.textContent = s.deviceLabel || '—';
+    els.rate.textContent = s.sampleRate ? `${s.sampleRate} Hz` : '—';
+    els.metaW.textContent = s.weighting;
+    els.metaR.textContent = s.response;
+    els.metaN.textContent = String(s.stats.samples);
+
+    const series = engine.graph.series();
+    els.path.setAttribute('d', seriesToPath(series.slice(-180), 600, 160));
+    els.graphEmpty.style.display = series.length ? 'none' : '';
+    els.graphMeta.textContent = series.length ? `${series.length} pts` : '';
+
+    if (st === 'error') {
+      const info = describeError(s.error, s.errorDetail);
+      els.err.classList.remove('hidden');
+      els.errTitle.textContent = info.title;
+      els.errMsg.textContent = info.message;
+      els.errFix.textContent = info.recovery;
+    } else {
+      els.err.classList.add('hidden');
+    }
+
+    const announce = `${st}${st === 'error' ? ': ' + s.error : ''}`;
+    if (announce !== lastAnnounced) {
+      lastAnnounced = announce;
+      els.announcer.textContent = announce;
+    }
+
+    if ((st === 'stopped') && hasData) {
+      const res = saveSession(s.stats, `${s.weighting}/${s.response}`);
+      historyEntries = res.entries;
+      if (!res.ok) els.storageWarn.classList.remove('hidden');
+      renderHistory();
+    }
+  });
+
+  els.start?.addEventListener('click', () => { els.start.blur(); engine.start(); });
+  els.pause?.addEventListener('click', () => engine.pause());
+  els.resume?.addEventListener('click', () => engine.resume());
+  els.stop?.addEventListener('click', () => engine.stop());
+  els.reset?.addEventListener('click', () => engine.reset());
+  els.retry?.addEventListener('click', () => engine.start());
+  els.dismiss?.addEventListener('click', () => engine.dismissError());
+  els.mic?.addEventListener('change', (e) => {
+    const sel = e.target;
+    engine.setDevice(sel.value, sel.options[sel.selectedIndex]?.textContent ?? '');
+  });
+  els.refresh?.addEventListener('click', () => refreshMics());
+
+  document.querySelectorAll('input[name="rdm-w"]').forEach((r) => {
+    r.addEventListener('change', (e) => engine.setWeighting(e.target.value));
+  });
+  document.querySelectorAll('input[name="rdm-r"]').forEach((r) => {
+    r.addEventListener('change', (e) => engine.setResponse(e.target.value));
+  });
+
+  els.calApply?.addEventListener('click', () => {
+    const off = parseFloat(els.offset.value);
+    engine.setCalibrationOffset(Number.isFinite(off) ? off : NaN, els.calLabel.value, true);
+  });
+  els.calReset?.addEventListener('click', () => { engine.resetCalibration(); els.offset.value = '0'; els.calLabel.value = ''; });
+
+  els.expCsv?.addEventListener('click', () => {
+    const s = engine.snapshot();
+    downloadText(`decibel-session-${Date.now()}.csv`, sessionToCsv(s.stats, {
+      weighting: s.weighting, response: s.response, calibration: s.calibration,
+      deviceLabel: s.deviceLabel, startedAtIso: engine.getStartedAtIso() || new Date().toISOString(),
+    }), 'text/csv');
+  });
+  els.expJson?.addEventListener('click', () => {
+    const s = engine.snapshot();
+    downloadText(`decibel-session-${Date.now()}.json`, sessionToJson(s.stats, {
+      weighting: s.weighting, response: s.response, calibration: s.calibration,
+      deviceLabel: s.deviceLabel, startedAtIso: engine.getStartedAtIso() || new Date().toISOString(),
+    }), 'application/json');
+  });
+  els.historyClear?.addEventListener('click', () => {
+    if (clearHistory()) { historyEntries = []; renderHistory(); }
+    else els.storageWarn.classList.remove('hidden');
+  });
+
+  // Init: device list + local history; labels appear after permission.
+  refreshMics();
+  navigator.mediaDevices?.addEventListener?.('devicechange', refreshMics);
+  try {
+    const h = loadHistory();
+    historyEntries = h.entries;
+    if (!h.storageOk) els.storageWarn.classList.remove('hidden');
+  } catch { els.storageWarn.classList.remove('hidden'); }
+  renderHistory();
+
+  // Keyboard: Escape closes advanced disclosure.
+  document.getElementById('rdm-advanced')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') e.target.closest('details')?.removeAttribute('open');
+  });
+</script>

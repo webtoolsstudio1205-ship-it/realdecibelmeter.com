@@ -1,0 +1,22 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="How Accuracy Works — Real Decibel Meter" description="Browser microphone readings are honest estimates, not certified measurements. Learn why." path="/accuracy/">
+  <Article title="How accuracy works" intro="Your microphone was built for calls, not metrology. This page states plainly what the meter can and cannot claim.">
+    <h2 class="text-white font-semibold">What the number means</h2>
+    <p class="mt-2">The panel shows an <strong>uncalibrated browser estimate</strong> derived from Web Audio time-domain samples. Gain, placement, case resonance and frequency response differ per device, so two phones side by side can disagree.</p>
+    <h2 class="text-white font-semibold mt-6">What improves it</h2>
+    <ul class="list-disc pl-5 mt-2 space-y-1">
+      <li>Measuring in a stable position, away from wind and handling noise.</li>
+      <li>Using A-weighting for speech-like environments, C or Z when comparing spectra.</li>
+      <li>Comparing against a known reference (e.g. a calibrator tone) and storing the offset.</li>
+    </ul>
+    <h2 class="text-white font-semibold mt-6">What it is not</h2>
+    <p class="mt-2">Not a Class 1 / Class 2 sound level meter, not laboratory tested, not certified, and not suitable for workplace-compliance, legal or hearing-safety verdicts. No green/yellow/red safety labels are shown for exactly this reason.</p>
+    <p class="mt-4"><a class="underline underline-offset-4" href="/calibration/">Next: calibration →</a> · <a class="underline underline-offset-4" href="/methodology/">Methodology →</a></p>
+  </Article>
+</Layout>

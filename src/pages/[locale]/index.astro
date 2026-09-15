@@ -1,22 +1,20 @@
 ---
-import Layout from '../components/Layout.astro';
-import MeterPanel from '../components/MeterPanel.astro';
-import { getDict } from '../i18n/dictionaries';
+import Layout from '../../components/Layout.astro';
+import MeterPanel from '../../components/MeterPanel.astro';
+import { getDict, type Locale } from '../../i18n/dictionaries';
 
-const locale = 'en';
+export function getStaticPaths() {
+  return (['de', 'it', 'ja', 'es', 'fr', 'pt', 'ko'] as Locale[]).map((locale) => ({
+    params: { locale },
+  }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
 const dict = getDict(locale);
-
-const guides = [
-  { href: '/accuracy/', t: 'Accuracy', d: 'What browser estimates can and cannot claim.' },
-  { href: '/calibration/', t: 'Calibration', d: 'Add an offset from a known reference.' },
-  { href: '/methodology/', t: 'Methodology', d: 'How the Web Audio pipeline computes levels.' },
-  { href: '/how-to-use/', t: 'How to use', d: 'Permissions, placement and best practice.' },
-  { href: '/microphone-not-working/', t: 'Microphone help', d: 'Fix denied, busy or missing inputs.' },
-  { href: '/decibel-chart/', t: 'Decibel chart', d: 'Typical everyday sound levels.' },
-];
+const prefix = `/${locale}`;
 ---
 
-<Layout locale={locale} dict={dict} title={dict.metaTitle} description={dict.metaDescription} path="/">
+<Layout locale={locale} dict={dict} title={dict.metaTitle} description={dict.metaDescription} path={`${prefix}/`}>
   <div style="position:relative;overflow:hidden">
     <div class="hero-glow" aria-hidden="true"></div>
     <div class="container-x pt-8 md:pt-12 pb-4" style="max-width:1120px">
@@ -45,16 +43,13 @@ const guides = [
     </section>
 
     <section class="panel p-6" data-reveal aria-labelledby="acc">
-      <p class="eyebrow">Estimate, not a certified meter</p>
-      <h2 id="acc" class="text-xl font-semibold tracking-tight mt-1">{dict.accTitle}</h2>
+      <h2 id="acc" class="text-xl font-semibold tracking-tight">{dict.accTitle}</h2>
       <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{dict.accBody}</p>
-      <p class="mt-3"><a href="/accuracy/" class="focus-ring underline underline-offset-4 text-sm">Read the full accuracy guide →</a></p>
     </section>
 
     <section class="panel p-6" data-reveal aria-labelledby="trouble">
       <h2 id="trouble" class="text-xl font-semibold tracking-tight">{dict.troubleTitle}</h2>
       <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{dict.troubleBody}</p>
-      <p class="mt-3"><a href="/microphone-not-working/" class="focus-ring underline underline-offset-4 text-sm">Microphone troubleshooting →</a></p>
     </section>
 
     <section class="panel p-6" data-reveal aria-labelledby="sess">
@@ -70,18 +65,6 @@ const guides = [
             <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
             <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
           </details>
-        ))}
-      </div>
-    </section>
-
-    <section data-reveal aria-labelledby="guides">
-      <h2 id="guides" class="text-xl font-semibold tracking-tight">{dict.guidesTitle}</h2>
-      <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {guides.map((g) => (
-          <a href={g.href} class="panel lift p-4 focus-ring block hover:opacity-90">
-            <h3 class="font-semibold text-[15px]">{g.t}</h3>
-            <p class="text-sm mt-1" style="color:var(--muted)">{g.d}</p>
-          </a>
         ))}
       </div>
     </section>

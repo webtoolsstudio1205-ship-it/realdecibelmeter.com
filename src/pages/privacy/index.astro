@@ -1,0 +1,17 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="Privacy — Real Decibel Meter" description="Audio never leaves your browser. Local history only." path="/privacy/">
+  <Article title="Privacy" intro="This meter is local-first: microphone audio is processed in your browser and never transmitted by this site.">
+    <ul class="list-disc pl-5 mt-2 space-y-1">
+      <li><strong class="text-white">Audio:</strong> analysed via Web Audio API on-device; never uploaded, recorded server-side, or shared.</li>
+      <li><strong class="text-white">Storage:</strong> theme preference and up to 20 session summaries live in your browser's localStorage only. Clearing site data removes them.</li>
+      <li><strong class="text-white">Analytics/cookies:</strong> the app itself sets no tracking cookies and makes no measurement API calls.</li>
+      <li><strong class="text-white">Hosting:</strong> static files are served over HTTPS; the host may keep standard access logs outside this app's control.</li>
+    </ul>
+  </Article>
+</Layout>
