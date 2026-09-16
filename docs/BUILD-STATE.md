@@ -152,3 +152,61 @@ silently never worked. Full account: `docs/POST-PROMPT-2-FIXES.md`.
   pass (20 static pages). Browser screenshots were captured and reviewed at 320×800, 390×844,
   768×1024, and 1440×900 in dark and light themes. No horizontal overflow; the 768px duplicate
   mobile-menu cascade and 320px header wrapping found during QA were fixed and rechecked.
+
+## Prompt 5 changes (2026-09-16, core SEO implementation)
+
+- **Config/foundation:** `astro.config.mjs` gains `site: https://realdecibelmeter.com`,
+  `trailingSlash: 'always'` and `@astrojs/sitemap` (404 filtered); new `public/robots.txt`
+  (Allow all + sitemap pointer). New `src/lib/seo.ts` (canonical/hreflang/OG-locale/JSON-LD builders).
+- **Layout:** one absolute self canonical, robots meta, reciprocal 9-tag hreflang on homepages
+  (self-only on English-only guides), OG locale/site-name/image-alt/twitter tags, JSON-LD slot,
+  footer language links; Guides nav now points at new `/guides/` hub; language switcher falls back
+  to the locale homepage for guide pages (equivalent localized guides don't exist — fixes broken links).
+- **i18n:** per-locale titles/H1s/descriptions (DE/IT/JA per Search Console priorities), fully
+  translated 5-question FAQs in all 7 locales, translated meter chrome keys + new `btnCancel`;
+  MeterPanel initial HTML (badge, mode status, CTA, stats labels, req/cancel/save) now uses dict values.
+- **Homepage:** tool-first, one H1 (`Online Decibel Meter`), required 9-H2 structure, crawlable
+  input-strength-vs-SPL explainer, WebSite+WebApplication+FAQPage+Breadcrumb JSON-LD, links to all
+  guides/locales. All 7 locale homepages rebuilt with localized H1/intro/sections/FAQ + WebApp/FAQ JSON-LD.
+- **Cluster:** expanded accuracy/calibration/methodology/decibel-chart/db-vs-dba/how-to-use/
+  microphone-not-working/privacy/about (Article JSON-LD + breadcrumbs + reviewed dates + authoritative
+  outbound refs); new `/guides/` hub; contact no longer leaks internal docs path; 404 is noindex with
+  guide links. Calibration page stale ±40 dB note replaced with profile-compatibility explanation.
+- **Tests:** new `src/lib/seo.test.ts` (17 tests: titles, H1, canonicals, hreflang, sitemap-config,
+  robots, JSON-LD, links, 404, claims, footer). `@astrojs/sitemap` pulled in `@types/node`
+  transitively, so the two now-unused `@ts-expect-error` lines in `presentation.test.ts` were removed.
+- **Verification:** `npx tsc --noEmit` pass; `npm test` **72/72 pass** (7 files);
+  `npm run build` pass (**21 pages**, sitemap-index.xml emitted); dist audit script 0 failures
+  (unique titles/descs/canonicals, one H1 each, lang, 9 hreflangs, JSON-LD parses, no broken links,
+  no banned claims). Details: `docs/SEO-STRATEGY.md`, `docs/KEYWORD-MAP.md`, `docs/SEO-QA.md`.
+- **Still pending:** runtime calibration-modal/diagnostics/error strings are English-first on all
+  locales (crawlable copy is localized); guides are English-only; OG PNG not rendered; real-device
+  mic QA and Search Console monitoring still require future data. No deployment/hosting/DNS work done.
+
+## 2026-09-16 — two-mode + stabilizing verification pass
+- Engine: added `stabilizing` state (`requesting-permission → stabilizing → running`), ~1.5 s
+  window, stabilization quanta discarded from session/graph/reference capture; `stabilizeMs` option
+  (0 in unit harness for determinism). Stop/switch-device/visibility handlers cover stabilizing.
+- Presentation: new `PublicMeasurementMode` (`input-strength` | `calibrated-spl`) with central
+  `publicMeasurementMode()` selector; uncalibrated stats relabeled Current/Average/Peak Strength;
+  badge/status now read `Uncalibrated — showing microphone input strength, not environmental dB` /
+  `Calibration required for environmental dB`; hero eyebrow/sub match spec; stopped button is
+  `Save Session`; static stat markup no longer contains `Digital peak`.
+- UI: stabilizing indicator + transport (`stabilizing → stop/customize`), new Measurement Quality
+  panel (overall, calibration, signal, processing, rate, channels, duration, gaps, last calibration).
+- Results: `npm test` 89/89 (new `spec-compliance.test.ts`, 17 tests), `tsc --noEmit` pass,
+  `astro build` pass (21 pages), dist SEO re-verified (canonicals, 9-hreflang cluster, JSON-LD,
+  sitemap, robots), localhost:4321 QA all-pass (200s, 404, banned-string scan).
+
+## 2026-09-16 — dead-attribute removal, dict cleanup, 404+500 pages
+- Removed 10 never-consumed `data-s-*` attributes from `#measure`: they rendered
+  `Digital energy average` / `Digital peak` into the public homepage HTML. Verified the only
+  remaining `dBFS`/digital labels in `dist/index.html` sit inside Digital Diagnostics.
+- Deleted 10 dead i18n keys (`digitalNote`, `digitalTitle`, `statSoundCurrent`, `statEnergyAvg`,
+  `statDigitalAvg`, `statDigitalPeak`, `statCurrent`, `statMin`, `statLeq`, `statMax`) from the
+  Dict interface and all 8 locales; repo-wide grep confirms zero references.
+- Added `src/pages/500.astro` (Something went wrong + reload/meter/guides links, noindex, no
+  self-canonical); existing `404.astro` verified (one H1, noindex, meter/guides/calibration links).
+  Both build to `dist/404.html` / `dist/500.html`; sitemap filter now excludes `/404` and `/500`.
+- Results: `npm test` 91/91, `tsc --noEmit` pass, `astro build` 22 pages pass, localhost QA
+  all-pass, error-page markup script all-pass, no dev-server errors.

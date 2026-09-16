@@ -1,17 +1,20 @@
 ---
 import Layout from '../components/Layout.astro';
 import { getDict } from '../i18n/dictionaries';
+import { SITE } from '../lib/seo';
 const dict = getDict('en');
 ---
 
-<Layout locale="en" dict={dict} title="Page not found — Real Decibel Meter" description="The page you requested does not exist." path="/404/">
+<Layout locale="en" dict={dict} title="Page not found — Real Decibel Meter" description="The page you requested does not exist. Back to the online decibel meter." path="/" robots="noindex, follow">
   <div class="container-x py-24 text-center" style="max-width:1120px">
     <p class="eyebrow">404</p>
     <h1 class="font-semibold tracking-tight mt-2" style="font-size:clamp(28px,5vw,44px)">Page not found</h1>
     <p class="mt-3 text-[15px]" style="color:var(--muted)">The page moved or never existed. The meter is still here.</p>
     <div class="mt-6 flex justify-center gap-2 flex-wrap">
       <a href="/" class="btn-primary focus-ring">Back to the meter</a>
+      <a href="/guides/" class="btn-secondary focus-ring">Browse guides</a>
       <a href="/how-to-use/" class="btn-secondary focus-ring">How to use</a>
     </div>
+    <p class="mt-6 text-sm" style="color:var(--muted)">Popular: <a class="underline underline-offset-4 focus-ring" href="/calibration/">calibration</a> · <a class="underline underline-offset-4 focus-ring" href="/accuracy/">accuracy</a> · <a class="underline underline-offset-4 focus-ring" href="/decibel-chart/">decibel chart</a></p>
   </div>
 </Layout>

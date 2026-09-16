@@ -2,6 +2,7 @@
 import Layout from '../../components/Layout.astro';
 import MeterPanel from '../../components/MeterPanel.astro';
 import { getDict, type Locale } from '../../i18n/dictionaries';
+import { SITE, webAppJsonLd, faqJsonLd } from '../../lib/seo';
 
 export function getStaticPaths() {
   return (['de', 'it', 'ja', 'es', 'fr', 'pt', 'ko'] as Locale[]).map((locale) => ({
@@ -12,15 +13,123 @@ export function getStaticPaths() {
 const { locale } = Astro.params as { locale: Locale };
 const dict = getDict(locale);
 const prefix = `/${locale}`;
+
+const COPY: Record<Locale, { intro: string; howT: string; howB: string; calT: string; calB: string; accT: string; guides: { t: string; d: string; href: string }[] }> = {
+  de: {
+    intro: 'Prüfen Sie die Mikrofon-Eingangsstärke sofort – kostenlos, ohne App und ohne Download. Für einen Schallpegel in dBA, dBC oder dBZ kalibrieren Sie Ihr Gerät mit einer bekannten Referenz.',
+    howT: 'Wie der Dezibelmesser funktioniert',
+    howB: 'Das Mikrofon wird über die Web Audio API ausgelesen: RMS pro Block, Umrechnung in dB, Korrektur für A-, C- oder Z-Bewertung, Glättung mit Fast (125 ms) oder Slow (1 s) und Mittelung als Leq. Unkalibriert sehen Sie die Eingangsstärke in Prozent; mit Offset wird daraus ein Schallpegel-Schätzwert. Details zur Schallpegelmessung und Methode finden Sie in den Anleitungen.',
+    calT: 'Kalibrierung für Dezibel-Schätzwerte',
+    calB: 'Jedes Mikrofon verstärkt anders – daher ist eine Kalibrierung vor jedem dBA-Wert nötig. Vergleichen Sie mit einer stabilen Referenz, tragen Sie die Differenz als Offset ein und behalten Sie Mikrofon, Position und Einstellungen bei.',
+    accT: 'Genauigkeit im Browser',
+    guides: [
+      { t: 'Kalibrierung', d: 'Mikrofon mit Referenz abgleichen.', href: '/calibration/' },
+      { t: 'Genauigkeit', d: 'Was Browser-Schätzwerte leisten.', href: '/accuracy/' },
+      { t: 'Dezibel-Tabelle', d: 'Typische Alltagspegel im Vergleich.', href: '/decibel-chart/' },
+    ],
+  },
+  it: {
+    intro: 'Controlla subito il segnale del microfono – gratis, senza app e senza download. Per una stima in dBA, dBC o dBZ, calibra il dispositivo con un riferimento noto.',
+    howT: 'Come funziona il fonometro online',
+    howB: 'Il microfono viene letto tramite Web Audio API: RMS per blocco, conversione in dB, correzione per la ponderazione A, C o Z, smoothing Fast (125 ms) o Slow (1 s) e media energetica Leq. Senza calibrazione vedi il segnale in percentuale; con l’offset ottieni una stima del livello in decibel.',
+    calT: 'Calibrazione per la misura dei decibel',
+    calB: 'Ogni microfono ha un guadagno diverso: la calibrazione è necessaria prima di fidarsi di un valore in dBA. Confronta con un riferimento stabile, inserisci la differenza come offset e mantieni microfono, posizione e impostazioni.',
+    accT: 'Precisione nel browser',
+    guides: [
+      { t: 'Calibrazione', d: 'Allinea il microfono a un riferimento.', href: '/calibration/' },
+      { t: 'Precisione', d: 'Cosa possono dire le stime browser.', href: '/accuracy/' },
+      { t: 'Tabella decibel', d: 'Livelli tipici a confronto.', href: '/decibel-chart/' },
+    ],
+  },
+  ja: {
+    intro: 'マイク入力レベルを今すぐ確認 — 無料・ダウンロード不要。dBA・dBC・dBZの推定値には、既知の基準器による校正が必要です。',
+    howT: 'オンラインデシベル測定の仕組み',
+    howB: 'Web Audio APIでマイクを読み取り、ブロックごとにRMS→dB変換、A・C・Z重み付け補正、Fast（125ms）・Slow（1s）の時定数で平滑化し、Leqとして平均します。未校正では入力レベルを％表示し、オフセット適用でデシベル推定値を表示します。',
+    calT: 'デシベル推定のための校正',
+    calB: 'マイクの感度は機器ごとに異なるため、dBA値を読む前に校正が必要です。安定した基準音と比較し、差分をオフセットとして入力し、マイク・位置・設定を固定してください。',
+    accT: 'ブラウザ測定の精度',
+    guides: [
+      { t: '校正', d: '基準器に合わせる。', href: '/calibration/' },
+      { t: '精度', d: 'ブラウザ推定値の限界。', href: '/accuracy/' },
+      { t: 'デシベル表', d: '身近な音の目安。', href: '/decibel-chart/' },
+    ],
+  },
+  es: {
+    intro: 'Comprueba la señal del micrófono al instante – gratis, sin app y sin descargas. Para estimar decibelios en dBA, dBC o dBZ, calibra tu dispositivo con una referencia conocida.',
+    howT: 'Cómo funciona el sonómetro online',
+    howB: 'El micrófono se lee con Web Audio API: RMS por bloque, conversión a dB, corrección por ponderación A, C o Z, suavizado Fast (125 ms) o Slow (1 s) y promedio energético Leq. Sin calibrar ves la señal en porcentaje; con el offset obtienes una estimación en decibelios.',
+    calT: 'Calibración para medir decibelios',
+    calB: 'Cada micrófono tiene distinta ganancia: calibrar es imprescindible antes de confiar en un valor dBA. Compara con una referencia estable, introduce la diferencia como offset y mantén micrófono, posición y ajustes.',
+    accT: 'Precisión en el navegador',
+    guides: [
+      { t: 'Calibración', d: 'Ajusta el micrófono a una referencia.', href: '/calibration/' },
+      { t: 'Precisión', d: 'Qué pueden decir las estimaciones.', href: '/accuracy/' },
+      { t: 'Tabla de decibelios', d: 'Niveles típicos comparados.', href: '/decibel-chart/' },
+    ],
+  },
+  fr: {
+    intro: 'Vérifiez le signal du microphone aussitôt – gratuit, sans application ni téléchargement. Pour une estimation en dBA, dBC ou dBZ, calibrez votre appareil avec une référence connue.',
+    howT: 'Comment fonctionne le sonomètre en ligne',
+    howB: 'Le microphone est lu via Web Audio API : RMS par bloc, conversion en dB, correction de pondération A, C ou Z, lissage Fast (125 ms) ou Slow (1 s) et moyenne énergétique Leq. Sans calibrage vous voyez le signal en pourcentage ; avec l’offset vous obtenez une estimation en décibels.',
+    calT: 'Calibrage pour mesurer les décibels',
+    calB: 'Chaque microphone a un gain différent : le calibrage est indispensable avant de croire une valeur dBA. Comparez avec une référence stable, saisissez l’écart comme offset et gardez micro, position et réglages.',
+    accT: 'Précision dans le navigateur',
+    guides: [
+      { t: 'Calibrage', d: 'Ajuster le micro à une référence.', href: '/calibration/' },
+      { t: 'Précision', d: 'Ce que valent les estimations.', href: '/accuracy/' },
+      { t: 'Tableau des décibels', d: 'Niveaux typiques comparés.', href: '/decibel-chart/' },
+    ],
+  },
+  pt: {
+    intro: 'Verifique o sinal do microfone na hora – grátis, sem app e sem download. Para estimar decibéis em dBA, dBC ou dBZ, calibre o dispositivo com uma referência conhecida.',
+    howT: 'Como funciona o medidor online',
+    howB: 'O microfone é lido via Web Audio API: RMS por bloco, conversão em dB, correção de ponderação A, C ou Z, suavização Fast (125 ms) ou Slow (1 s) e média energética Leq. Sem calibrar você vê o sinal em percentagem; com o offset obtém uma estimativa em decibéis.',
+    calT: 'Calibração para medir decibéis',
+    calB: 'Cada microfone tem ganho diferente: calibrar é essencial antes de confiar num valor dBA. Compare com uma referência estável, introduza a diferença como offset e mantenha microfone, posição e ajustes.',
+    accT: 'Precisão no navegador',
+    guides: [
+      { t: 'Calibração', d: 'Ajustar o microfone a uma referência.', href: '/calibration/' },
+      { t: 'Precisão', d: 'O que valem as estimativas.', href: '/accuracy/' },
+      { t: 'Tabela de decibéis', d: 'Níveis típicos comparados.', href: '/decibel-chart/' },
+    ],
+  },
+  ko: {
+    intro: '마이크 입력 레벨을 바로 확인 — 무료·다운로드 불필요. dBA·dBC·dBZ 추정값에는 알려진 기준기로 교정이 필요합니다.',
+    howT: '온라인 데시벨 측정기 원리',
+    howB: 'Web Audio API로 마이크를 읽어 블록별 RMS→dB 변환, A·C·Z 가중 보정, Fast(125ms)·Slow(1s) 평활화 후 Leq로 평균합니다. 미교정 상태에서는 입력 레벨을 %로 표시하고, 오프셋 적용 시 데시벨 추정값을 표시합니다.',
+    calT: '데시벨 추정을 위한 교정',
+    calB: '마이크 감도는 기기마다 다르므로 dBA 값을 읽기 전 교정이 필수입니다. 안정적인 기준음과 비교해 차이를 오프셋으로 입력하고, 마이크·위치·설정을 고정하세요.',
+    accT: '브라우저 측정의 정확도',
+    guides: [
+      { t: '교정', d: '기준기에 맞추기.', href: '/calibration/' },
+      { t: '정확도', d: '브라우저 추정치의 한계.', href: '/accuracy/' },
+      { t: '데시벨 표', d: '일상 소음의 기준.', href: '/decibel-chart/' },
+    ],
+  },
+  en: { intro: '', howT: '', howB: '', calT: '', calB: '', accT: '', guides: [] },
+};
+
+const copy = COPY[locale] ?? COPY.de;
+const langName: Record<string, string> = { de: 'de', it: 'it', ja: 'ja', es: 'es', fr: 'fr', pt: 'pt', ko: 'ko' };
+const jsonLd = [
+  webAppJsonLd({
+    name: dict.heroH1,
+    url: `${SITE}${prefix}/`,
+    description: dict.metaDescription,
+    inLanguage: langName[locale] ?? locale,
+  }),
+  faqJsonLd(dict.faq),
+];
 ---
 
-<Layout locale={locale} dict={dict} title={dict.metaTitle} description={dict.metaDescription} path={`${prefix}/`}>
+<Layout locale={locale} dict={dict} title={dict.metaTitle} description={dict.metaDescription} path={`${prefix}/`} jsonLd={jsonLd}>
   <div style="position:relative;overflow:hidden">
     <div class="hero-glow" aria-hidden="true"></div>
     <div class="container-x pt-8 md:pt-12 pb-4" style="max-width:1120px">
       <p class="eyebrow anim-rise" style="--d:0ms">{dict.heroEyebrow}</p>
       <h1 class="font-semibold tracking-tight mt-2 anim-rise" style="--d:60ms;font-size:clamp(32px,6vw,52px);line-height:1.05;letter-spacing:-0.03em">{dict.heroH1}</h1>
       <p class="mt-3 text-[16px] leading-6 anim-rise" style="--d:120ms;color:var(--muted);max-width:56ch">{dict.heroSub}</p>
+      <p class="mt-2 text-[15px] leading-6 anim-rise" style="--d:150ms;color:var(--muted);max-width:60ch">{copy.intro}</p>
       <div class="mt-4 flex flex-wrap gap-2 anim-rise" style="--d:180ms">
         <a href="#measure" class="btn-primary focus-ring">{dict.startMeasuring}</a>
         <a href="/accuracy/" class="btn-secondary focus-ring">{dict.howAccuracy}</a>
@@ -33,6 +142,21 @@ const prefix = `/${locale}`;
   </div>
 
   <div class="container-x py-8 grid gap-4" style="max-width:1120px">
+    <section class="panel p-6" data-reveal aria-labelledby="how">
+      <h2 id="how" class="text-xl font-semibold tracking-tight">{copy.howT}</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{copy.howB}</p>
+    </section>
+
+    <section class="panel p-6" data-reveal aria-labelledby="cal">
+      <h2 id="cal" class="text-xl font-semibold tracking-tight">{copy.calT}</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{copy.calB}</p>
+    </section>
+
+    <section class="panel p-6" data-reveal aria-labelledby="acc">
+      <h2 id="acc" class="text-xl font-semibold tracking-tight">{copy.accT}</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{dict.accBody}</p>
+    </section>
+
     <section class="panel p-6" data-reveal aria-labelledby="steps">
       <h2 id="steps" class="text-xl font-semibold tracking-tight">{dict.stepsTitle}</h2>
       <ol class="mt-4 grid gap-4 md:grid-cols-3">
@@ -40,21 +164,6 @@ const prefix = `/${locale}`;
         <li class="panel-raised p-4"><p class="font-mono text-xs" style="color:var(--muted)">02</p><h3 class="font-semibold mt-1">{dict.step2t}</h3><p class="text-sm mt-1" style="color:var(--muted)">{dict.step2d}</p></li>
         <li class="panel-raised p-4"><p class="font-mono text-xs" style="color:var(--muted)">03</p><h3 class="font-semibold mt-1">{dict.step3t}</h3><p class="text-sm mt-1" style="color:var(--muted)">{dict.step3d}</p></li>
       </ol>
-    </section>
-
-    <section class="panel p-6" data-reveal aria-labelledby="acc">
-      <h2 id="acc" class="text-xl font-semibold tracking-tight">{dict.accTitle}</h2>
-      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{dict.accBody}</p>
-    </section>
-
-    <section class="panel p-6" data-reveal aria-labelledby="trouble">
-      <h2 id="trouble" class="text-xl font-semibold tracking-tight">{dict.troubleTitle}</h2>
-      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{dict.troubleBody}</p>
-    </section>
-
-    <section class="panel p-6" data-reveal aria-labelledby="sess">
-      <h2 id="sess" class="text-xl font-semibold tracking-tight">{dict.sessionTitle}</h2>
-      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{dict.sessionBody}</p>
     </section>
 
     <section class="panel p-6" data-reveal aria-labelledby="faq">
@@ -65,6 +174,18 @@ const prefix = `/${locale}`;
             <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
             <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
           </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="panel p-6" data-reveal aria-labelledby="guides">
+      <h2 id="guides" class="text-xl font-semibold tracking-tight">{dict.guidesTitle}</h2>
+      <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {copy.guides.map((g) => (
+          <a href={g.href} class="panel lift p-4 focus-ring block hover:opacity-90">
+            <h3 class="font-semibold text-[15px]">{g.t}</h3>
+            <p class="text-sm mt-1" style="color:var(--muted)">{g.d}</p>
+          </a>
         ))}
       </div>
     </section>

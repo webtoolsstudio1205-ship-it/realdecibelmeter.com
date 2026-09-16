@@ -2,12 +2,16 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
+import { SITE, breadcrumbJsonLd } from '../../lib/seo';
 const dict = getDict('en');
+const title = 'Contact';
+const description = 'How to get help with the online decibel meter: troubleshooting and accuracy guides.';
+const url = `${SITE}/contact/`;
+const jsonLd = [breadcrumbJsonLd([{ name: 'Home', url: `${SITE}/` }, { name: 'Contact', url }])];
 ---
 
-<Layout locale="en" dict={dict} title="Contact — Real Decibel Meter" description="How to reach the site owner. No support email is published yet." path="/contact/">
-  <Article title="Contact" intro="A public support email is not published for this site yet.">
-    <p class="mt-2"><strong class="text-white">Configuration required (owner):</strong> add an official contact channel before advertising support. See <code>docs/BUILD-STATE.md</code> in the private repository — no address, registration or support email is invented on this page.</p>
-    <p class="mt-3">For microphone problems, the fastest help is the <a class="underline underline-offset-4" href="/microphone-not-working/">troubleshooting guide</a>. For accuracy questions, read <a class="underline underline-offset-4" href="/accuracy/">how accuracy works</a>.</p>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/contact/" jsonLd={jsonLd}>
+  <Article title={title} intro="No public support email is published for this site yet." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact/' }]}>
+    <p class="mt-2">For microphone problems, the fastest help is the <a class="underline underline-offset-4" href="/microphone-not-working/">troubleshooting guide</a>. For accuracy questions, read <a class="underline underline-offset-4" href="/accuracy/">how accuracy works</a>. For background on the project, see <a class="underline underline-offset-4" href="/about/">about</a>.</p>
   </Article>
 </Layout>

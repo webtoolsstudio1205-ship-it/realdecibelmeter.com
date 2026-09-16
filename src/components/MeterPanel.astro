@@ -8,8 +8,8 @@ interface Props {
 const { dict } = Astro.props;
 ---
 
-<section id="measure" aria-label={dict.liveRegion} class="scroll-mt-20" data-st-idle={dict.statusIdle} data-st-req={dict.statusRequesting} data-st-run={dict.statusRunning} data-st-pause={dict.statusPaused} data-st-stop={dict.statusStopped} data-st-err={dict.statusError} data-p-unknown={dict.permUnknown} data-p-granted={dict.permGranted} data-p-denied={dict.permDenied} data-p-prompt={dict.permPrompt} data-cal-u={dict.calibrationUncal} data-cal-c={dict.calibrationCal} data-mic-default={dict.micDefault} data-s-calreq={dict.statusCalRequired} data-s-strength={dict.inputStrength} data-s-cta={dict.calibrateCta} data-s-dignote={dict.digitalNote} data-s-envavg={dict.statEnergyAvg} data-s-digavg={dict.statDigitalAvg} data-s-digpeak={dict.statDigitalPeak} data-s-cur={dict.statSoundCurrent} data-s-min={dict.statMin} data-s-max={dict.statMax}>
-  <h2 class="sr-only">Measure sound</h2>
+<section id="measure" aria-label={dict.liveRegion} class="scroll-mt-20" data-st-idle={dict.statusIdle} data-st-req={dict.statusRequesting} data-st-run={dict.statusRunning} data-st-pause={dict.statusPaused} data-st-stop={dict.statusStopped} data-st-err={dict.statusError} data-p-unknown={dict.permUnknown} data-p-granted={dict.permGranted} data-p-denied={dict.permDenied} data-p-prompt={dict.permPrompt} data-cal-u={dict.calibrationUncal} data-cal-c={dict.calibrationCal} data-mic-default={dict.micDefault}>
+  <h2 class="sr-only">{dict.navMeasure}</h2>
   <div id="rdm-panel" class="panel meter-card p-4 sm:p-6 md:p-8" data-live="false" data-state="idle">
     <div id="rdm-announcer" class="sr-only" role="status" aria-live="polite"></div>
 
@@ -19,7 +19,7 @@ const { dict } = Astro.props;
         <span id="rdm-state-text">{dict.statusIdle}</span>
       </span>
       <span id="rdm-cal-badge" class="chip chip-2 inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
-        Input Strength mode · Not calibrated
+        {dict.calibrationUncal}
       </span>
       <span class="chip chip-3 inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
         <span>{dict.micPermission}: </span><strong id="rdm-perm-text" class="font-semibold">{dict.permUnknown}</strong>
@@ -53,22 +53,26 @@ const { dict } = Astro.props;
         <span id="rdm-big" class="tabular font-semibold tracking-tight" style="font-size:clamp(56px,12vw,92px);line-height:1" aria-live="off">--</span>
         <span id="rdm-unit" class="text-sm font-medium" style="color:var(--muted)">%</span>
       </div>
-      <p id="rdm-mode-status" class="meter-status">Calibration required for environmental dB</p>
-      <button id="rdm-cta-cal" type="button" class="btn-secondary focus-ring mt-4">Calibrate for environmental dB</button>
+      <p id="rdm-mode-status" class="meter-status">{dict.statusCalRequired}</p>
+      <button id="rdm-cta-cal" type="button" class="btn-secondary focus-ring mt-4">{dict.calibrateCta}</button>
       </div>
 
       <div class="meter-controls flex flex-wrap justify-center gap-2" role="group" aria-label="Transport">
         <button id="rdm-start" type="button" class="btn-primary focus-ring grad-edge">{dict.btnStartMeasuring}</button>
         <button id="rdm-req" type="button" class="btn-primary focus-ring" disabled hidden>
           <svg class="mic-pulse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
-          <span id="rdm-req-text">Requesting Microphone…</span>
+          <span id="rdm-req-text">{dict.statusRequesting}</span>
         </button>
-        <button id="rdm-cancel" type="button" class="btn-secondary focus-ring" hidden>Cancel</button>
+        <button id="rdm-stab" type="button" class="btn-primary focus-ring" disabled hidden>
+          <svg class="mic-pulse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
+          <span>Stabilizing…</span>
+        </button>
+        <button id="rdm-cancel" type="button" class="btn-secondary focus-ring" hidden>{dict.btnCancel}</button>
         <button id="rdm-pause" type="button" class="btn-square focus-ring" hidden>{dict.btnPause}</button>
         <button id="rdm-resume" type="button" class="btn-square focus-ring" hidden>{dict.btnResume}</button>
         <button id="rdm-stop" type="button" class="btn-square focus-ring" hidden>{dict.btnStop}</button>
         <button id="rdm-start-new" type="button" class="btn-primary focus-ring grad-edge" hidden>{dict.btnStartNew}</button>
-        <button id="rdm-save" type="button" class="btn-secondary focus-ring" hidden>Save Session</button>
+        <button id="rdm-save" type="button" class="btn-secondary focus-ring" hidden>{dict.btnSave}</button>
         <button id="rdm-reset" type="button" class="btn-square focus-ring" hidden>{dict.btnReset}</button>
         <button id="rdm-retry" type="button" class="btn-square focus-ring" hidden>{dict.btnRetry}</button>
         <button id="rdm-dismiss" type="button" class="btn-square focus-ring" hidden>{dict.btnDismiss}</button>
@@ -76,14 +80,29 @@ const { dict } = Astro.props;
       </div>
 
       <dl id="rdm-stats" class="stats-grid meter-stats">
-        <div class="panel-raised p-3"><dt id="rdm-l1" class="eyebrow">Current strength</dt><dd id="rdm-s1" class="tabular text-2xl font-semibold mt-1">--</dd></div>
-        <div class="panel-raised p-3"><dt id="rdm-l2" class="eyebrow">Average strength</dt><dd id="rdm-s2" class="tabular text-2xl font-semibold mt-1">--</dd></div>
-        <div class="panel-raised p-3"><dt id="rdm-l3" class="eyebrow">Peak strength</dt><dd id="rdm-s3" class="tabular text-2xl font-semibold mt-1">--</dd></div>
-        <div class="panel-raised p-3"><dt id="rdm-l4" class="eyebrow">Duration</dt><dd id="rdm-s4" class="tabular text-2xl font-semibold mt-1">00:00</dd></div>
-        <div id="rdm-stat-5" class="panel-raised p-3" hidden><dt id="rdm-l5" class="eyebrow">Duration</dt><dd id="rdm-s5" class="tabular text-2xl font-semibold mt-1">00:00</dd></div>
+        <div class="panel-raised p-3"><dt id="rdm-l1" class="eyebrow">Current Strength</dt><dd id="rdm-s1" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3"><dt id="rdm-l2" class="eyebrow">Average Strength</dt><dd id="rdm-s2" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3"><dt id="rdm-l3" class="eyebrow">Peak Strength</dt><dd id="rdm-s3" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3"><dt id="rdm-l4" class="eyebrow">{dict.statDuration}</dt><dd id="rdm-s4" class="tabular text-2xl font-semibold mt-1">00:00</dd></div>
+        <div id="rdm-stat-5" class="panel-raised p-3" hidden><dt id="rdm-l5" class="eyebrow">{dict.statDuration}</dt><dd id="rdm-s5" class="tabular text-2xl font-semibold mt-1">00:00</dd></div>
       </dl>
     </div>
     <p id="rdm-save-msg" class="text-xs text-center mt-2" style="color:var(--muted)" role="status"></p>
+
+    <section id="rdm-quality" class="mt-6 panel-raised p-4" aria-labelledby="rdm-quality-title">
+      <h4 id="rdm-quality-title" class="eyebrow mb-2">Measurement quality</h4>
+      <dl class="text-sm grid gap-x-4 gap-y-1 sm:grid-cols-2">
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Overall</dt><dd id="rdm-q-overall" class="tabular text-right font-medium">Ready</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Calibration</dt><dd id="rdm-q-cal" class="tabular text-right">Not calibrated</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Signal</dt><dd id="rdm-q-signal" class="tabular text-right">—</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Browser processing</dt><dd id="rdm-q-proc" class="tabular text-right">—</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Sample rate</dt><dd id="rdm-q-rate" class="tabular text-right">—</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Channels</dt><dd id="rdm-q-chan" class="tabular text-right">—</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Active duration</dt><dd id="rdm-q-dur" class="tabular text-right">00:00</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Processing gaps</dt><dd id="rdm-q-gaps" class="tabular text-right">0</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Last calibration</dt><dd id="rdm-q-caldate" class="tabular text-right">—</dd></div>
+      </dl>
+    </section>
 
     <div id="rdm-error" class="hidden mt-4 rounded-xl p-4" role="alert" style="border:1px solid var(--border);background:var(--raised)">
       <p id="rdm-error-title" class="font-semibold text-[15px]"></p>
@@ -160,7 +179,7 @@ const { dict } = Astro.props;
           <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-refdur" value="30" checked /> 30 s</label>
           <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-refdur" value="60" /> 60 s</label>
           <button id="rdm-ref-start" type="button" class="btn-square focus-ring">Capture</button>
-          <button id="rdm-ref-cancel" type="button" class="btn-square focus-ring">Cancel</button>
+          <button id="rdm-ref-cancel" type="button" class="btn-square focus-ring">{dict.btnCancel}</button>
         </div>
         <p id="rdm-ref-progress" class="text-xs mt-1" style="color:var(--muted)"></p>
         <div class="grid gap-2 sm:grid-cols-2 mt-2">
@@ -256,7 +275,7 @@ const { dict } = Astro.props;
   import { DecibelEngine } from '../lib/engine.js';
   import { formatDb, formatDuration } from '../lib/dsp.js';
   import { dbToY, seriesToAreaPath, seriesToPath } from '../lib/graph.js';
-  import { digitalDiagnostics, publicGauge, publicGraph, publicStats, transportControls } from '../lib/presentation.js';
+  import { digitalDiagnostics, publicGauge, publicGraph, publicMeasurementMode, publicStats, transportControls } from '../lib/presentation.js';
   import { buildExportSession, sessionToCsv, sessionToJson, downloadText } from '../lib/export-format.js';
   import { loadHistory, saveSession, clearHistory } from '../lib/history.js';
   import { describeError } from '../lib/errors.js';
@@ -269,6 +288,7 @@ const { dict } = Astro.props;
   const STATUS = () => ({
     idle: T('data-st-idle', 'Idle'),
     'requesting-permission': T('data-st-req', 'Requesting permission…'),
+    stabilizing: 'Stabilizing…',
     running: T('data-st-run', 'Measuring'),
     paused: T('data-st-pause', 'Paused'),
     stopped: T('data-st-stop', 'Stopped'),
@@ -288,7 +308,7 @@ const { dict } = Astro.props;
     tickLo: $('rdm-tick-lo'), tickMid: $('rdm-tick-mid'), tickHi: $('rdm-tick-hi'),
     big: $('rdm-big'), unit: $('rdm-unit'), modeStatus: $('rdm-mode-status'),
     ctaCal: $('rdm-cta-cal'),
-    start: $('rdm-start'), req: $('rdm-req'), cancel: $('rdm-cancel'), pause: $('rdm-pause'), resume: $('rdm-resume'),
+    start: $('rdm-start'), req: $('rdm-req'), stab: $('rdm-stab'), cancel: $('rdm-cancel'), pause: $('rdm-pause'), resume: $('rdm-resume'),
     stop: $('rdm-stop'), startNew: $('rdm-start-new'), save: $('rdm-save'), reset: $('rdm-reset'),
     retry: $('rdm-retry'), dismiss: $('rdm-dismiss'), customize: $('rdm-customize'), saveMsg: $('rdm-save-msg'),
     err: $('rdm-error'), errTitle: $('rdm-error-title'), errMsg: $('rdm-error-msg'), errFix: $('rdm-error-fix'),
@@ -313,6 +333,8 @@ const { dict } = Astro.props;
     dCur: $('rdm-d-cur'), dMin: $('rdm-d-min'), dAvg: $('rdm-d-avg'), dMax: $('rdm-d-max'), dPeak: $('rdm-d-peak'),
     diagnosticPath: $('rdm-diagnostic-path'), diagnostics: $('rdm-diagnostics'),
     relState: $('rdm-rel-state'), relCap: $('rdm-rel-cap'), relClear: $('rdm-rel-clear'), relMsg: $('rdm-rel-msg'),
+    qOverall: $('rdm-q-overall'), qCal: $('rdm-q-cal'), qSignal: $('rdm-q-signal'), qProc: $('rdm-q-proc'),
+    qRate: $('rdm-q-rate'), qChan: $('rdm-q-chan'), qDur: $('rdm-q-dur'), qGaps: $('rdm-q-gaps'), qCalDate: $('rdm-q-caldate'),
   };
 
   const specFills = Array.from(document.querySelectorAll('#rdm-spec .spec-fill'));
@@ -394,7 +416,7 @@ const { dict } = Astro.props;
     }
     els.gaugeGlow.style.opacity = (0.15 + shownFrac * 0.55).toFixed(2);
     const st = latest.state;
-    if (st === 'running' || st === 'paused' || st === 'requesting-permission') {
+    if (st === 'running' || st === 'paused' || st === 'stabilizing' || st === 'requesting-permission') {
       rafId = requestAnimationFrame(rafTick);
     }
   }
@@ -402,7 +424,7 @@ const { dict } = Astro.props;
   function ensureRaf() {
     if (rafId || REDUCED || !latest) return;
     const st = latest.state;
-    if (st === 'running' || st === 'paused' || st === 'requesting-permission') {
+    if (st === 'running' || st === 'paused' || st === 'stabilizing' || st === 'requesting-permission') {
       lastFrame = 0;
       rafId = requestAnimationFrame(rafTick);
     }
@@ -515,6 +537,7 @@ const { dict } = Astro.props;
     const show = (el, on) => { el.hidden = !on; };
     show(els.start, active.has('start'));
     show(els.req, active.has('requesting'));
+    show(els.stab, active.has('stabilizing'));
     show(els.cancel, active.has('cancel'));
     show(els.pause, active.has('pause'));
     show(els.resume, active.has('resume'));
@@ -590,6 +613,41 @@ const { dict } = Astro.props;
     els.metaR.textContent = s.response;
   }
 
+  function updateQuality(s) {
+    const mode = publicMeasurementMode(s);
+    // Overall: Ready / Check setup / Not calibrated / Invalid reading (never a fake accuracy %).
+    let overall = 'Ready';
+    if (s.state === 'error') overall = 'Check setup';
+    else if (mode === 'input-strength' && (s.state === 'running' || s.state === 'stabilizing' || s.state === 'paused')) overall = 'Not calibrated';
+    else if ((s.state === 'running' || s.state === 'stabilizing') && s.stats.current == null) overall = 'Invalid reading';
+    els.qOverall.textContent = overall;
+    els.qCal.textContent = s.calibrationValid && s.activeProfile
+      ? `Calibrated (${s.activeProfile.offsetDb >= 0 ? '+' : ''}${s.activeProfile.offsetDb.toFixed(1)} dB)`
+      : 'Not calibrated';
+    // Signal: Stable / Variable / Below measurement floor / Clipping / Disconnected.
+    let signal = '—';
+    if (s.state === 'error' && s.error === 'device-disconnected') signal = 'Disconnected';
+    else if (s.state === 'running' || s.state === 'paused' || s.state === 'stabilizing') {
+      const peak = s.stats.peakDb;
+      if (s.stats.current == null || !Number.isFinite(s.stats.current)) signal = 'Below measurement floor';
+      else if (Number.isFinite(peak) && peak >= -0.5) signal = 'Clipping';
+      else if (s.stats.current <= -90) signal = 'Below measurement floor';
+      else if (s.gapMs > 2000 || s.stats.gapCount > 2) signal = 'Variable';
+      else signal = 'Stable';
+    }
+    els.qSignal.textContent = signal;
+    els.qProc.textContent = s.sampleRate
+      ? `EC ${s.processing.echoCancellation} / NS ${s.processing.noiseSuppression} / AGC ${s.processing.autoGainControl}`
+      : '—';
+    els.qRate.textContent = s.sampleRate ? `${s.sampleRate} Hz` : '—';
+    els.qChan.textContent = s.sampleRate ? String(s.channelCount) : '—';
+    els.qDur.textContent = formatDuration(s.stats.durationSec);
+    els.qGaps.textContent = s.stats.gapCount > 0 ? `${s.stats.gapCount} (${(s.gapMs / 1000).toFixed(1)} s)` : '0';
+    els.qCalDate.textContent = s.activeProfile?.calibrationDateIso
+      ? DATE_ONLY.format(new Date(s.activeProfile.calibrationDateIso))
+      : '—';
+  }
+
   const unsubscribe = engine.subscribe((s) => {
     latest = s;
     const st = s.state;
@@ -602,7 +660,7 @@ const { dict } = Astro.props;
     els.permText.textContent = permMap[s.permission] ?? s.permission;
     els.calBadge.textContent = s.calibrationValid && s.activeProfile
       ? `${T('data-cal-c', 'Calibrated')} (${s.activeProfile.offsetDb >= 0 ? '+' : ''}${s.activeProfile.offsetDb.toFixed(1)} dB)`
-      : 'Input Strength mode · Not calibrated';
+      : T('data-cal-u', 'Uncalibrated — showing microphone input strength, not environmental dB');
 
     // Stop completion animation + pause dimming are CSS-driven via data-state/classes.
     if (prevState !== 'stopped' && st === 'stopped') {
@@ -618,7 +676,11 @@ const { dict } = Astro.props;
     if ((prevState === 'idle' || prevState === 'stopped') && st === 'requesting-permission') {
       pauseMarkers = [];
     }
-    if (prevState === 'requesting-permission' && st === 'running' && !REDUCED) {
+    if (prevState === 'requesting-permission' && (st === 'stabilizing' || st === 'running') && !REDUCED) {
+      els.panel.classList.add('permission-granted');
+      setTimeout(() => els.panel.classList.remove('permission-granted'), 620);
+    }
+    if (prevState === 'stabilizing' && st === 'running' && !REDUCED) {
       els.panel.classList.add('permission-granted');
       setTimeout(() => els.panel.classList.remove('permission-granted'), 620);
     }
@@ -639,6 +701,7 @@ const { dict } = Astro.props;
     updateMainMeta(s);
     updateStats(s);
     updateModal(s);
+    updateQuality(s);
 
     // Spectrum bars rise from ACTUAL microphone FFT data only.
     const live = st === 'running' && s.spectrumDb.length;

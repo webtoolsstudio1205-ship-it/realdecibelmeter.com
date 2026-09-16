@@ -91,3 +91,20 @@ Source-backed checks: public presentation tests assert −53.2 → 46.8% (render
 diagnostic −53.2 dBFS value, +113.2 offset → 60.0 dBA, mismatched-profile fallback, both graph
 scales, control exclusivity, Start/Customize wiring, cleanup, and reduced-motion CSS. Engine tests
 assert microphone disposal on Stop and on a cancelled permission request that resolves late.
+
+## 2026-09-16 re-verification
+- `spec-compliance.test.ts` (17 tests) additionally asserts: exact Current/Average/Peak Strength
+  labels, no A/C/Z badge in input-strength mode, calibration CTA opens settings, stabilizing
+  controls, stabilization-sample exclusion (0 samples mid-window, 24000 after), silence safety,
+  clipping/gap detection, 40+60 dB energy average approx 57.0329 dB, no skeleton markup.
+- Localhost DOM scan at :4321: all required strings present (hero, strength labels, stabilizing
+  indicator, quality panel, diagnostics), all banned strings absent (mode popup, digital-stat
+  labels, old uncalibrated copy). No console/server errors in dev logs. Physical microphone
+  completion and visual viewport screenshots remain MANUAL REQUIRED (no browser harness here).
+
+## 2026-09-16 pass (this session)
+- Fixed a real leak: 10 dead `data-s-*` attributes rendered `Digital energy average` /
+  `Digital peak` into public homepage HTML. Removed them plus 10 dead i18n keys (all locales).
+- New regression test scopes the public markup (before `rdm-diagnostics`) and fails on any banned
+  label outside Digital Diagnostics.
+- Added and verified 404 + 500 error pages (one H1 each, noindex, recovery links).

@@ -1,0 +1,35 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, breadcrumbJsonLd } from '../../lib/seo';
+const dict = getDict('en');
+const title = 'Sound-Measurement Guide Hub';
+const description = 'Learn to measure, calibrate and interpret browser sound levels: how the meter works, accuracy, calibration, decibel chart and privacy.';
+const url = `${SITE}/guides/`;
+const jsonLd = [breadcrumbJsonLd([{ name: 'Home', url: `${SITE}/` }, { name: 'Guides', url }])];
+const items = [
+  { href: '/how-to-use/', t: 'How to use the online decibel meter', d: 'Permissions, placement, reading the panel and exporting sessions.' },
+  { href: '/methodology/', t: 'How browser sound measurement works', d: 'Microphone access, local processing, RMS, dBFS, weighting, Leq.' },
+  { href: '/calibration/', t: 'How to calibrate a browser decibel meter', d: 'Reference equipment, placement, offsets, profiles and mistakes.' },
+  { href: '/accuracy/', t: 'Browser decibel-meter accuracy and limitations', d: 'Hardware variation, AGC, mobile vs desktop, certified meters.' },
+  { href: '/decibel-chart/', t: 'Decibel comparison chart', d: 'Approximate everyday sound levels from 30 to 120 dBA.' },
+  { href: '/db-vs-dba/', t: 'dB vs dBA: weighting explained', d: 'A, C and Z weighting plus Fast and Slow response.' },
+  { href: '/microphone-not-working/', t: 'Microphone troubleshooting', d: 'Denied, missing, busy or disconnected inputs.' },
+  { href: '/privacy/', t: 'Microphone and audio-processing privacy', d: 'Local processing, permissions, storage and hosting.' },
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/guides/" jsonLd={jsonLd}>
+  <Article title={title} intro="One hub for every sound-measurement guide: start with the working meter, then go deeper where you need it." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }]}>
+    <div class="grid gap-3 sm:grid-cols-2">
+      {items.map((g) => (
+        <a href={g.href} class="panel-raised p-4 focus-ring block hover:opacity-90" style="border-radius:10px">
+          <h2 class="font-semibold text-[15px] text-white">{g.t}</h2>
+          <p class="text-sm mt-1">{g.d}</p>
+        </a>
+      ))}
+    </div>
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a></p>
+  </Article>
+</Layout>

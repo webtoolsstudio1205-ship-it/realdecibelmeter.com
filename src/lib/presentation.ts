@@ -1,6 +1,26 @@
 import { digitalToInputStrength, formatDb, formatDuration } from './dsp.js';
 import type { EngineSnapshot, MeasurementState } from './types.js';
 
+/**
+ * Authoritative two-mode public presentation model.
+ * - "input-strength": no compatible calibration — percentages only, never dB/SPL.
+ * - "calibrated-spl": compatible profile active — estimated dBA/dBC/dBZ.
+ * Determined centrally here; components must not guess the mode themselves.
+ */
+export type PublicMeasurementMode =
+  | 'input-strength'
+  | 'calibrated-spl';
+
+export const DIGITAL_FLOOR_DBFS = -100;
+
+export function publicMeasurementMode(
+  s: Pick<EngineSnapshot, 'calibrationValid' | 'result'>,
+): PublicMeasurementMode {
+  return s.calibrationValid && s.result.kind === 'calibrated'
+    ? 'calibrated-spl'
+    : 'input-strength';
+}
+
 export type PublicGauge = {
   calibrated: boolean;
   value: number | null;
@@ -64,9 +84,9 @@ export function publicStats(s: EngineSnapshot): PublicStat[] {
     return pct == null ? '--' : `${pct.toFixed(0)}%`;
   };
   return [
-    { label: 'Current strength', value: strength(s.stats.current) },
-    { label: 'Average strength', value: strength(s.stats.leq) },
-    { label: 'Peak strength', value: strength(Number.isFinite(s.stats.peakDb) ? s.stats.peakDb : null) },
+    { label: 'Current Strength', value: strength(s.stats.current) },
+    { label: 'Average Strength', value: strength(s.stats.leq) },
+    { label: 'Peak Strength', value: strength(Number.isFinite(s.stats.peakDb) ? s.stats.peakDb : null) },
     { label: 'Duration', value: formatDuration(s.stats.durationSec) },
   ];
 }
@@ -98,6 +118,7 @@ export function transportControls(state: MeasurementState): string[] {
   switch (state) {
     case 'idle': return ['start', 'customize'];
     case 'requesting-permission': return ['requesting', 'cancel'];
+    case 'stabilizing': return ['stabilizing', 'stop', 'customize'];
     case 'running': return ['pause', 'stop', 'customize'];
     case 'paused': return ['resume', 'stop', 'customize'];
     case 'stopped': return ['start-new', 'save', 'reset'];

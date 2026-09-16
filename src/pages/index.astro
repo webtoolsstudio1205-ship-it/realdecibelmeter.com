@@ -2,21 +2,33 @@
 import Layout from '../components/Layout.astro';
 import MeterPanel from '../components/MeterPanel.astro';
 import { getDict } from '../i18n/dictionaries';
+import { SITE, webAppJsonLd, faqJsonLd, breadcrumbJsonLd } from '../lib/seo';
 
 const locale = 'en';
 const dict = getDict(locale);
 
+const jsonLd = [
+  webAppJsonLd({
+    name: 'Online Decibel Meter',
+    url: `${SITE}/`,
+    description: dict.metaDescription,
+    inLanguage: 'en',
+  }),
+  faqJsonLd(dict.faq),
+  breadcrumbJsonLd([{ name: 'Home', url: `${SITE}/` }]),
+];
+
 const guides = [
-  { href: '/accuracy/', t: 'Accuracy', d: 'What browser estimates can and cannot claim.' },
-  { href: '/calibration/', t: 'Calibration', d: 'Add an offset from a known reference.' },
-  { href: '/methodology/', t: 'Methodology', d: 'How the Web Audio pipeline computes levels.' },
-  { href: '/how-to-use/', t: 'How to use', d: 'Permissions, placement and best practice.' },
-  { href: '/microphone-not-working/', t: 'Microphone help', d: 'Fix denied, busy or missing inputs.' },
-  { href: '/decibel-chart/', t: 'Decibel chart', d: 'Typical everyday sound levels.' },
+  { href: '/calibration/', t: 'Calibration', d: 'Calibrate your microphone with a known reference before trusting dBA estimates.' },
+  { href: '/accuracy/', t: 'Browser measurement accuracy', d: 'What browser estimates can and cannot claim — and when to use a certified meter.' },
+  { href: '/methodology/', t: 'How the meter works', d: 'RMS, dBFS, weighting, Fast/Slow response and Leq, explained from the real pipeline.' },
+  { href: '/decibel-chart/', t: 'Decibel comparison chart', d: 'Understand decibel levels with approximate everyday examples.' },
+  { href: '/db-vs-dba/', t: 'dB vs dBA', d: 'What A, C and Z weighting mean and which one to pick.' },
+  { href: '/privacy/', t: 'Microphone privacy', d: 'How local audio processing keeps recordings on your device.' },
 ];
 ---
 
-<Layout locale={locale} dict={dict} title={dict.metaTitle} description={dict.metaDescription} path="/">
+<Layout locale={locale} dict={dict} title={dict.metaTitle} description={dict.metaDescription} path="/" jsonLd={jsonLd}>
   <div class="home-hero">
     <div class="hero-grid" aria-hidden="true"></div>
     <div class="hero-orb hero-orb-a" aria-hidden="true"></div>
@@ -25,12 +37,9 @@ const guides = [
       <path d="M0 55 C80 55 92 31 156 31 S248 74 316 56 402 36 468 53 552 78 620 48 704 25 782 55 862 72 930 45 1008 52 1086 63 1120 48 1120 48" />
     </svg>
     <div class="container-x hero-copy">
-      <p class="eyebrow anim-rise" style="--d:40ms">PRIVATE • REAL-TIME • NO DOWNLOAD</p>
-      <h1 class="hero-title mt-2" aria-label="Measure Sound Instantly">
-        <span class="anim-rise" style="--d:90ms">Measure Sound</span>
-        <span class="hero-title-second anim-rise" style="--d:140ms">Instantly</span>
-      </h1>
-      <p class="hero-sub anim-rise" style="--d:190ms">Check microphone input strength immediately, or calibrate your device for estimated environmental sound levels.</p>
+      <p class="eyebrow anim-rise" style="--d:40ms">{dict.heroEyebrow}</p>
+      <h1 class="hero-title mt-2">{dict.heroH1}</h1>
+      <p class="hero-sub anim-rise" style="--d:190ms">{dict.heroSub}</p>
       <div class="hero-actions anim-rise" style="--d:240ms">
         <a href="#measure" class="btn-primary focus-ring">{dict.startMeasuring}</a>
         <a href="/accuracy/" class="btn-secondary focus-ring">{dict.howAccuracy}</a>
@@ -45,9 +54,80 @@ const guides = [
 
   <div class="container-x pb-4" style="max-width:1120px">
     <MeterPanel dict={dict} />
+    <p class="mt-3 text-sm" style="color:var(--muted);max-width:78ch">
+      Uncalibrated percentage readings show microphone input strength, not environmental sound pressure.
+      Calibrated environmental readings in dBA, dBC or dBZ depend on your device and calibration.
+      This free <a class="underline underline-offset-4 focus-ring" href="/methodology/">online sound meter</a>
+      works as a sound level meter and noise level meter for quick checks — not as a certified instrument.
+    </p>
   </div>
 
   <div class="container-x py-8 grid gap-4" style="max-width:1120px">
+    <section class="panel p-6" data-reveal aria-labelledby="measure-browser">
+      <h2 id="measure-browser" class="text-xl font-semibold tracking-tight">Measure sound in your browser</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
+        This online decibel meter reads your microphone through the Web Audio API and shows live input strength immediately —
+        no download, no account. Press <a class="underline underline-offset-4 focus-ring" href="#measure">Start Measuring</a>,
+        grant permission once, and watch current, average and peak values on the live graph.
+        For an estimated environmental sound level, <a class="underline underline-offset-4 focus-ring" href="/calibration/">calibrate your microphone</a> against a known reference first.
+      </p>
+    </section>
+
+    <section class="panel p-6" data-reveal aria-labelledby="how">
+      <h2 id="how" class="text-xl font-semibold tracking-tight">How the online decibel meter works</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
+        Each audio block is reduced to an RMS value, converted to a level in dB, corrected for the selected
+        frequency weighting, smoothed with Fast (125&nbsp;ms) or Slow (1&nbsp;s) time response, and aggregated into an
+        energy-average Leq. Uncalibrated output is microphone input strength; a saved offset turns it into an estimated
+        environmental reading. Read the full <a class="underline underline-offset-4 focus-ring" href="/methodology/">methodology</a>.
+      </p>
+    </section>
+
+    <section class="panel p-6" data-reveal aria-labelledby="understand">
+      <h2 id="understand" class="text-xl font-semibold tracking-tight">Understanding your measurement</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
+        Raw digital readings (dBFS) are negative because full scale is zero — silence sits near −100 and loud input approaches 0.
+        This meter maps that range to a 0–100% input-strength display so it stays readable. Environmental decibels work the other
+        way: a quiet bedroom is around 30&nbsp;dBA and normal conversation near 60&nbsp;dBA.
+        See <a class="underline underline-offset-4 focus-ring" href="/decibel-chart/">understand decibel levels</a> for approximate examples.
+      </p>
+    </section>
+
+    <section class="panel p-6" data-reveal aria-labelledby="cal">
+      <h2 id="cal" class="text-xl font-semibold tracking-tight">Calibrating for estimated environmental decibels</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
+        Every microphone has different gain, so calibration is required before any dBA number can be trusted.
+        Place the device where you will measure, play or compare a stable reference of known level, enter the difference as an
+        offset, and keep the same microphone, position and settings. Profiles are device-specific and stop applying when the
+        setup changes. Follow the <a class="underline underline-offset-4 focus-ring" href="/calibration/">calibration guide</a>.
+      </p>
+    </section>
+
+    <section class="panel p-6" data-reveal aria-labelledby="weighting">
+      <h2 id="weighting" class="text-xl font-semibold tracking-tight">What A, C and Z weighting mean</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
+        Sound-level weighting shapes which frequencies count most. A-weighting (dBA) approximates human hearing and is the
+        default for everyday checks; C-weighting (dBC) stays flatter near loud peaks; Z-weighting (dBZ) counts all frequencies
+        equally. Fast response follows peaks, Slow smooths them. Compare them in
+        <a class="underline underline-offset-4 focus-ring" href="/db-vs-dba/"> dB vs dBA</a>.
+      </p>
+    </section>
+
+    <section class="panel p-6" data-reveal aria-labelledby="acc">
+      <h2 id="acc" class="text-xl font-semibold tracking-tight">Browser measurement accuracy</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">{dict.accBody}</p>
+      <p class="mt-3"><a href="/accuracy/" class="focus-ring underline underline-offset-4 text-sm">Read the full browser measurement accuracy guide →</a></p>
+    </section>
+
+    <section class="panel p-6" data-reveal aria-labelledby="privacy-home">
+      <h2 id="privacy-home" class="text-xl font-semibold tracking-tight">Microphone privacy</h2>
+      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
+        The browser processes microphone samples locally; this site uploads no recordings and sets no tracking cookies for
+        measurement. Saved session history stays in this browser. Details in
+        <a class="underline underline-offset-4 focus-ring" href="/privacy/">microphone privacy</a>.
+      </p>
+    </section>
+
     <section class="panel p-6" data-reveal aria-labelledby="steps">
       <h2 id="steps" class="text-xl font-semibold tracking-tight">{dict.stepsTitle}</h2>
       <ol class="mt-4 grid gap-4 md:grid-cols-3">
@@ -55,26 +135,7 @@ const guides = [
         <li class="panel-raised p-4"><p class="font-mono text-xs" style="color:var(--muted)">02</p><h3 class="font-semibold mt-1">{dict.step2t}</h3><p class="text-sm mt-1" style="color:var(--muted)">{dict.step2d}</p></li>
         <li class="panel-raised p-4"><p class="font-mono text-xs" style="color:var(--muted)">03</p><h3 class="font-semibold mt-1">{dict.step3t}</h3><p class="text-sm mt-1" style="color:var(--muted)">{dict.step3d}</p></li>
       </ol>
-    </section>
-
-    <section class="grid gap-4 md:grid-cols-2" aria-label="Features and privacy">
-      <article class="panel p-6" data-reveal aria-labelledby="features">
-        <p class="eyebrow">Features</p>
-        <h2 id="features" class="text-xl font-semibold tracking-tight mt-1">One honest meter, two clear modes</h2>
-        <p class="text-[15px] leading-7 mt-2" style="color:var(--muted)">Use input strength on any compatible microphone. Add a device-specific reference profile only when you need an estimated environmental sound level.</p>
-      </article>
-      <article class="panel p-6" data-reveal aria-labelledby="privacy-home">
-        <p class="eyebrow">Privacy</p>
-        <h2 id="privacy-home" class="text-xl font-semibold tracking-tight mt-1">Audio stays on your device</h2>
-        <p class="text-[15px] leading-7 mt-2" style="color:var(--muted)">The browser processes microphone samples locally. The site does not upload recordings, and saved session history remains in this browser.</p>
-      </article>
-    </section>
-
-    <section class="panel p-6" data-reveal aria-labelledby="acc">
-      <p class="eyebrow">Estimate, not a certified meter</p>
-      <h2 id="acc" class="text-xl font-semibold tracking-tight mt-1">{dict.accTitle}</h2>
-      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{dict.accBody}</p>
-      <p class="mt-3"><a href="/accuracy/" class="focus-ring underline underline-offset-4 text-sm">Read the full accuracy guide →</a></p>
+      <p class="mt-3 text-sm" style="color:var(--muted)">New here? Read <a class="underline underline-offset-4 focus-ring" href="/how-to-use/">how to use the meter</a> or fix <a class="underline underline-offset-4 focus-ring" href="/microphone-not-working/">microphone problems</a>.</p>
     </section>
 
     <section class="panel p-6" data-reveal aria-labelledby="trouble">
@@ -89,7 +150,7 @@ const guides = [
     </section>
 
     <section class="panel p-6" data-reveal aria-labelledby="faq">
-      <h2 id="faq" class="text-xl font-semibold tracking-tight">{dict.faqTitle}</h2>
+      <h2 id="faq" class="text-xl font-semibold tracking-tight">Common questions</h2>
       <div class="mt-3 grid gap-2">
         {dict.faq.map((f) => (
           <details class="panel-raised px-4" style="border-radius:10px">
@@ -101,7 +162,7 @@ const guides = [
     </section>
 
     <section data-reveal aria-labelledby="guides">
-      <h2 id="guides" class="text-xl font-semibold tracking-tight">{dict.guidesTitle}</h2>
+      <h2 id="guides" class="text-xl font-semibold tracking-tight">Decibel meter guides</h2>
       <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {guides.map((g) => (
           <a href={g.href} class="panel lift p-4 focus-ring block hover:opacity-90">
@@ -110,6 +171,7 @@ const guides = [
           </a>
         ))}
       </div>
+      <p class="mt-3 text-sm" style="color:var(--muted)">Browse the full <a class="underline underline-offset-4 focus-ring" href="/guides/">sound-measurement guide hub</a>.</p>
     </section>
   </div>
 </Layout>

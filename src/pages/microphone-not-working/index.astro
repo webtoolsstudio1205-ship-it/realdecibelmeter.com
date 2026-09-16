@@ -2,19 +2,31 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
 const dict = getDict('en');
+const title = 'Microphone Not Working? Fix It';
+const description = 'Fix denied permissions, missing devices, busy or disconnected microphones in the browser decibel meter.';
+const url = `${SITE}/microphone-not-working/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-16' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Microphone help', url },
+  ]),
+];
 ---
 
-<Layout locale="en" dict={dict} title="Microphone Not Working — Real Decibel Meter" description="Fix denied permissions, missing devices, busy or disconnected microphones." path="/microphone-not-working/">
-  <Article title="Microphone not working?" intro="Each failure on this site has its own message. Match yours below and follow the recovery.">
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/microphone-not-working/" jsonLd={jsonLd}>
+  <Article title={title} intro="Each failure on this site has its own message. Match yours below and follow the recovery." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Microphone help', href: '/microphone-not-working/' }]}>
     <ul class="space-y-4 mt-2">
-      <li><strong class="text-white">Permission denied.</strong> Open the lock/tune icon in the address bar → allow the microphone → press Start again.</li>
+      <li><strong class="text-white">Permission denied.</strong> Open the lock/tune icon in the address bar → allow the microphone → press Start again. Also check the OS privacy switch for microphone access.</li>
       <li><strong class="text-white">No microphone detected.</strong> Connect a device, check OS sound settings, reload, press Start.</li>
       <li><strong class="text-white">Microphone is busy.</strong> Close video calls, recorders or other tabs using the mic, then retry.</li>
       <li><strong class="text-white">Device disconnected.</strong> Reconnect, reselect it in the microphone list, press Start.</li>
-      <li><strong class="text-white">Browser not supported.</strong> Use a recent Chrome, Edge, Firefox or Safari on HTTPS or localhost.</li>
+      <li><strong class="text-white">Browser not supported.</strong> Use a recent Chrome, Edge, Firefox or Safari in a secure (HTTPS) context.</li>
       <li><strong class="text-white">Still stuck?</strong> Reload the page, try another microphone, and check OS-level mic privacy switches.</li>
     </ul>
-    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Back to the meter →</a></p>
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Back to the online decibel meter →</a> · <a class="underline underline-offset-4" href="/how-to-use/">How to use →</a></p>
   </Article>
 </Layout>

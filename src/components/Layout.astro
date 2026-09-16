@@ -1,6 +1,7 @@
 ---
 import type { Dict, Locale } from '../i18n/dictionaries';
 import { LOCALES } from '../i18n/dictionaries';
+import { SITE, homepageHreflang, ogLocaleFor } from '../lib/seo';
 import '../styles/global.css';
 
 interface Props {
@@ -9,19 +10,37 @@ interface Props {
   title: string;
   description: string;
   path: string;
+  robots?: string;
+  hreflang?: { hreflang: string; href: string }[];
+  jsonLd?: Record<string, unknown>[];
+  ogType?: string;
 }
 
 const { locale, dict, title, description, path } = Astro.props;
-const canonical = `https://realdecibelmeter.com${path}`;
+const robots = Astro.props.robots ?? 'index, follow';
+const ogType = Astro.props.ogType ?? 'website';
+const canonical = `${SITE}${path}`;
 const pagePath = path.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
-const KNOWN = ['/', '/accuracy/', '/calibration/', '/methodology/', '/how-to-use/', '/microphone-not-working/', '/decibel-chart/', '/db-vs-dba/', '/about/', '/contact/', '/privacy/', '/terms/'];
+const KNOWN = ['/', '/accuracy/', '/calibration/', '/methodology/', '/how-to-use/', '/microphone-not-working/', '/decibel-chart/', '/db-vs-dba/', '/about/', '/contact/', '/privacy/', '/terms/', '/guides/'];
 const isKnown = KNOWN.indexOf(pagePath) !== -1;
+const isHome = pagePath === '/';
 function langHref(code: Locale, base: string): string {
+  // Only homepages exist in every locale; guide pages fall back to the locale homepage
+  // so the switcher never links to a non-existent equivalent path.
   if (!isKnown) return base;
-  if (code === 'en') return pagePath;
-  return pagePath === '/' ? base : base.replace(/\/$/, '') + pagePath;
+  if (pagePath === '/') {
+    if (code === 'en') return pagePath;
+    return base;
+  }
+  return base;
 }
+// hreflang: full reciprocal cluster on homepages; self-only elsewhere (guides are en-only).
+const hreflangs = Astro.props.hreflang ?? (isHome ? homepageHreflang() : [{ hreflang: locale === 'en' ? 'en' : locale, href: canonical }]);
+const ogLocale = ogLocaleFor(locale as 'en' | 'de' | 'it' | 'ja' | 'es' | 'fr' | 'pt' | 'ko');
+const jsonLdBlocks = Astro.props.jsonLd ?? [];
 const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English';
+const homeHref = locale === 'en' ? '/' : `/${locale}/`;
+const measureHref = locale === 'en' ? '/#measure' : `/${locale}/#measure`;
 ---
 
 <!doctype html>
@@ -31,15 +50,26 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta id="theme-color" name="theme-color" content="#08090b" />
+    <meta name="robots" content={robots} />
     <link rel="canonical" href={canonical} />
-    <meta property="og:type" content="website" />
+    {hreflangs.map((h) => (
+      <link rel="alternate" hreflang={h.hreflang} href={h.href} />
+    ))}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="Real Decibel Meter" />
+    <meta property="og:locale" content={ogLocale} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content="https://realdecibelmeter.com/og-image.svg" />
+    <meta property="og:image:alt" content="Real Decibel Meter — browser sound level meter" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {jsonLdBlocks.map((block) => (
+      <script type="application/ld+json" set:html={JSON.stringify(block)} />
+    ))}
     <script is:inline>
       try {
         var t = localStorage.getItem('rdm-theme');
@@ -55,7 +85,7 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:px-3 focus:py-2 focus:rounded-md focus-ring" style="background:var(--raised);border:1px solid var(--border)">Skip to content</a>
     <header class="site-header sticky top-0 z-40" style="height:64px;background:color-mix(in srgb, var(--bg) 88%, transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border)">
       <div class="container-x flex items-center gap-3" style="height:64px">
-        <a href={locale === 'en' ? '/' : `/${locale}/`} class="brand focus-ring" aria-label="Real Decibel Meter home">
+        <a href={homeHref} class="brand focus-ring" aria-label="Real Decibel Meter home">
           <svg class="brand-mark" width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true">
             <rect class="bm-b1" x="2" y="13" width="3.5" height="6" rx="1.75" fill="currentColor" opacity="0.45"/>
             <rect class="bm-b2" x="7.5" y="9" width="3.5" height="14" rx="1.75" fill="currentColor" opacity="0.65"/>
@@ -66,8 +96,8 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
           <span class="brand-text font-semibold tracking-tight text-[15px]">Real Decibel Meter</span>
         </a>
         <nav class="ml-auto hidden md:flex items-center gap-1" aria-label="Primary">
-          <a href={locale === 'en' ? '/#measure' : `/${locale}/#measure`} class="nav-link px-3 py-2 rounded-full text-sm focus-ring" style="color:var(--muted)">{dict.navMeasure}</a>
-          <a href={locale === 'en' ? '/how-to-use/' : `/${locale}/`} class="nav-link px-3 py-2 rounded-full text-sm focus-ring" style="color:var(--muted)">{dict.navGuides}</a>
+          <a href={measureHref} class="nav-link px-3 py-2 rounded-full text-sm focus-ring" style="color:var(--muted)">{dict.navMeasure}</a>
+          <a href={locale === 'en' ? '/guides/' : homeHref} class="nav-link px-3 py-2 rounded-full text-sm focus-ring" style="color:var(--muted)">{dict.navGuides}</a>
         </nav>
         <div class="ml-auto md:ml-0 flex items-center gap-2">
           <div class="lang" style="position:relative">
@@ -79,7 +109,7 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
             <ul id="lang-menu" role="menu" aria-label="Language" hidden>
               {LOCALES.map((l) => (
                 <li role="none">
-                  <a role="menuitemradio" aria-checked={l.code === locale ? 'true' : 'false'} class="focus-ring" href={langHref(l.code, l.path)}>
+                  <a role="menuitemradio" aria-checked={l.code === locale ? 'true' : 'false'} class="focus-ring" href={langHref(l.code, l.path)} hreflang={l.code === 'en' ? 'en' : l.code}>
                     <span>{l.native}</span>
                     {l.code === locale && (
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
@@ -100,8 +130,8 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
       </div>
       <div id="mobile-menu" class="hidden md:hidden overflow-y-auto" style="background:var(--surface);border-bottom:1px solid var(--border);max-height:calc(100vh - 64px)">
         <nav class="container-x py-3 flex flex-col gap-1" aria-label="Mobile">
-          <a href={locale === 'en' ? '/#measure' : `/${locale}/#measure`} class="px-3 py-3 rounded-lg text-[15px] focus-ring" style="border:1px solid transparent">{dict.navMeasure}</a>
-          <a href={locale === 'en' ? '/how-to-use/' : `/${locale}/`} class="px-3 py-3 rounded-lg text-[15px] focus-ring">{dict.navGuides}</a>
+          <a href={measureHref} class="px-3 py-3 rounded-lg text-[15px] focus-ring" style="border:1px solid transparent">{dict.navMeasure}</a>
+          <a href={locale === 'en' ? '/guides/' : homeHref} class="px-3 py-3 rounded-lg text-[15px] focus-ring">{dict.navGuides}</a>
           <a href="/accuracy/" class="px-3 py-3 rounded-lg text-[15px] focus-ring" style="color:var(--muted)">Accuracy</a>
           <a href="/calibration/" class="px-3 py-3 rounded-lg text-[15px] focus-ring" style="color:var(--muted)">Calibration</a>
           <a href="/decibel-chart/" class="px-3 py-3 rounded-lg text-[15px] focus-ring" style="color:var(--muted)">Decibel chart</a>
@@ -120,7 +150,7 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
         <nav aria-label="Measure">
           <p class="eyebrow mb-3">Measure</p>
           <ul class="space-y-2 text-sm">
-            <li><a class="focus-ring underline-offset-4 hover:underline" href={locale === 'en' ? '/#measure' : `/${locale}/#measure`}>{dict.navMeasure}</a></li>
+            <li><a class="focus-ring underline-offset-4 hover:underline" href={measureHref}>{dict.navMeasure}</a></li>
             <li><a class="focus-ring underline-offset-4 hover:underline" href="/accuracy/">Accuracy</a></li>
             <li><a class="focus-ring underline-offset-4 hover:underline" href="/calibration/">Calibration</a></li>
             <li><a class="focus-ring underline-offset-4 hover:underline" href="/methodology/">Methodology</a></li>
@@ -148,6 +178,11 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
       <div style="border-top:1px solid var(--border)">
         <div class="container-x py-4 flex flex-wrap gap-2 items-center text-xs" style="color:var(--muted)">
           <span>© {new Date().getFullYear()} Real Decibel Meter. {dict.footerRights}</span>
+          <span class="ml-auto flex flex-wrap gap-2" aria-label="Languages">
+            {LOCALES.map((l) => (
+              <a class="focus-ring underline-offset-4 hover:underline" href={l.path} hreflang={l.code}>{l.native}</a>
+            ))}
+          </span>
         </div>
       </div>
     </footer>

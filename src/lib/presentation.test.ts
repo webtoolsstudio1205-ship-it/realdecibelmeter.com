@@ -1,6 +1,4 @@
-// @ts-expect-error Vitest runs in Node; the production project intentionally omits @types/node.
 import { readFileSync } from 'node:fs';
-// @ts-expect-error Vitest runs in Node; the production project intentionally omits @types/node.
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import type { EngineSnapshot } from './types.js';

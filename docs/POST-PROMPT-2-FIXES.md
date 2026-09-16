@@ -142,3 +142,23 @@ rendered dark/light browser review at 320×800, 390×844, 768×1024, and 1440×9
 found and fixed a 768px duplicate menu-button cascade and 320px brand wrapping. Live hardware
 permission completion remains a real-device limitation; deterministic engine tests cover stream
 release, cancellation, state transitions, and calibration math.
+
+## 2026-09-16 two-mode + stabilizing pass
+- `stabilizing` state added to the engine with a ~1.5 s discarded warm-up window; quanta inside
+  the window never reach session, graph, or reference capture (proven: 0 samples mid-window).
+- Central `PublicMeasurementMode` selector (`input-strength` | `calibrated-spl`) in
+  `presentation.ts`; components no longer guess the mode.
+- Public copy corrected: `Uncalibrated — showing microphone input strength, not environmental dB`,
+  `Calibration required for environmental dB`, Current/Average/Peak Strength, Save Session,
+  spec hero eyebrow/sub.
+- New Measurement Quality panel (overall, calibration, signal, processing, rate, channels,
+  duration, gaps, last calibration date).
+- Verified: Vitest 89/89 (8 files), `tsc --noEmit` pass, `astro build` 21 pages pass, dist SEO
+  re-verified (canonicals, hreflang, JSON-LD, sitemap, robots), localhost:4321 DOM scan all-pass
+  with zero banned strings and no server errors.
+
+## 2026-09-16 pass (this session)
+- Baseline: 89/89 tests, clean typecheck, 21-page build — zero initial failures.
+- Removed dead `data-s-*` attributes + dead i18n keys; added `500.astro`, verified `404.astro`,
+  excluded both from the sitemap.
+- Final: Vitest 91/91, typecheck pass, 22-page build pass, localhost + error-page checks all-pass.

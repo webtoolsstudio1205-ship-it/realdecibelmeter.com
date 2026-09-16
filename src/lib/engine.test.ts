@@ -87,12 +87,13 @@ class FakeCapture implements CaptureController {
   }
 }
 
-function harness() {
+function harness(opts: { stabilizeMs?: number } = {}) {
   let t = 1_000_000;
   const fakes: FakeCapture[] = [];
   const engine = new DecibelEngine({
     now: () => t,
     uiThrottleMs: 0,
+    stabilizeMs: opts.stabilizeMs ?? 0,
     createCapture: () => {
       const f = new FakeCapture();
       fakes.push(f);

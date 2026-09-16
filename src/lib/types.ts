@@ -7,6 +7,7 @@ import type { GapRecord, SegmentSummary } from './session.js';
 export type MeasurementState =
   | 'idle'
   | 'requesting-permission'
+  | 'stabilizing'
   | 'running'
   | 'paused'
   | 'stopped'

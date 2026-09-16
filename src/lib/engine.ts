@@ -45,6 +45,9 @@ export interface EngineOptions {
   now?: () => number;
   /** Max UI emit rate; DSP quanta are never dropped, only listener emits throttle. */
   uiThrottleMs?: number;
+  /** Stabilization window after capture starts (ms). Samples inside it are
+   * discarded from public statistics. Default 1500 (≈1–2 s per spec). */
+  stabilizeMs?: number;
 }
 
 const QUANTUM_FRAMES = 128;
@@ -71,7 +74,7 @@ export function splUnitFor(weighting: Weighting): 'dBA' | 'dBC' | 'dBZ' {
 
 /**
  * DecibelEngine: single typed state machine for the whole UI.
- * States: idle → requesting-permission → running ⇄ paused → stopped → error.
+ * States: idle → requesting-permission → stabilizing → running ⇄ paused → stopped → error.
  *
  * Measurement integrity rules enforced here:
  * - Uncalibrated readings are DIGITAL dBFS, never "dB SPL".
@@ -84,6 +87,7 @@ export class DecibelEngine {
   private listeners = new Set<(s: EngineSnapshot) => void>();
   private readonly nowFn: () => number;
   private readonly uiThrottleMs: number;
+  private readonly stabilizeMs: number;
   private readonly createCapture: () => CaptureController;
   private readonly customCapture: boolean;
 
@@ -116,6 +120,9 @@ export class DecibelEngine {
   private refMeasuredLeq: number | null = null;
   private lastEmitAt = 0;
   private startEpoch = 0;
+  /** Wall time (nowFn ms) when stabilization ends; 0 when not stabilizing. */
+  private stabilizingUntil = 0;
+  private stabilizeTimer: ReturnType<typeof setTimeout> | null = null;
 
   private capture: CaptureController | null = null;
   private averager: EnergyAverager | null = null;
@@ -127,6 +134,7 @@ export class DecibelEngine {
   constructor(opts: EngineOptions = {}) {
     this.nowFn = opts.now ?? (() => Date.now());
     this.uiThrottleMs = opts.uiThrottleMs ?? 120;
+    this.stabilizeMs = opts.stabilizeMs ?? 1500;
     this.customCapture = opts.createCapture != null;
     this.createCapture = opts.createCapture ?? (() => new MicCapture());
     try {
@@ -253,6 +261,7 @@ export class DecibelEngine {
   }
 
   snapshot(): EngineSnapshot {
+    this.promoteIfStabilized(this.nowFn());
     const s = this.session.snapshot(this.nowFn());
     const cal: CalibrationProfile =
       this.mode === 'calibrated' && this.activeProfile
@@ -318,7 +327,7 @@ export class DecibelEngine {
       const design = designWeightingSos(w, this.sampleRate);
       this.capture.setWeighting(design.sos as number[][], design.gain);
     }
-    if (this.state === 'running' || this.state === 'paused') {
+    if (this.state === 'stabilizing' || this.state === 'running' || this.state === 'paused') {
       this.session.reconfigure(
         { weighting: w, calibrationId: this.activeProfile?.id ?? null, sampleRate: this.sampleRate },
         this.nowFn(),
@@ -444,7 +453,7 @@ export class DecibelEngine {
     this.staleReasons = [];
     this.refCapture = null;
     this.refMeasuredLeq = null;
-    if (this.state === 'running' || this.state === 'paused') {
+    if (this.state === 'stabilizing' || this.state === 'running' || this.state === 'paused') {
       this.session.reconfigure(
         { weighting: this.weighting, calibrationId: profile.id, sampleRate: this.sampleRate },
         this.nowFn(),
@@ -470,7 +479,7 @@ export class DecibelEngine {
     }
     this.activeProfile = p;
     this.staleReasons = [];
-    if (this.state === 'running' || this.state === 'paused') {
+    if (this.state === 'stabilizing' || this.state === 'running' || this.state === 'paused') {
       this.session.reconfigure(
         { weighting: this.weighting, calibrationId: p.id, sampleRate: this.sampleRate },
         this.nowFn(),
@@ -489,7 +498,7 @@ export class DecibelEngine {
     this.activeProfile = null;
     this.staleReasons = [];
     if (this.mode === 'calibrated') this.mode = 'digital';
-    if (this.state === 'running' || this.state === 'paused') {
+    if (this.state === 'stabilizing' || this.state === 'running' || this.state === 'paused') {
       this.session.reconfigure(
         { weighting: this.weighting, calibrationId: null, sampleRate: this.sampleRate },
         this.nowFn(),
@@ -524,6 +533,8 @@ export class DecibelEngine {
   // -- transport ------------------------------------------------------------------
 
   private fail(code: ErrorCode, detail = ''): void {
+    this.clearStabilizeTimer();
+    this.stabilizingUntil = 0;
     try {
       this.capture?.dispose();
     } catch { /* noop */ }
@@ -536,7 +547,7 @@ export class DecibelEngine {
   }
 
   async start(): Promise<void> {
-    if (this.state === 'requesting-permission' || this.state === 'running') return;
+    if (this.state === 'requesting-permission' || this.state === 'stabilizing' || this.state === 'running') return;
     if (this.state === 'paused') {
       this.resume();
       return;
@@ -566,7 +577,7 @@ export class DecibelEngine {
           this.emit(false);
         },
         onEnded: (reason) => {
-          if (reason === 'device-lost' && (this.state === 'running' || this.state === 'paused')) {
+          if (reason === 'device-lost' && (this.state === 'stabilizing' || this.state === 'running' || this.state === 'paused')) {
             this.session.markGap(0, 'device', this.nowFn());
             this.fail('device-disconnected');
           }
@@ -599,7 +610,7 @@ export class DecibelEngine {
           this.staleReasons = [];
         }
       }
-      this.state = 'running';
+      this.state = 'stabilizing';
       const now = this.nowFn();
       this.startedAtMs = now;
       this.session.begin(now, {
@@ -615,7 +626,27 @@ export class DecibelEngine {
       this.graph.clear();
       this.refreshStale();
       this.attachLifecycle();
-      this.emit(true);
+      // Stabilization: ~1–2 s of discarded warm-up so AGC/filter settling
+      // never pollutes public statistics. Quanta arriving inside the window
+      // are dropped by handleQuantum (and counted as stabilization, not gaps).
+      if (this.stabilizeMs > 0) {
+        this.state = 'stabilizing';
+        this.stabilizingUntil = now + this.stabilizeMs;
+        this.emit(true);
+        this.clearStabilizeTimer();
+        const timerEpoch = this.startEpoch;
+        this.stabilizeTimer = setTimeout(() => {
+          if (this.startEpoch === timerEpoch && this.state === 'stabilizing') {
+            this.state = 'running';
+            this.stabilizingUntil = 0;
+            this.emit(true);
+          }
+        }, this.stabilizeMs);
+      } else {
+        this.stabilizingUntil = 0;
+        this.state = 'running';
+        this.emit(true);
+      }
     } catch (err) {
       try {
         capture.dispose();
@@ -665,7 +696,9 @@ export class DecibelEngine {
   }
 
   stop(): void {
-    if (this.state !== 'running' && this.state !== 'paused') return;
+    if (this.state !== 'stabilizing' && this.state !== 'running' && this.state !== 'paused') return;
+    this.clearStabilizeTimer();
+    this.stabilizingUntil = 0;
     try {
       this.capture?.dispose();
     } catch { /* noop */ }
@@ -678,6 +711,8 @@ export class DecibelEngine {
   }
 
   reset(): void {
+    this.clearStabilizeTimer();
+    this.stabilizingUntil = 0;
     try {
       this.capture?.dispose();
     } catch { /* noop */ }
@@ -704,7 +739,9 @@ export class DecibelEngine {
 
   /** Switch input device mid-session: full capture restart + new segment. */
   async switchDevice(deviceId: string, label = ''): Promise<void> {
-    const wasActive = this.state === 'running' || this.state === 'paused';
+    const wasActive = this.state === 'stabilizing' || this.state === 'running' || this.state === 'paused';
+    this.clearStabilizeTimer();
+    this.stabilizingUntil = 0;
     try {
       this.capture?.dispose();
     } catch { /* noop */ }
@@ -722,9 +759,37 @@ export class DecibelEngine {
 
   // -- quantum ingest (DSP runs per quantum; UI emits are throttled) -------------
 
+  private clearStabilizeTimer(): void {
+    if (this.stabilizeTimer != null) {
+      clearTimeout(this.stabilizeTimer);
+      this.stabilizeTimer = null;
+    }
+  }
+
+  /**
+   * Promote stabilizing → running once the window elapsed. Checked on every
+   * quantum and every snapshot so fake-clock tests and background tabs (where
+   * timers may be throttled) converge deterministically.
+   */
+  private promoteIfStabilized(now: number): void {
+    if (this.state === 'stabilizing' && now >= this.stabilizingUntil) {
+      this.state = 'running';
+      this.stabilizingUntil = 0;
+      this.clearStabilizeTimer();
+      this.emit(true);
+    }
+  }
+
   private handleQuantum(q: QuantumMessage): void {
-    if (this.state !== 'running') return;
     const now = this.nowFn();
+    this.promoteIfStabilized(now);
+    // Stabilization samples are discarded: no session ingest, no graph points,
+    // no reference-capture energy — they never reach public statistics.
+    if (this.state === 'stabilizing') {
+      this.lastSeq = q.seq;
+      return;
+    }
+    if (this.state !== 'running') return;
     try {
       // Missing quanta (dropped audio blocks) become explicit gaps.
       if (this.lastSeq != null && q.seq > this.lastSeq + 1 && q.frames > 0 && this.sampleRate > 0) {
@@ -772,10 +837,10 @@ export class DecibelEngine {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
     this.detachLifecycle();
     this.visibilityHandler = () => {
-      if (document.hidden && this.state === 'running') {
+      if (document.hidden && (this.state === 'stabilizing' || this.state === 'running')) {
         this.gapOpenSince = this.nowFn();
         void this.capture?.suspend();
-      } else if (!document.hidden && this.state === 'running') {
+      } else if (!document.hidden && (this.state === 'stabilizing' || this.state === 'running')) {
         void this.capture?.resume();
         // Gap closes on the next arriving quantum (or now if none arrives).
       }

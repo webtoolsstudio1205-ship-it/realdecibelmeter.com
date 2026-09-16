@@ -5,10 +5,10 @@ import { getDict } from '../../i18n/dictionaries';
 const dict = getDict('en');
 ---
 
-<Layout locale="en" dict={dict} title="Terms — Real Decibel Meter" description="Estimates only; not for safety, workplace or legal decisions." path="/terms/">
-  <Article title="Terms" intro="By using the meter you accept that its readings are uncalibrated browser estimates.">
+<Layout locale="en" dict={dict} title="Terms — Real Decibel Meter" description="Estimates only; not for safety, workplace or legal decisions. Terms for the online decibel meter." path="/terms/">
+  <Article title="Terms" intro="By using the meter you accept that its readings are uncalibrated browser estimates." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Terms', href: '/terms/' }]}>
     <ul class="list-disc pl-5 mt-2 space-y-1">
-      <li>Readings are estimates from consumer microphones, not certified measurements.</li>
+      <li>Readings are estimates from consumer microphones, not certified measurements (see <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>).</li>
       <li>Do not rely on them for hearing-safety, workplace-compliance, legal or medical decisions.</li>
       <li>The app runs as-is, without warranty. Audio processing stays on your device; you are responsible for permissions and local laws on recording.</li>
     </ul>

@@ -2,20 +2,54 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
 const dict = getDict('en');
+const title = 'How to Calibrate a Browser Decibel Meter';
+const description = 'Add a reference offset to browser sound-level estimates: placement, stable references, weighting, profiles and common mistakes.';
+const url = `${SITE}/calibration/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-16' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Calibration', url },
+  ]),
+];
 ---
 
-<Layout locale="en" dict={dict} title="Calibration — Real Decibel Meter" description="Add a reference offset to browser level estimates. Honest, explicit, reversible." path="/calibration/">
-  <Article title="Calibration" intro="Calibration here means one thing: adding a fixed dB offset measured against a reference you trust.">
-    <h2 class="text-white font-semibold">How to calibrate</h2>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/calibration/" jsonLd={jsonLd}>
+  <Article title={title} intro="Calibration here means one thing: adding a fixed dB offset measured against a reference you trust." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Calibration', href: '/calibration/' }]}>
+    <h2 class="text-white font-semibold">Why calibration matters</h2>
+    <p class="mt-2">Every consumer microphone has different gain, so the same sound produces different raw readings on different devices. Until you measure that difference against a known reference, the meter can only show microphone input strength — never an environmental sound level in dBA.</p>
+    <h2 class="text-white font-semibold mt-6">What you need</h2>
+    <ul class="list-disc pl-5 mt-2 space-y-1">
+      <li>A stable reference of known level: a calibrated sound level meter side by side, or an acoustic calibrator tone at a stated level (commonly 94 dB).</li>
+      <li>The same device, microphone, position and browser settings you will measure with later.</li>
+      <li>Matching frequency weighting (A, C or Z) and time response (Fast or Slow) on both sides.</li>
+    </ul>
+    <h2 class="text-white font-semibold mt-6">How to calibrate</h2>
     <ol class="list-decimal pl-5 mt-2 space-y-1">
-      <li>Play a stable reference tone of known level near the microphone.</li>
-      <li>Read the uncalibrated value on this site.</li>
-      <li>Enter the difference (reference − shown) as the offset in Advanced controls.</li>
+      <li>Place the device where you will measure — stable surface, ear height, mic port uncovered, away from wind.</li>
+      <li>Expose it to the stable reference and let the display settle for several seconds.</li>
+      <li>Read the uncalibrated value on this site and enter the difference (reference − shown) as the offset in Customize → Calibration.</li>
+      <li>Confirm the status badge changes from “Uncalibrated” to “Calibrated” and re-check against the reference.</li>
     </ol>
-    <p class="mt-2">The status badge changes from “Uncalibrated — readings are estimates only” to “Calibrated (+/− dB)”. Reset any time to return to the raw estimate.</p>
-    <h2 class="text-white font-semibold mt-6">Limits</h2>
-    <p class="mt-2">An offset corrects overall gain, not frequency response or distortion. Offsets beyond ±40 dB are rejected as invalid. Even calibrated, a browser is not a certified instrument.</p>
-    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the meter →</a></p>
+    <h2 class="text-white font-semibold mt-6">Saving device-specific profiles</h2>
+    <p class="mt-2">The offset is stored in this browser for the current microphone and weighting setup. It auto-applies only when the same setup is detected; change the input device and the profile stops applying rather than silently producing wrong numbers. Reset any time to return to the raw estimate.</p>
+    <h2 class="text-white font-semibold mt-6">When profiles become incompatible</h2>
+    <ul class="list-disc pl-5 mt-2 space-y-1">
+      <li>You switch microphones, headsets or USB inputs.</li>
+      <li>You change weighting (A/C/Z) or response (Fast/Slow).</li>
+      <li>The browser or OS changes gain, enables AGC, or updates audio processing.</li>
+      <li>You measure in very different acoustics (near-field vs room) — re-check against a reference.</li>
+    </ul>
+    <h2 class="text-white font-semibold mt-6">Common calibration mistakes</h2>
+    <ul class="list-disc pl-5 mt-2 space-y-1">
+      <li>Calibrating with music or speech instead of a stable tone — levels jump too much to read.</li>
+      <li>Holding the phone in your hand while calibrating, then measuring on a table.</li>
+      <li>Mixing weightings: calibrating in dBA, then comparing in dBC.</li>
+      <li>Assuming one phone's offset transfers to another device.</li>
+      <li>Treating a calibrated browser as a certified meter — it remains an estimate (see <a class="underline underline-offset-4" href="/accuracy/">browser measurement accuracy</a>).</li>
+    </ul>
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the meter →</a> · <a class="underline underline-offset-4" href="/methodology/">How the meter works →</a> · <a class="underline underline-offset-4" href="/decibel-chart/">Decibel chart →</a></p>
   </Article>
 </Layout>

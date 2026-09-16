@@ -1,0 +1,25 @@
+---
+import Layout from '../components/Layout.astro';
+import { getDict } from '../i18n/dictionaries';
+const dict = getDict('en');
+---
+
+<Layout locale="en" dict={dict} title="Something went wrong — Real Decibel Meter" description="The page could not be loaded. Return to the online decibel meter." path="/" robots="noindex, follow">
+  <div class="container-x py-24 text-center" style="max-width:1120px">
+    <p class="eyebrow">500</p>
+    <h1 class="font-semibold tracking-tight mt-2" style="font-size:clamp(28px,5vw,44px)">Something went wrong</h1>
+    <p class="mt-3 text-[15px]" style="color:var(--muted)">The page could not be loaded. Your microphone data never leaves this browser, so just reload or head back to the meter.</p>
+    <div class="mt-6 flex justify-center gap-2 flex-wrap">
+      <button id="err-reload" type="button" class="btn-primary focus-ring">Reload this page</button>
+      <a href="/" class="btn-secondary focus-ring">Back to the meter</a>
+      <a href="/guides/" class="btn-secondary focus-ring">Browse guides</a>
+    </div>
+    <p class="mt-6 text-sm" style="color:var(--muted)">Popular: <a class="underline underline-offset-4 focus-ring" href="/calibration/">calibration</a> · <a class="underline underline-offset-4 focus-ring" href="/accuracy/">accuracy</a> · <a class="underline underline-offset-4 focus-ring" href="/decibel-chart/">decibel chart</a></p>
+  </div>
+  <script is:inline>
+    (function () {
+      var btn = document.getElementById('err-reload');
+      if (btn) btn.addEventListener('click', function () { window.location.reload(); });
+    })();
+  </script>
+</Layout>

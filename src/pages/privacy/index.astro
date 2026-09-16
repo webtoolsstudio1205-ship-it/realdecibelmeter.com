@@ -2,16 +2,29 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
 const dict = getDict('en');
+const title = 'Microphone and Audio-Processing Privacy';
+const description = 'Microphone audio is processed locally in your browser and never uploaded. Local storage, history and hosting notes.';
+const url = `${SITE}/privacy/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-16' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Privacy', url },
+  ]),
+];
 ---
 
-<Layout locale="en" dict={dict} title="Privacy — Real Decibel Meter" description="Audio never leaves your browser. Local history only." path="/privacy/">
-  <Article title="Privacy" intro="This meter is local-first: microphone audio is processed in your browser and never transmitted by this site.">
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/privacy/" jsonLd={jsonLd}>
+  <Article title={title} intro="This meter is local-first: microphone audio is processed in your browser and never transmitted by this site." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy/' }]}>
     <ul class="list-disc pl-5 mt-2 space-y-1">
-      <li><strong class="text-white">Audio:</strong> analysed via Web Audio API on-device; never uploaded, recorded server-side, or shared.</li>
+      <li><strong class="text-white">Audio:</strong> analysed via the Web Audio API on-device; the microphone stream is never connected to speakers and never uploaded, recorded server-side, or shared. Stopping the meter disposes tracks and closes the audio context.</li>
+      <li><strong class="text-white">Permissions:</strong> the browser asks for microphone access once per origin; you can revoke it any time in the address-bar site settings. Denying permission only shows the idle “--” display — nothing is captured.</li>
       <li><strong class="text-white">Storage:</strong> theme preference and up to 20 session summaries live in your browser's localStorage only. Clearing site data removes them.</li>
       <li><strong class="text-white">Analytics/cookies:</strong> the app itself sets no tracking cookies and makes no measurement API calls.</li>
       <li><strong class="text-white">Hosting:</strong> static files are served over HTTPS; the host may keep standard access logs outside this app's control.</li>
     </ul>
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/methodology/">How measurement works →</a></p>
   </Article>
 </Layout>

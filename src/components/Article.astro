@@ -2,14 +2,32 @@
 interface Props {
   title: string;
   intro: string;
+  breadcrumb?: { name: string; href: string }[];
+  reviewed?: string;
 }
-const { title, intro } = Astro.props;
+const { title, intro, breadcrumb = [{ name: 'Home', href: '/' }], reviewed } = Astro.props;
 ---
 
 <div class="container-x py-10" style="max-width:1120px">
-  <p class="eyebrow"><a href="/" class="focus-ring underline-offset-4 hover:underline">Home</a> / Guide</p>
+  <nav aria-label="Breadcrumb">
+    <p class="eyebrow">
+      {breadcrumb.map((c, i) => (
+        <>
+          {i > 0 && <span aria-hidden="true"> / </span>}
+          {i < breadcrumb.length - 1 ? (
+            <a href={c.href} class="focus-ring underline-offset-4 hover:underline">{c.name}</a>
+          ) : (
+            <span aria-current="page">{c.name}</span>
+          )}
+        </>
+      ))}
+    </p>
+  </nav>
   <h1 class="font-semibold tracking-tight mt-2" style="font-size:clamp(28px,5vw,40px);line-height:1.1;letter-spacing:-0.02em">{title}</h1>
   <p class="mt-3 text-[16px] leading-7" style="color:var(--muted);max-width:68ch">{intro}</p>
+  {reviewed && (
+    <p class="mt-2 text-xs" style="color:var(--muted)">Last materially reviewed: {reviewed}</p>
+  )}
   <div class="panel p-6 mt-6 text-[15px] leading-7 anim-rise" style="--d:120ms;color:var(--muted);max-width:78ch">
     <slot />
   </div>
