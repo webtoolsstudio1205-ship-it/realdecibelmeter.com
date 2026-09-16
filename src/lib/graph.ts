@@ -42,7 +42,13 @@ export function dbToY(db: number, height: number, lo = 30, hi = 120): number {
   return height - t * height;
 }
 
-export function seriesToPath(series: (number | null)[], width: number, height: number): string {
+export function seriesToPath(
+  series: (number | null)[],
+  width: number,
+  height: number,
+  lo = 30,
+  hi = 120,
+): string {
   if (series.length === 0) return '';
   const step = series.length > 1 ? width / (series.length - 1) : 0;
   let d = '';
@@ -54,9 +60,23 @@ export function seriesToPath(series: (number | null)[], width: number, height: n
       continue;
     }
     const x = i * step;
-    const y = dbToY(v, height);
+    const y = dbToY(v, height, lo, hi);
     d += started ? ` L${x.toFixed(1)},${y.toFixed(1)}` : `M${x.toFixed(1)},${y.toFixed(1)}`;
     started = true;
   }
   return d;
+}
+
+/** Closed area path for a contiguous series on the same explicit scale. */
+export function seriesToAreaPath(
+  series: (number | null)[],
+  width: number,
+  height: number,
+  lo = 30,
+  hi = 120,
+): string {
+  const line = seriesToPath(series, width, height, lo, hi);
+  if (!line || series.some((value) => value == null)) return '';
+  const lastX = series.length > 1 ? width : 0;
+  return `${line} L${lastX.toFixed(1)},${height} L0,${height} Z`;
 }

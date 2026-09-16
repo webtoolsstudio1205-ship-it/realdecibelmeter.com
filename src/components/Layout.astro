@@ -31,6 +31,7 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta id="theme-color" name="theme-color" content="#08090b" />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
@@ -62,7 +63,7 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
             <rect class="bm-b4" x="18.5" y="10" width="3.5" height="12" rx="1.75" fill="#3B82F6"/>
             <rect class="bm-b5" x="24" y="14" width="3.5" height="4" rx="1.75" fill="currentColor" opacity="0.5"/>
           </svg>
-          <span class="font-semibold tracking-tight text-[15px]">Real Decibel Meter</span>
+          <span class="brand-text font-semibold tracking-tight text-[15px]">Real Decibel Meter</span>
         </a>
         <nav class="ml-auto hidden md:flex items-center gap-1" aria-label="Primary">
           <a href={locale === 'en' ? '/#measure' : `/${locale}/#measure`} class="nav-link px-3 py-2 rounded-full text-sm focus-ring" style="color:var(--muted)">{dict.navMeasure}</a>
@@ -157,6 +158,8 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
         var themeBtn = document.getElementById('theme-toggle');
         function paint() {
           var light = root.getAttribute('data-theme') === 'light';
+          var themeMeta = document.getElementById('theme-color');
+          if (themeMeta) themeMeta.setAttribute('content', light ? '#ffffff' : '#08090b');
           var moons = document.querySelectorAll('.icon-moon');
           var suns = document.querySelectorAll('.icon-sun');
           for (var i = 0; i < moons.length; i++) moons[i].classList.toggle('hidden', light);
@@ -264,6 +267,7 @@ const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English
             }
           }, { threshold: 0.12, rootMargin: '0px 0px -8px 0px' });
           for (var m = 0; m < revealEls.length; m++) io.observe(revealEls[m]);
+          window.addEventListener('pagehide', function () { io.disconnect(); }, { once: true });
         } else {
           for (var n = 0; n < revealEls.length; n++) revealEls[n].classList.add('in');
         }

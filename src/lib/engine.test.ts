@@ -103,6 +103,29 @@ function harness() {
 }
 
 describe('engine transport', () => {
+  it('cancels a pending permission request and disposes a stream that resolves late', async () => {
+    let resolveStart!: (info: CaptureStartInfo) => void;
+    let disposeCalls = 0;
+    const pendingCapture: CaptureController = {
+      get active() { return false; },
+      start: async () => new Promise<CaptureStartInfo>((resolve) => { resolveStart = resolve; }),
+      setWeighting() {}, async suspend() {}, async resume() {}, dispose() { disposeCalls++; },
+    };
+    const engine = new DecibelEngine({ now: () => 0, uiThrottleMs: 0, createCapture: () => pendingCapture });
+    const start = engine.start();
+    expect(engine.snapshot().state).toBe('requesting-permission');
+    engine.cancelStart();
+    expect(engine.snapshot().state).toBe('idle');
+    resolveStart({
+      sampleRate: 48000, label: 'Late mic', channelCount: 1,
+      processing: { echoCancellation: 'disabled', noiseSuppression: 'disabled', autoGainControl: 'disabled' },
+      relaxed: [],
+    });
+    await start;
+    expect(engine.snapshot().state).toBe('idle');
+    expect(disposeCalls).toBe(1);
+  });
+
   it('17. Start → Stop → Start works with no duplicate nodes or streams', async () => {
     const { engine, fakes } = harness();
     await engine.start();

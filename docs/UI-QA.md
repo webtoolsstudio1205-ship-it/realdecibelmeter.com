@@ -1,22 +1,22 @@
 # UI-QA — Real Decibel Meter (Prompt 1)
 
-Method: static code review + production build only. **No browser or screenshot tooling is
-available in this environment, so no viewport was visually rendered.** Nothing below marked
-“pending” may be reported as tested.
+Method (latest pass, 2026-09-16): production build plus an actual Chromium render through the
+Codex in-app browser. Viewport screenshots were captured and inspected at all requested sizes in
+both existing themes. Earlier historical “pending” notes below are superseded by the final table.
 
 ## Checklist
 | Check | 320×800 | 390×844 | 768×1024 | 1440×900 | Dark | Light |
 |---|---|---|---|---|---|---|
-| No horizontal overflow | pending | pending | pending | pending | — | — |
-| Hero compact, meter near first viewport | pass (code) | pass (code) | pass (code) | pass (code) | pass | pass |
-| Clipped text / translation overflow | pending | pending | — | — | pending | pending |
+| No horizontal overflow | pass | pass | pass | pass | pass | pass |
+| Hero compact, meter near first viewport | pass | pass | pass | pass | pass | pass |
+| Clipped text / control overflow | pass | pass | pass | pass | pass | pass |
 | Contrast (text vs surface) | pass (tokens) | pass | pass | pass | pass (code) | pass (code) |
-| Mobile menu opens/closes, Escape, focus return | pass (code) | pass (code) | — | — | — | — |
+| Mobile menu opens/closes, Escape, focus return | pass | pass | pass | — | pass | pass |
 | Language selector switches, no mixed language | pass (build) | — | — | — | — | — |
 | Theme toggle + persist + no flash | pass (code) | — | — | — | pass | pass |
 | Focus-visible on all controls | pass (code) | — | — | — | pass | pass |
 | All buttons functional/disabled-with-reason | pass (code) | — | — | — | — | — |
-| Graph resizes (SVG viewBox, preserveAspectRatio none) | pass (code) | pending | pending | pending | — | — |
+| Graph resizes and unit/range stays mode-matched | pass | pass | pass | pass | pass | pass |
 | Production build | **pass** | — | — | — | — | — |
 | Type check | **pass** | — | — | — | — | — |
 
@@ -70,3 +70,24 @@ Reduced-motion disables interpolation, pulses, edge animation and modal transiti
 (both CSS and the JS `REDUCED` fast path); mobile drops blur/glow/edge animation.
 New i18n strings are English-fallback in de/it/ja/es/fr/pt/ko (same pending status as
 FAQ translation). Browser render checks for all of the above remain **pending**.
+
+## Prompt 4 rendered QA (2026-09-16)
+
+| Viewport/theme | What was inspected | Result |
+|---|---|---|
+| 320×800, dark + light | header fit, hero wrapping, CTAs, trust row, meter start, horizontal overflow | pass after tightening the ≤359px header; brand stays on one line |
+| 390×844, dark + light | hero density, primary CTA, top of gauge, card gutters, mobile controls | pass; hero CTA and gauge appear in the initial viewport |
+| 768×1024, dark + light | desktop nav breakpoint, gauge/stat split, controls, card width | pass after fixing `.btn-square` overriding `md:hidden` on the menu button |
+| 1440×900, dark + light | max-width alignment, compact hero, meter entrance, two-column meter | pass; hero and beginning of the meter fit in the first viewport |
+
+Interactive checks: Customize opens the modal and traps focus; Advanced and Digital Diagnostics
+are both collapsed initially; diagnostics reveal the exact technical explanation and −100…0 dBFS
+scale; Start leaves the modal closed and changes only to Requesting Microphone… + Cancel; mobile
+menu opens, closes with Escape, and returns to a single navigation state. The in-app browser had
+no usable microphone device/permission completion, so running/paused/stopped visuals were
+validated by state-model/engine tests rather than claimed as live-device QA.
+
+Source-backed checks: public presentation tests assert −53.2 → 46.8% (rendered 47%), the raw
+diagnostic −53.2 dBFS value, +113.2 offset → 60.0 dBA, mismatched-profile fallback, both graph
+scales, control exclusivity, Start/Customize wiring, cleanup, and reduced-motion CSS. Engine tests
+assert microphone disposal on Stop and on a cancelled permission request that resolves late.

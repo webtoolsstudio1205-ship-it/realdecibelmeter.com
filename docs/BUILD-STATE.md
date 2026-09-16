@@ -73,12 +73,9 @@ client-side Web Audio measurement engine. No simulated data: idle reads `--` unt
   professional translation — surfaced as **blocker 2** below.
 
 ## Unresolved blockers
-1. **Browser/screenshot verification NOT performed** — no browser or screenshot tooling is
-   available in this environment. The 320×800 / 390×844 / 768×1024 / 1440×900 render checks
-   and dark/light visual QA are marked **pending** in `docs/UI-QA.md`. Do not claim otherwise.
-2. **FAQ localization incomplete** — non-English locales show English FAQ Q&A (structure and all
+1. **FAQ localization incomplete** — non-English locales show English FAQ Q&A (structure and all
    other strings translated). Needs translator pass.
-3. **Owner contact channel missing** — see `/contact/` + note below (private): configure a real
+2. **Owner contact channel missing** — see `/contact/` + note below (private): configure a real
    support email/form endpoint before advertising support. **Do not publish invented details.**
 
 ## Next prompt to execute
@@ -126,3 +123,32 @@ silently never worked. Full account: `docs/POST-PROMPT-2-FIXES.md`.
 - Still pending (no browser tooling here): visual render QA all viewports/themes,
   permission-flow QA on real devices, translation of new strings + FAQ, OG PNG,
   Pages deploy config.
+
+## Prompt 4 repair (2026-09-16, strict public presentation + rendered QA)
+
+- **Root cause confirmed in the live render path:** `MeterPanel.updateStats()` mapped only the
+  first public tile to `inputStrengthPct`; the other three tiles still formatted `stats.leq`,
+  `stats.peakDb`, and `stats.current` directly. Its optional Digital view also promoted raw dBFS
+  back onto the main gauge. `seriesToPath()` hardcoded a 30–120 Y scale while the engine graph
+  contained raw mode-dependent numbers. Those paths produced the reported 47% / −53.2 / −19.2 /
+  −53.2 combination even though the engine itself preserved correct negative digital readings.
+- **One public presentation pipeline:** new `src/lib/presentation.ts` owns gauge, statistics,
+  graph units/ranges, diagnostics formatting, and state-exclusive controls. Uncalibrated current,
+  energy-average, and peak dBFS values each map independently through the documented −100…0 →
+  0…100% visual formula. Calibrated output exists only for a compatible profile and remains
+  `raw + offset` with its selected dBA/dBC/dBZ unit.
+- **Old render paths removed:** no public Digital/Relative gauge selector; no public raw-current,
+  digital-average, or digital-peak tile; no fixed 30–120 graph transform; no raw local-history
+  average. Raw values and the −100…0 graph now live only in Customize → Advanced → Digital
+  Diagnostics, collapsed by default.
+- **Layout and motion:** centred compact hero with required eyebrow/copy/trust row, finite
+  decorative waveform and exactly two blurred orbs, responsive gauge/stat card, hover-only CTA
+  sweep, mode/status/permission animations, area graph, endpoint, crosshair/tooltip, pause
+  markers, and cleanup for rAF/subscriptions/device listeners/IntersectionObserver. Reduced
+  motion disables non-essential effects.
+- **Controls:** requesting state now includes a real Cancel action; a late-resolving microphone
+  stream is disposed. Stopped state is exactly Start New Measurement / Save Session / Reset.
+- **Verification:** `npx tsc --noEmit` pass; `npm test` **55/55 pass** (6 files); `npm run build`
+  pass (20 static pages). Browser screenshots were captured and reviewed at 320×800, 390×844,
+  768×1024, and 1440×900 in dark and light themes. No horizontal overflow; the 768px duplicate
+  mobile-menu cascade and 320px header wrapping found during QA were fixed and rechecked.

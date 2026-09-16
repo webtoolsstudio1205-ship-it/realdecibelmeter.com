@@ -122,3 +122,23 @@ a displayed dB sign.
 - Professional translation of the new Customize/gauge strings (7 locales show
   English fallback) and of the FAQ answers (pre-existing).
 - OG PNG render if the platform needs raster; Cloudflare Pages deploy config.
+
+## 2026-09-16 follow-up repair
+
+The previous rewrite left one obsolete public branch in `updateStats()`: in Input Strength mode it
+still wrote raw `stats.leq`, `stats.peakDb`, and `stats.current` into the normal homepage. It also
+allowed Digital/Relative views to replace the public gauge and drew every history series with the
+legacy 30–120 transform. This was the remaining source of the reported 47% / −53.2 / −19.2 /
+−53.2 interface.
+
+The follow-up introduces `src/lib/presentation.ts` as the single display contract, removes those
+branches, keeps the engine graph as bounded raw digital history, and maps that history only at the
+display layer. Public uncalibrated gauge/stats/graph are percentages; compatible calibrated mode
+adds the saved offset and carries dBA/dBC/dBZ; Digital Diagnostics alone formats negative dBFS.
+The diagnostics are nested under Customize → Advanced and collapsed by default.
+
+Actual final checks: TypeScript pass; Vitest 55/55; Astro production build pass (20 pages);
+rendered dark/light browser review at 320×800, 390×844, 768×1024, and 1440×900. The browser pass
+found and fixed a 768px duplicate menu-button cascade and 320px brand wrapping. Live hardware
+permission completion remains a real-device limitation; deterministic engine tests cover stream
+release, cancellation, state transitions, and calibration math.

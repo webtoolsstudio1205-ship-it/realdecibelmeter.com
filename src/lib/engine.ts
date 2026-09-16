@@ -115,6 +115,7 @@ export class DecibelEngine {
   private refCapture: { durationSec: number; beganAt: number; energySum: number; samples: number } | null = null;
   private refMeasuredLeq: number | null = null;
   private lastEmitAt = 0;
+  private startEpoch = 0;
 
   private capture: CaptureController | null = null;
   private averager: EnergyAverager | null = null;
@@ -552,6 +553,7 @@ export class DecibelEngine {
     this.error = 'none';
     this.errorDetail = '';
     this.emit(true);
+    const epoch = ++this.startEpoch;
 
     const capture = this.createCapture();
     try {
@@ -571,6 +573,10 @@ export class DecibelEngine {
         },
         onDevicesChanged: () => this.emit(true),
       });
+      if (epoch !== this.startEpoch || this.state !== 'requesting-permission') {
+        capture.dispose();
+        return;
+      }
       this.capture = capture;
       this.sampleRate = info.sampleRate;
       this.channelCount = info.channelCount;
@@ -614,6 +620,7 @@ export class DecibelEngine {
       try {
         capture.dispose();
       } catch { /* noop */ }
+      if (epoch !== this.startEpoch) return;
       if ((err as { name?: string })?.name === 'InvalidStateError') return;
       const code = errorFromDomException(err);
       const msg = err instanceof Error ? err.message : String(err);
@@ -624,6 +631,18 @@ export class DecibelEngine {
         this.fail(code, msg);
       }
     }
+  }
+
+  /** Cancel a pending permission request; any late stream is disposed immediately. */
+  cancelStart(): void {
+    if (this.state !== 'requesting-permission') return;
+    this.startEpoch++;
+    try {
+      this.capture?.dispose();
+    } catch { /* noop */ }
+    this.capture = null;
+    this.state = 'idle';
+    this.emit(true);
   }
 
   pause(): void {
@@ -728,8 +747,9 @@ export class DecibelEngine {
       const weightedDb = smoothed > 0 ? 10 * Math.log10(smoothed) : null;
       this.session.ingest({ sumSq: q.sumSq, n: q.n, peak: q.peak, weightedDb, atMs: now });
       this.lastQuantumAt = now;
-      // Graph follows the DISPLAY value for the active mode.
-      this.graph.push(this.toDisplay(weightedDb));
+      // Keep one bounded raw digital series. Public presentation maps it to
+      // input-strength percent or adds a compatible calibration offset.
+      this.graph.push(weightedDb);
       // Reference capture accumulates raw digital energy only.
       if (this.refCapture) {
         this.refCapture.energySum += q.sumSq;
