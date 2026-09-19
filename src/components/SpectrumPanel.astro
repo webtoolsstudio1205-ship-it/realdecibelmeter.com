@@ -1,0 +1,83 @@
+---
+import type { Locale } from '../i18n/dictionaries';
+import { getFeatures } from '../i18n/features';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const f = getFeatures(locale);
+---
+<!-- Informative spectrum summary: axis labels, band groups, dominant estimate, freeze/hold. -->
+<section id="rdm-spectrum" class="panel cv-defer mt-4 p-5 sm:p-6" aria-labelledby="rdm-spectrum-title">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <div>
+      <p class="eyebrow">{f.spectrumTitle}</p>
+      <h2 id="rdm-spectrum-title" class="mt-1 text-lg font-semibold tracking-tight">{f.spectrumTitle}</h2>
+      <p class="mt-1 text-xs leading-5" style="color:var(--muted)">{f.spectrumEstimateNote}</p>
+    </div>
+    <button id="rdm-spec-freeze" type="button" class="btn-square focus-ring" aria-pressed="false">{f.spectrumFreeze}</button>
+  </div>
+  <div class="mt-3 flex justify-between text-[11px] tabular" style="color:var(--muted)" aria-hidden="true">
+    <span>60 Hz</span><span>300 Hz</span><span>1 kHz</span><span>4 kHz</span><span>12 kHz</span>
+  </div>
+  <dl class="mt-2 text-sm grid gap-x-4 gap-y-1 sm:grid-cols-2">
+    <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.spectrumLow} (≈60–300 Hz)</dt><dd id="rdm-sp-low" class="tabular text-right">--</dd></div>
+    <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.spectrumMid} (≈0.3–1.9 kHz)</dt><dd id="rdm-sp-mid" class="tabular text-right">--</dd></div>
+    <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.spectrumHigh} (≈1.9–12 kHz)</dt><dd id="rdm-sp-high" class="tabular text-right">--</dd></div>
+    <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.spectrumDominant}</dt><dd id="rdm-sp-dom" class="tabular text-right">--</dd></div>
+  </dl>
+  <p id="rdm-sp-desc" class="mt-2 text-xs leading-5" style="color:var(--muted)" aria-live="polite"></p>
+</section>
+
+<script type="application/json" id="rdm-sp-strings" set:html={JSON.stringify(f)} />
+
+<script>
+  import { summarizeSpectrum, formatBandRange } from '../lib/spectrum.js';
+  import { formatDb } from '../lib/dsp.js';
+
+  const stringsNode = document.getElementById('rdm-sp-strings');
+  const F = JSON.parse(stringsNode?.textContent || '{}');
+  const freezeBtn = document.getElementById('rdm-spec-freeze');
+  const els = {
+    low: document.getElementById('rdm-sp-low'),
+    mid: document.getElementById('rdm-sp-mid'),
+    high: document.getElementById('rdm-sp-high'),
+    dom: document.getElementById('rdm-sp-dom'),
+    desc: document.getElementById('rdm-sp-desc'),
+  };
+  let frozen = false;
+  let frozenBands = null;
+
+  function paint(bands) {
+    const s = summarizeSpectrum(bands || []);
+    const db = (v) => (v == null ? '--' : `${formatDb(v)} dBFS`);
+    if (els.low) els.low.textContent = db(s.lowDb);
+    if (els.mid) els.mid.textContent = db(s.midDb);
+    if (els.high) els.high.textContent = db(s.highDb);
+    if (els.dom) els.dom.textContent = s.dominantRange ? `${formatBandRange(s.dominantRange)} (${s.dominantRegion})` : '--';
+    if (els.desc) {
+      els.desc.textContent = s.dominantBand == null
+        ? ''
+        : `${F.spectrumDominant}: ${formatBandRange(s.dominantRange)} — ${s.dominantRegion === 'low' ? F.spectrumLow : s.dominantRegion === 'high' ? F.spectrumHigh : F.spectrumMid}. ${F.spectrumEstimateNote}`;
+    }
+  }
+
+  freezeBtn?.addEventListener('click', () => {
+    frozen = !frozen;
+    freezeBtn.setAttribute('aria-pressed', String(frozen));
+    freezeBtn.textContent = frozen ? F.spectrumUnfreeze : F.spectrumFreeze;
+    if (frozen) frozenBands = window.__rdmSpectrum ? [...window.__rdmSpectrum] : null;
+    else if (window.__rdmSnapshot?.spectrumDb) paint(window.__rdmSnapshot.spectrumDb);
+  });
+
+  document.addEventListener('rdm:snapshot', (e) => {
+    const bands = e.detail?.spectrumDb || [];
+    window.__rdmSpectrum = [...bands];
+    if (frozen && frozenBands) paint(frozenBands);
+    else paint(bands);
+  });
+  // Respect reduced motion: default to frozen display updates at low rate is
+  // handled by the engine throttle; no extra animation is added here.
+</script>

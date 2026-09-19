@@ -17,7 +17,7 @@ function snapshot(overrides: Partial<EngineSnapshot> = {}): EngineSnapshot {
     permission: 'granted', deviceLabel: 'Fixture mic', deviceId: 'fixture', sampleRate: 48000,
     channelCount: 1, processing: { echoCancellation: 'disabled', noiseSuppression: 'disabled', autoGainControl: 'disabled' },
     relaxedConstraints: [], secureContext: true, lastUpdateAt: 0, spectrumDb: [], gaps: [], gapMs: 0,
-    segments: [], referenceCapture: null, meterRange: [-100, 0], storageOk: true, appVersion: 'test',
+    segments: [], referenceCapture: null, verificationCapture: null, meterRange: [-100, 0], storageOk: true, appVersion: 'test',
     ...overrides,
   };
 }

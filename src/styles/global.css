@@ -146,6 +146,26 @@ body {
   border-radius: 12px;
 }
 
+/* Below-the-fold rendering deferral. Mobile main-thread profiling shows
+ * style/layout as the dominant cost while script evaluation is minor, and
+ * most homepage DOM sits below the fold. content-visibility keeps content in
+ * the DOM, accessibility tree, search index and anchor navigation — it only
+ * skips style/layout/paint until near the viewport. Applied ONLY to
+ * below-fold homepage blocks; never to the hero, meter, header or footer. */
+.cv-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 480px;
+}
+
+/* Group variant for the static article sections below the homepage meter:
+ * one class on the container defers each direct section child. Fragment
+ * anchors (#how, #acc, …) still work — the browser renders skipped content
+ * when navigating to it. */
+#main .cv-group > section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 480px;
+}
+
 .hairline {
   border-color: var(--border);
 }
@@ -1154,6 +1174,13 @@ body,
   }
   .hero-wave {
     opacity: 0.12;
+  }
+  /* Sticky-header backdrop blur forces costly compositing on every scroll
+   * frame on low-power devices; the 88%-opaque background + border carry the
+   * visual design on their own, so the blur is dropped on mobile only. */
+  .site-header {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
   .meter-wrap {
     padding-top: 10px;

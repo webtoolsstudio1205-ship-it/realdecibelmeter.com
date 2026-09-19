@@ -17,7 +17,12 @@
 # - No other external fetches, fonts, images, Turnstile, or manifests.
 # - No data: or * sources: none are required by any feature.
 
+# The site already uses Google Analytics. `no-transform` prevents the
+# Cloudflare Pages Web Analytics setting from injecting a second beacon at
+# the edge. The injected beacon was blocked by this CSP and was the sole
+# cause of Lighthouse console-error and DevTools-Issue failures.
 /*
+  Cache-Control: public, max-age=0, must-revalidate, no-transform
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: DENY

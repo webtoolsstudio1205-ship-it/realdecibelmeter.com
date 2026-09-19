@@ -107,6 +107,8 @@ export interface EngineSnapshot {
   gapMs: number;
   segments: SegmentSummary[];
   referenceCapture: { active: boolean; durationSec: number; elapsedSec: number } | null;
+  /** Second-point verification capture (null when idle). */
+  verificationCapture: { active: boolean; durationSec: number; elapsedSec: number } | null;
   /** LED/graph mapping range for the current mode+unit. */
   meterRange: [number, number];
   storageOk: boolean;

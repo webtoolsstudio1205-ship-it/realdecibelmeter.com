@@ -1,0 +1,30 @@
+---
+import { getDict, type Locale } from '../i18n/dictionaries';
+import { getFeatures } from '../i18n/features';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const f = getFeatures(locale);
+const ui = getDict(locale).ui;
+---
+<!-- Local PDF report details: user-entered context fields + generate button. -->
+<details id="rdm-report" class="panel cv-defer mt-4 p-5 sm:p-6">
+  <summary class="cursor-pointer focus-ring font-semibold text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.pdfTitle}</summary>
+  <div class="mt-3 grid gap-2 sm:grid-cols-2">
+    <label class="block text-sm">{f.pdfSessionTitle}<input id="rdm-pdf-title" type="text" maxlength="120" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" /></label>
+    <label class="block text-sm">{f.pdfLocation}<input id="rdm-pdf-location" type="text" maxlength="120" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" /></label>
+    <label class="block text-sm">{f.pdfDistance}<input id="rdm-pdf-distance" type="text" maxlength="120" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" /></label>
+    <label class="block text-sm">{f.pdfSource}<input id="rdm-pdf-source" type="text" maxlength="120" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" /></label>
+    <label class="block text-sm">{f.pdfPosition}<input id="rdm-pdf-position" type="text" maxlength="120" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" /></label>
+    <label class="block text-sm">{f.pdfNotes}<input id="rdm-pdf-notes" type="text" maxlength="300" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" /></label>
+  </div>
+  <p class="mt-3 text-xs leading-5 rounded-lg p-3" style="border:1px solid var(--border);background:var(--raised);color:var(--muted)"><strong>{f.pdfNotice}</strong></p>
+  <div class="mt-2 flex flex-wrap gap-2">
+    <button id="rdm-pdf-generate" type="button" class="btn-square focus-ring" aria-describedby="rdm-pdf-hint" disabled>{f.pdfGenerate}</button>
+  </div>
+  <p id="rdm-pdf-hint" class="mt-2 text-xs" style="color:var(--muted)">{ui.exportHint}</p>
+  <p id="rdm-pdf-msg" class="mt-2 text-xs" style="color:var(--muted)" role="status"></p>
+</details>

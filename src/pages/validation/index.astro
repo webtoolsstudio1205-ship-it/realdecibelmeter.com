@@ -1,0 +1,75 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Validation Protocol for Browser Sound Measurements';
+const description = 'Reproducible repeatability protocol for the browser decibel meter: equipment, placement, repeated runs, verification level and limitations.';
+const url = `${SITE}/validation/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-19' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Validation', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/validation/" jsonLd={jsonLd}>
+  <Article title={title} intro="How repeatability is checked with consumer microphones — and why repeatability is not absolute accuracy." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Validation', href: '/validation/' }]}>
+    <h2 class="text-white font-semibold">Required equipment</h2>
+    <ul class="list-disc pl-5 mt-2">
+      <li>Device under test (phone, tablet or laptop) with a current Chrome, Edge, Firefox or Safari over HTTPS.</li>
+      <li>Reference instrument: calibrated Class 1 or Class 2 sound level meter, or an acoustic calibrator with a documented level.</li>
+      <li>Stable sound source (loudspeaker playing pink noise or a steady tone) — not a phone speaker at full volume.</li>
+      <li>Tripod or stable surface, tape measure, and a quiet room with doors closed.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Stable-source guidance</h2>
+    <p class="mt-2">Warm up the source for at least 5 minutes. Choose a level near 70–80 dBA at the test position. Keep the room quiet: close windows, silence notifications, and avoid wind or direct airflow over either microphone.</p>
+
+    <h2 class="text-white font-semibold mt-6">Device placement</h2>
+    <ul class="list-disc pl-5 mt-2">
+      <li>Place the browser device and the reference microphone side by side, same height, same distance (e.g. 1 m from the source).</li>
+      <li>Keep the browser microphone uncovered and pointed the same way for every run.</li>
+      <li>Record microphone label, browser, OS and app version for every run.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Three repeated 60-second runs</h2>
+    <ol class="list-decimal pl-5 mt-2">
+      <li>Use A weighting and Slow response for all runs.</li>
+      <li>Start the browser meter, wait out stabilization, record 60 s without touching either device.</li>
+      <li>Note the browser LAeq, the reference LAeq, duration, sample rate, channels and processing flags.</li>
+      <li>Repeat twice more without moving anything. Compute the spread (max − min) of the three browser LAeq values.</li>
+    </ol>
+
+    <h2 class="text-white font-semibold mt-6">A separate verification level</h2>
+    <p class="mt-2">Change the level by at least 10 dB (or halve the distance), then capture one more 60-second browser average plus the reference average. Apply the calibration offset from the first level and report the residual (browser estimate − reference). A residual within 2 dB is consistent at that point; 2–5 dB means use with caution; over 5 dB means the calibration did not track consistently. These bands are product guidance, not certification.</p>
+
+    <h2 class="text-white font-semibold mt-6">Required details to publish</h2>
+    <ul class="list-disc pl-5 mt-2">
+      <li>Device model, OS version, browser version, app version.</li>
+      <li>Microphone label, sample rate, channel count, EC/NS/AGC state.</li>
+      <li>Reference instrument make, model, calibration due date, weighting and response used.</li>
+      <li>Source type, distance, room description and background level.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Suggested data table</h2>
+    <p class="mt-2">Run | Browser LAeq | Reference LAeq | Residual | Duration | Sample rate | Processing | Notes. Publish all three repeats plus the separate verification level; never publish only the best run.</p>
+
+    <h2 class="text-white font-semibold mt-6">Repeatability versus absolute accuracy</h2>
+    <p class="mt-2">Repeatability is how closely repeated runs agree with each other. Absolute accuracy is how closely the browser average agrees with the reference. A browser meter can repeat within 1 dB yet sit 10 dB from the reference when uncalibrated — both numbers must be reported separately. A single offset cannot fix nonlinearity, frequency response, AGC or clipping.</p>
+
+    <h2 class="text-white font-semibold mt-6">Limitations of browser and consumer microphones</h2>
+    <p class="mt-2">Consumer microphones add unknown gain, frequency shaping, compression and browser processing (echo cancellation, noise suppression, automatic gain control). They are not Class 1 or Class 2 instruments. Browser readings are reference-only screening estimates — never use them for occupational, legal, medical or regulatory decisions.</p>
+
+    <h2 class="text-white font-semibold mt-6">Verified results</h2>
+    <div class="mt-2 rounded-xl p-4" style="border:1px solid var(--border);background:var(--raised)">
+      <p><strong>No verified results published yet.</strong> Controlled testing has not been completed, so no device-validation results, accuracy percentages or laboratory claims are published here. Verified results will be published after controlled testing with the protocol above.</p>
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/methodology/">Methodology →</a> · <a class="underline underline-offset-4" href="/accuracy/">Accuracy →</a></p>
+  </Article>
+</Layout>

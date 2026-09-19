@@ -1,0 +1,134 @@
+---
+import { getDict, type Locale } from '../i18n/dictionaries';
+import { getFeatures } from '../i18n/features';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const f = getFeatures(locale);
+const ui = getDict(locale).ui;
+---
+<!-- Guided two-session comparison using existing completed (saved) sessions. -->
+<details id="rdm-compare" class="panel cv-defer mt-4 p-5 sm:p-6">
+  <summary class="cursor-pointer focus-ring font-semibold text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.compareTitle}</summary>
+  <p class="mt-1 text-sm leading-6" style="color:var(--muted)">{f.compareIntro}</p>
+  <p class="mt-1 text-xs leading-5" style="color:var(--muted)">{f.compareLegalNote}</p>
+  <div class="mt-3 grid gap-2 sm:grid-cols-2">
+    <label class="block text-sm">{f.compareA}
+      <select id="rdm-cmp-a" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"></select>
+    </label>
+    <label class="block text-sm">{f.compareB}
+      <select id="rdm-cmp-b" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"></select>
+    </label>
+  </div>
+  <div class="mt-2 flex flex-wrap items-center gap-2">
+    <button id="rdm-cmp-run" type="button" class="btn-square focus-ring">{f.compareRun}</button>
+    <label class="inline-flex items-center gap-2 text-sm" style="min-height:44px"><input id="rdm-cmp-pdf" type="checkbox" /> {f.compareIncludePdf}</label>
+  </div>
+  <p id="rdm-cmp-empty" class="mt-2 text-sm" style="color:var(--muted)">{f.compareNoSessions}</p>
+  <div id="rdm-cmp-out" class="mt-2 text-sm leading-6" aria-live="polite"></div>
+</details>
+
+<script type="application/json" id="rdm-cmp-strings" set:html={JSON.stringify({ ...f, minimum: ui.minimum, maximum: ui.maximum, duration: ui.activeDuration, clipping: ui.clipping, gaps: ui.processingGaps, stable: ui.stable })} />
+
+<script>
+  import { compareSessions } from '../lib/history.js';
+  import { formatDb, formatDuration } from '../lib/dsp.js';
+
+  const stringsNode = document.getElementById('rdm-cmp-strings');
+  const F = JSON.parse(stringsNode?.textContent || '{}');
+  const selA = document.getElementById('rdm-cmp-a');
+  const selB = document.getElementById('rdm-cmp-b');
+  const runBtn = document.getElementById('rdm-cmp-run');
+  const emptyMsg = document.getElementById('rdm-cmp-empty');
+  const out = document.getElementById('rdm-cmp-out');
+  const pdfCheck = document.getElementById('rdm-cmp-pdf');
+
+  function readHistory() {
+    try {
+      const raw = window.localStorage.getItem('rdm.session-history.v2');
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed.entries)) return [];
+      return parsed.entries;
+    } catch {
+      return [];
+    }
+  }
+
+  function labelFor(e, i) {
+    const s = e.session || {};
+    const when = e.savedAtIso ? new Date(e.savedAtIso).toLocaleString() : `#${i + 1}`;
+    const leq = s.leqDb != null && Number.isFinite(s.leqDb) ? `${formatDb(s.leqDb)} ${s.unit || ''}` : '--';
+    return `${e.label || when} · ${leq}`;
+  }
+
+  function refresh() {
+    const entries = readHistory();
+    for (const sel of [selA, selB]) {
+      if (!sel) continue;
+      sel.replaceChildren();
+      entries.slice(0, 20).forEach((e, i) => {
+        const o = document.createElement('option');
+        o.value = e.id;
+        o.textContent = labelFor(e, i);
+        sel.appendChild(o);
+      });
+    }
+    if (emptyMsg) emptyMsg.hidden = entries.length >= 2;
+    if (runBtn) runBtn.disabled = entries.length < 2;
+    if (entries.length >= 2 && selB) selB.selectedIndex = 1;
+  }
+
+  function run() {
+    const entries = readHistory();
+    const a = entries.find((e) => e.id === selA?.value);
+    const b = entries.find((e) => e.id === selB?.value);
+    if (!out) return;
+    out.replaceChildren();
+    if (!a || !b) return;
+    const r = compareSessions(a, b);
+    const p = document.createElement('p');
+    if (!r.compatible) {
+      p.textContent = `${F.compareIncompatible}. ${F.compareIntro}`;
+      out.appendChild(p);
+      window.__rdmComparison = null;
+      return;
+    }
+    const A = a.session;
+    const B = b.session;
+    const line = (text) => {
+      const el = document.createElement('p');
+      el.textContent = text;
+      out.appendChild(el);
+    };
+    line(`${F.compareA}: LAeq ${formatDb(A.leqDb)} ${A.unit} · ${F.minimum} ${formatDb(A.minDb)} · ${F.maximum} ${formatDb(A.maxDb)} · ${F.duration} ${formatDuration(A.activeSec || 0)}`);
+    line(`${F.compareB}: LAeq ${formatDb(B.leqDb)} ${B.unit} · ${F.minimum} ${formatDb(B.minDb)} · ${F.maximum} ${formatDb(B.maxDb)} · ${F.duration} ${formatDuration(B.activeSec || 0)}`);
+    line(`${F.compareDelta}: ${r.deltaLeqDb == null ? '--' : `${r.deltaLeqDb >= 0 ? '+' : ''}${r.deltaLeqDb.toFixed(1)} dB`}`);
+    const clipA = Number.isFinite(A.peakDb) && A.peakDb >= -0.5;
+    const clipB = Number.isFinite(B.peakDb) && B.peakDb >= -0.5;
+    if (clipA || clipB || (A.gapMs ?? 0) > 0 || (B.gapMs ?? 0) > 0) {
+      line(`⚠ ${F.clipping}/${F.gaps}: A ${clipA ? F.clipping : F.stable}/${(A.gapMs ?? 0) / 1000}s · B ${clipB ? F.clipping : F.stable}/${(B.gapMs ?? 0) / 1000}s`);
+    }
+    const d = r.deltaLeqDb ?? 0;
+    line(d > 0.5 ? F.compareInterpretUp : d < -0.5 ? F.compareInterpretDown : F.compareInterpretSame);
+    line(F.compareLegalNote);
+    window.__rdmComparison = {
+      aLabel: a.label || 'A',
+      bLabel: b.label || 'B',
+      deltaLeqDb: r.deltaLeqDb,
+      includeInPdf: pdfCheck?.checked === true,
+      text: out.textContent || '',
+    };
+  }
+
+  pdfCheck?.addEventListener('change', () => {
+    if (window.__rdmComparison) window.__rdmComparison.includeInPdf = pdfCheck.checked;
+  });
+  runBtn?.addEventListener('click', run);
+  window.addEventListener('storage', refresh);
+  document.addEventListener('rdm:history-changed', refresh);
+  refresh();
+</script>

@@ -1,6 +1,11 @@
 ---
 import Layout from '../components/Layout.astro';
 import MeterPanel from '../components/MeterPanel.astro';
+import ChecklistPanel from '../components/ChecklistPanel.astro';
+import ExposurePanel from '../components/ExposurePanel.astro';
+import SpectrumPanel from '../components/SpectrumPanel.astro';
+import ComparePanel from '../components/ComparePanel.astro';
+import ReportPanel from '../components/ReportPanel.astro';
 import SoundLevelGuide from '../components/SoundLevelGuide.astro';
 import { getDict } from '../i18n/dictionaries';
 import { SITE, webAppJsonLd, faqJsonLd, breadcrumbJsonLd } from '../lib/seo';
@@ -31,6 +36,7 @@ const tools = [
   { href: '/microphone-noise-floor-test/', t: 'Microphone noise floor test', d: 'Run a focused 30-second raw dBFS diagnostic.' },
   { href: '/background-noise-test/', t: 'Background noise test', d: 'A simple pause-and-resume workflow with honest calibrated and uncalibrated modes.' },
   { href: '/dbfs-vs-db-spl/', t: 'dBFS vs dB SPL', d: 'Understand why digital microphone levels cannot be converted universally to sound pressure.' },
+  { href: '/validation/', t: 'Validation protocol', d: 'Reproducible repeatability checks and current verification status.' },
 ];
 ---
 
@@ -60,6 +66,11 @@ const tools = [
 
   <div class="container-x pb-4" style="max-width:1120px">
     <MeterPanel dict={dict} locale={locale} />
+    <ChecklistPanel locale={locale} />
+    <ExposurePanel locale={locale} />
+    <SpectrumPanel locale={locale} />
+    <ComparePanel locale={locale} />
+    <ReportPanel locale={locale} />
     <p class="mt-3 text-sm" style="color:var(--muted);max-width:78ch">
       Uncalibrated readings are nominal dBA, dBC or dBZ estimates based on a common browser-microphone offset.
       Calibration replaces that default with a device-specific offset for better accuracy.
@@ -69,7 +80,7 @@ const tools = [
     <SoundLevelGuide locale={locale} />
   </div>
 
-  <div class="container-x py-8 grid gap-4" style="max-width:1120px">
+  <div class="container-x cv-group py-8 grid gap-4" style="max-width:1120px">
     <section class="panel p-6" data-reveal aria-labelledby="measure-browser">
       <h2 id="measure-browser" class="text-xl font-semibold tracking-tight">Measure sound in your browser</h2>
       <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">

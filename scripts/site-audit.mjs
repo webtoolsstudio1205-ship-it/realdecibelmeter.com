@@ -8,7 +8,7 @@ const expected = [
   '/de/', '/de/anleitungen/', '/de/kalibrierung/', '/de/genauigkeit/', '/de/dezibel-tabelle/', '/de/db-vs-dba/', '/de/mikrofon-funktioniert-nicht/',
   '/decibel-chart/', '/es/', '/fr/', '/guides/', '/how-to-use/', '/it/', '/ja/', '/ja/accuracy/', '/ja/calibration/', '/ja/db-vs-dba/',
   '/ja/decibel-chart/', '/ja/guides/', '/ja/how-to-use/', '/ja/methodology/', '/ja/microphone-not-working/', '/ja/privacy/', '/ko/',
-  '/methodology/', '/microphone-noise-floor-test/', '/microphone-not-working/', '/privacy/', '/pt/', '/terms/',
+  '/methodology/', '/microphone-noise-floor-test/', '/microphone-not-working/', '/privacy/', '/pt/', '/terms/', '/validation/',
 ];
 
 const failures = [];

@@ -136,7 +136,8 @@ export interface ComparisonResult {
 
 /**
  * Only compare sessions with compatible units, calibration, microphone,
- * sample rate, weighting and processing. Otherwise explain why.
+ * sample rate, weighting, response and processing. Otherwise explain why.
+ * Relative comparisons are never proof of a legal violation.
  */
 export function compareSessions(a: SavedSession, b: SavedSession): ComparisonResult {
   const reasons: string[] = [];
@@ -145,6 +146,7 @@ export function compareSessions(a: SavedSession, b: SavedSession): ComparisonRes
   if (A.unit !== B.unit) reasons.push(`Units differ (${A.unit} vs ${B.unit}).`);
   if (A.mode !== B.mode) reasons.push(`Modes differ (${A.mode} vs ${B.mode}).`);
   if (A.weighting !== B.weighting) reasons.push(`Frequency weighting differs (${A.weighting} vs ${B.weighting}).`);
+  if (A.response !== B.response) reasons.push(`Time response differs (${A.response} vs ${B.response}).`);
   if (A.sampleRate !== B.sampleRate) reasons.push(`Sample rates differ (${A.sampleRate} vs ${B.sampleRate} Hz).`);
   const devA = A.deviceId || A.deviceLabel;
   const devB = B.deviceId || B.deviceLabel;

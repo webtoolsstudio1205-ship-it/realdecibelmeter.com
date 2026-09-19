@@ -1,5 +1,6 @@
 ---
 import type { Dict, Locale } from '../i18n/dictionaries';
+import { getFeatures } from '../i18n/features';
 
 interface Props {
   dict: Dict;
@@ -32,11 +33,13 @@ const CAL_COPY: Record<Locale, {
 };
 
 const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
+const featureCopy = getFeatures(locale);
 ---
 
 <section id="measure" aria-label={dict.liveRegion} class="scroll-mt-20" data-st-idle={dict.statusIdle} data-st-req={dict.statusRequesting} data-st-run={dict.statusRunning} data-st-pause={dict.statusPaused} data-st-stop={dict.statusStopped} data-st-err={dict.statusError} data-p-unknown={dict.permUnknown} data-p-granted={dict.permGranted} data-p-denied={dict.permDenied} data-p-prompt={dict.permPrompt} data-cal-u={dict.calibrationUncal} data-cal-c={dict.calibrationCal} data-cal-required={dict.statusCalRequired} data-input-strength={dict.inputStrength} data-duration={dict.statDuration} data-resp-fast={dict.respFast} data-resp-slow={dict.respSlow} data-mic-default={dict.micDefault}>
   <script id="rdm-ui-strings" type="application/json" set:html={JSON.stringify(dict.ui)} />
   <script id="rdm-cal-strings" type="application/json" set:html={JSON.stringify(calCopy)} />
+  <script id="rdm-feature-strings" type="application/json" set:html={JSON.stringify(featureCopy)} />
   <h2 class="sr-only">{dict.navMeasure}</h2>
   <div id="rdm-panel" class="panel meter-card p-4 sm:p-6 md:p-8" data-live="false" data-state="idle">
     <div id="rdm-announcer" class="sr-only" role="status" aria-live="polite"></div>
@@ -139,8 +142,11 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
     </div>
 
     <div class="mt-5" aria-hidden="true">
-      <div id="rdm-spec" class="spec">
+      <div id="rdm-spec" class="spec" role="img" aria-label="Frequency spectrum estimate, 60 Hz to 12 kHz">
         {Array.from({ length: 10 }).map(() => (<span class="spec-bar"><span class="spec-fill"></span></span>))}
+      </div>
+      <div class="mt-1 flex justify-between text-[10px] tabular" style="color:var(--muted)">
+        <span>60 Hz</span><span>1 kHz</span><span>12 kHz</span>
       </div>
     </div>
 
@@ -179,9 +185,11 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
     <div class="mt-6 panel-raised p-4">
       <h3 class="eyebrow mb-2">{dict.exportTitle}</h3>
       <div class="flex flex-wrap gap-2">
-        <button id="rdm-exp-csv" type="button" class="btn-square focus-ring" disabled>{dict.exportCsv}</button>
-        <button id="rdm-exp-json" type="button" class="btn-square focus-ring" disabled>{dict.exportJson}</button>
+        <button id="rdm-exp-csv" type="button" class="btn-square focus-ring" disabled aria-describedby="rdm-exp-hint">{dict.exportCsv}</button>
+        <button id="rdm-exp-json" type="button" class="btn-square focus-ring" disabled aria-describedby="rdm-exp-hint">{dict.exportJson}</button>
+        <button id="rdm-exp-pdf" type="button" class="btn-square focus-ring" disabled aria-describedby="rdm-exp-hint">{dict.ui.exportPdf}</button>
       </div>
+      <p id="rdm-exp-hint" class="mt-2 text-xs" style="color:var(--muted)">{dict.ui.exportHint}</p>
       <h3 class="eyebrow mt-4 mb-2">{dict.historyTitle}</h3>
       <p id="rdm-storage-warn" class="hidden text-xs mb-2" style="color:var(--muted)">{dict.ui.storageBlocked}</p>
       <ul id="rdm-history" class="text-sm space-y-1"></ul>
@@ -232,6 +240,20 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
         </div>
         <p id="rdm-cal-msg" class="text-xs mt-2" style="color:var(--muted)"></p>
         <ul id="rdm-profiles" class="text-sm space-y-1 mt-2"></ul>
+        <div id="rdm-verify" class="mt-3 rounded-xl p-3" style="border:1px solid var(--border);background:var(--surface)">
+          <p class="eyebrow">{featureCopy.verifyTitle}</p>
+          <p class="mt-1 text-xs leading-5" style="color:var(--muted)">{featureCopy.verifyIntro}</p>
+          <div class="mt-2 flex flex-wrap items-center gap-2 text-sm">
+            <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-verdur" value="30" /> 30 s</label>
+            <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-verdur" value="60" checked /> 60 s</label>
+            <button id="rdm-ver-start" type="button" class="btn-square focus-ring btn-mini">{featureCopy.verifyStart}</button>
+            <button id="rdm-ver-cancel" type="button" class="btn-square focus-ring btn-mini">{featureCopy.verifyCancel}</button>
+          </div>
+          <p id="rdm-ver-progress" class="text-xs mt-1" style="color:var(--muted)"></p>
+          <label class="block text-sm mt-2">{featureCopy.verifyReference}<input id="rdm-ver-reading" autocomplete="off" inputmode="decimal" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="number" step="0.1" min="-20" max="160" placeholder="80.0" /></label>
+          <div class="mt-2"><button id="rdm-ver-apply" type="button" class="btn-square focus-ring btn-mini">{featureCopy.verifyApply}</button></div>
+          <p id="rdm-ver-msg" class="text-xs mt-2" style="color:var(--muted)" role="status"></p>
+        </div>
       </section>
 
       <details class="modal-sec advanced-details">
@@ -314,7 +336,11 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
   import { formatDb, formatDuration } from '../lib/dsp.js';
   import { dbToY, seriesToAreaPath, seriesToPath } from '../lib/graph.js';
   import { digitalDiagnostics, publicGauge, publicGraph, publicMeasurementMode, publicStats, transportControls } from '../lib/presentation.js';
-  import { buildExportSession, sessionToCsv, sessionToJson, downloadText } from '../lib/export-format.js';
+  import { buildExportSession, sessionToCsv, sessionToJson, downloadText, downloadBlob, sessionToPdfBlob } from '../lib/export-format.js';
+  // NOTE: report.ts (field sanitizing/formatting) is intentionally NOT
+  // statically imported: it is only needed for the optional PDF export and
+  // is loaded lazily inside readReportFields() so it never joins the initial
+  // bundle (see the INEFFECTIVE_DYNAMIC_IMPORT warning this avoids).
   import { loadHistory, saveSession, clearHistory } from '../lib/history.js';
   import { MicCapture } from '../lib/microphone.js';
 
@@ -323,8 +349,10 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
   const section = document.getElementById('measure');
   const uiNode = document.getElementById('rdm-ui-strings');
   const calNode = document.getElementById('rdm-cal-strings');
+  const featureNode = document.getElementById('rdm-feature-strings');
   const UI = JSON.parse(uiNode?.textContent || '{}');
   const CAL = JSON.parse(calNode?.textContent || '{}');
+  const FEATURE = JSON.parse(featureNode?.textContent || '{}');
   const fill = (value, vars = {}) => Object.entries(vars).reduce((text, [key, replacement]) => text.replaceAll(`{${key}}`, String(replacement)), value || '');
   const T = (k, fb) => section?.getAttribute(k) ?? fb;
   const PRESENTATION = {
@@ -369,7 +397,9 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
     l1: $('rdm-l1'), l2: $('rdm-l2'), l3: $('rdm-l3'), l4: $('rdm-l4'), l5: $('rdm-l5'),
     s1: $('rdm-s1'), s2: $('rdm-s2'), s3: $('rdm-s3'), s4: $('rdm-s4'), s5: $('rdm-s5'), stat5: $('rdm-stat-5'),
     stats: $('rdm-stats'),
-    expCsv: $('rdm-exp-csv'), expJson: $('rdm-exp-json'),
+    expCsv: $('rdm-exp-csv'), expJson: $('rdm-exp-json'), expPdf: $('rdm-exp-pdf'),
+    verStart: $('rdm-ver-start'), verCancel: $('rdm-ver-cancel'), verReading: $('rdm-ver-reading'),
+    verApply: $('rdm-ver-apply'), verMsg: $('rdm-ver-msg'), verProgress: $('rdm-ver-progress'),
     history: $('rdm-history'), historyEmpty: $('rdm-history-empty'), historyClear: $('rdm-history-clear'),
     storageWarn: $('rdm-storage-warn'),
     modalWrap: $('rdm-modal-wrap'), modal: $('rdm-modal'), modalClose: $('rdm-modal-close'),
@@ -658,6 +688,19 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
     }
     updateCalibrationPreview();
     renderProfiles(s);
+    // Verification progress + last result (second-point consistency check).
+    if (s.verificationCapture) {
+      if (els.verProgress) els.verProgress.textContent = `${FEATURE.verifyStart}… ${s.verificationCapture.elapsedSec.toFixed(0)} / ${s.verificationCapture.durationSec} s · ${UI.keepSteady}`;
+    } else {
+      const vm = engine.getVerificationMeasuredLeq();
+      if (els.verProgress) {
+        els.verProgress.textContent = vm != null && Number.isFinite(vm)
+          ? `${FEATURE.verifyCaptured}: ${formatDb(vm)} dBFS`
+          : (s.activeProfile?.verification
+              ? `${FEATURE.verifyLast}: ${new Date(s.activeProfile.verification.verificationDateIso).toLocaleString()} · ${FEATURE.verifyResidual}: ${s.activeProfile.verification.residualDb >= 0 ? '+' : ''}${s.activeProfile.verification.residualDb.toFixed(1)} dB`
+              : '');
+      }
+    }
     // Digital Diagnostics — the ONLY place raw negative dBFS is shown.
     const diagnostic = digitalDiagnostics(s, PRESENTATION);
     [els.dCur, els.dMin, els.dAvg, els.dMax, els.dPeak].forEach((el, i) => {
@@ -721,6 +764,10 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
     const readingDetail = { value: guideReading.value, unit: guideReading.unit, calibrated: guideReading.calibrated };
     window.__rdmReading = readingDetail;
     document.dispatchEvent(new CustomEvent('rdm:reading', { detail: readingDetail }));
+    // Full typed snapshot for the screening panels (exposure, spectrum,
+    // report). No audio data is broadcast — only numeric summaries.
+    window.__rdmSnapshot = s;
+    document.dispatchEvent(new CustomEvent('rdm:snapshot', { detail: s }));
     const st = s.state;
     const calibratedNow = s.calibrationValid && s.result.kind === 'calibrated';
     els.panel.dataset.state = st;
@@ -816,6 +863,12 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
     const hasData = s.display.current != null || s.stats.current != null;
     els.expCsv.disabled = !hasData;
     els.expJson.disabled = !hasData;
+    if (els.expPdf) els.expPdf.disabled = !hasData;
+    const panelPdf = document.getElementById('rdm-pdf-generate');
+    if (panelPdf) panelPdf.disabled = !hasData;
+    document.getElementById('rdm-pdf-hint')?.toggleAttribute('hidden', hasData);
+    // Visible explanation for the disabled state (not color/icon alone).
+    document.getElementById('rdm-exp-hint')?.toggleAttribute('hidden', hasData);
 
     if (st === 'error') {
       const info = s.error === 'unsupported-browser'
@@ -860,6 +913,7 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
     if (!res.ok) els.storageWarn.classList.remove('hidden');
     els.saveMsg.textContent = res.ok ? UI.savedHistory : UI.operationFailed;
     renderHistory();
+    document.dispatchEvent(new CustomEvent('rdm:history-changed'));
   });
   els.ctaCal?.addEventListener('click', () => openModal());
 
@@ -952,9 +1006,69 @@ const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
     const s = engine.snapshot();
     downloadText(`decibel-session-${Date.now()}.json`, sessionToJson(buildExport(s)), 'application/json');
   });
+
+  async function readReportFields() {
+    // Lazy: report formatting is only needed when the user exports a PDF.
+    const { sanitizeReportFields } = await import('../lib/report.js');
+    const val = (id) => document.getElementById(id)?.value ?? '';
+    return sanitizeReportFields({
+      title: val('rdm-pdf-title'),
+      location: val('rdm-pdf-location'),
+      distance: val('rdm-pdf-distance'),
+      source: val('rdm-pdf-source'),
+      position: val('rdm-pdf-position'),
+      notes: val('rdm-pdf-notes'),
+      includeComparison: document.getElementById('rdm-cmp-pdf')?.checked === true,
+    });
+  }
+
+  async function generatePdf() {
+    const msg = document.getElementById('rdm-pdf-msg');
+    try {
+      const s = engine.snapshot();
+      if (s.display.current == null && s.stats.current == null) {
+        if (msg) msg.textContent = UI.exportHint;
+        return;
+      }
+      const session = buildExport(s);
+      const fields = await readReportFields();
+      const exposure = window.__rdmExposure ?? null;
+      const comparison = window.__rdmComparison?.includeInPdf ? window.__rdmComparison : null;
+      const series = engine.graph.series().slice(-180);
+      const blob = await sessionToPdfBlob(session, { userFields: fields, exposure, comparison, graphSeries: series });
+      downloadBlob(`decibel-report-${Date.now()}.pdf`, blob);
+      if (msg) msg.textContent = FEATURE.pdfDone;
+    } catch (err) {
+      if (msg) msg.textContent = UI.operationFailed;
+    }
+  }
+  els.expPdf?.addEventListener('click', generatePdf);
+  document.getElementById('rdm-pdf-generate')?.addEventListener('click', generatePdf);
+
+  // Verification workflow: separate run at a different level/distance.
+  els.verStart?.addEventListener('click', () => {
+    const dur = document.querySelector('input[name="rdm-verdur"]:checked')?.value === '60' ? 60 : 30;
+    const r = engine.startVerificationCapture(dur);
+    if (els.verMsg) els.verMsg.textContent = r.ok ? `${FEATURE.verifyStart}: ${dur} s · ${UI.keepSteady}` : UI.operationFailed;
+  });
+  els.verCancel?.addEventListener('click', () => { engine.cancelVerificationCapture(); if (els.verMsg) els.verMsg.textContent = UI.captureCancelled; });
+  els.verApply?.addEventListener('click', () => {
+    const reading = parseFloat(els.verReading?.value ?? '');
+    const duration = document.querySelector('input[name="rdm-verdur"]:checked')?.value === '60' ? 60 : 30;
+    const res = engine.applyVerification(Number.isFinite(reading) ? reading : Number.NaN, duration);
+    if (!els.verMsg) return;
+    if (!res.ok) { els.verMsg.textContent = UI.invalidReading; return; }
+    const rec = res.record;
+    const outcome = rec.outcome === 'consistent'
+      ? FEATURE.verifyOutcomeConsistent
+      : rec.outcome === 'caution'
+        ? FEATURE.verifyOutcomeCaution
+        : `${FEATURE.verifyOutcomeFail} ${FEATURE.verifyAgcNote}`;
+    els.verMsg.textContent = `${FEATURE.verifyReference}: ${rec.verificationReferenceDb.toFixed(1)} dBA · ${FEATURE.verifyResidual}: ${rec.residualDb >= 0 ? '+' : ''}${rec.residualDb.toFixed(1)} dB · ${outcome}`;
+  });
   els.historyClear?.addEventListener('click', () => {
     if (!window.confirm(UI.clearHistoryConfirm)) return;
-    if (clearHistory()) { historyEntries = []; renderHistory(); }
+    if (clearHistory()) { historyEntries = []; renderHistory(); document.dispatchEvent(new CustomEvent('rdm:history-changed')); }
     else els.storageWarn.classList.remove('hidden');
   });
 

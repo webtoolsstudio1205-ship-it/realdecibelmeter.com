@@ -1,0 +1,164 @@
+---
+import type { Locale } from '../i18n/dictionaries';
+import { getFeatures } from '../i18n/features';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const f = getFeatures(locale);
+---
+<!-- Noise-exposure screening panel: directly below measurement results, above the sound-level guide. -->
+<details id="rdm-exposure" class="panel cv-defer mt-4 p-5 sm:p-6" data-needs-a={f.exposureNeedsA} data-no-data={f.exposureNoData}>
+  <summary class="cursor-pointer focus-ring font-semibold text-[15px]" style="min-height:44px;display:flex;align-items:center;gap:8px">
+    <span>{f.exposureTitle}</span>
+    <span id="rdm-exp-badge" class="text-xs font-medium rounded-full px-2 py-1" style="border:1px solid var(--border);color:var(--muted)">--</span>
+  </summary>
+  <p class="mt-1 text-sm leading-6" style="color:var(--muted)">{f.exposureIntro}</p>
+  <p class="mt-2 text-xs leading-5 rounded-lg p-3" style="border:1px solid var(--border);background:var(--raised);color:var(--muted)" data-screening-note hidden>{f.exposureScreeningNote}</p>
+  <div id="rdm-exp-body" class="mt-3">
+    <p id="rdm-exp-empty" class="text-sm" style="color:var(--muted)">{f.exposureNoData}</p>
+    <dl id="rdm-exp-grid" class="text-sm grid gap-x-4 gap-y-1 sm:grid-cols-2" hidden>
+      <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.exposureLaeq}</dt><dd id="rdm-exp-laeq" class="tabular text-right font-medium">--</dd></div>
+      <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.exposureDuration}</dt><dd id="rdm-exp-dur" class="tabular text-right">--</dd></div>
+      <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.exposureAllowable}</dt><dd id="rdm-exp-allow" class="tabular text-right">--</dd></div>
+      <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.exposureDose}</dt><dd id="rdm-exp-dose" class="tabular text-right">--</dd></div>
+      <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.exposureProjected}</dt><dd id="rdm-exp-proj" class="tabular text-right">--</dd></div>
+      <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.exposureStatus}</dt><dd id="rdm-exp-status" class="text-right font-medium">--</dd></div>
+      <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.exposureCalibration}</dt><dd id="rdm-exp-cal" class="text-right">--</dd></div>
+      <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{f.exposureAction}</dt><dd id="rdm-exp-action" class="text-right">--</dd></div>
+    </dl>
+    <ul id="rdm-exp-warns" class="mt-2 space-y-1 text-xs" style="color:#fbbf24" aria-live="polite"></ul>
+  </div>
+</details>
+
+<script type="application/json" id="rdm-exp-strings" set:html={JSON.stringify(f)} />
+
+<script>
+  import { computeExposure } from '../lib/exposure.js';
+  import { formatDb, formatDuration } from '../lib/dsp.js';
+  import { nominalSoundEstimate } from '../lib/presentation.js';
+
+  const root = document.getElementById('rdm-exposure');
+  const stringsNode = document.getElementById('rdm-exp-strings');
+  const F = JSON.parse(stringsNode?.textContent || '{}');
+  const els = {
+    badge: document.getElementById('rdm-exp-badge'),
+    empty: document.getElementById('rdm-exp-empty'),
+    grid: document.getElementById('rdm-exp-grid'),
+    laeq: document.getElementById('rdm-exp-laeq'),
+    dur: document.getElementById('rdm-exp-dur'),
+    allow: document.getElementById('rdm-exp-allow'),
+    dose: document.getElementById('rdm-exp-dose'),
+    proj: document.getElementById('rdm-exp-proj'),
+    status: document.getElementById('rdm-exp-status'),
+    cal: document.getElementById('rdm-exp-cal'),
+    action: document.getElementById('rdm-exp-action'),
+    warns: document.getElementById('rdm-exp-warns'),
+    screeningNote: root?.querySelector('[data-screening-note]'),
+  };
+
+  function fmtAllow(sec) {
+    if (sec == null || !Number.isFinite(sec)) return '--';
+    const h = sec / 3600;
+    // Avoid presenting extreme low-level extrapolations as a precise safety
+    // allowance. The NIOSH model is used here only as a screening guide.
+    if (h >= 24) return '>24 h';
+    if (h >= 1) return `${h.toFixed(1)} h`;
+    const m = sec / 60;
+    if (m >= 1) return `${m.toFixed(0)} min`;
+    return `${Math.round(sec)} s`;
+  }
+
+  function statusText(s) {
+    if (s === 'low') return F.statusLow;
+    if (s === 'moderate') return F.statusModerate;
+    if (s === 'elevated') return F.statusElevated;
+    if (s === 'over') return F.statusOver;
+    return '--';
+  }
+
+  function actionText(s) {
+    if (s === 'low') return F.actionLow;
+    if (s === 'moderate') return F.actionModerate;
+    if (s === 'elevated') return F.actionElevated;
+    if (s === 'over') return F.actionOver;
+    return '--';
+  }
+
+  function warnText(w) {
+    if (w === 'clipping') return F.warnClipping;
+    if (w === 'gaps') return F.warnGaps;
+    if (w === 'stale-calibration') return F.warnStale;
+    return F.warnUnstable;
+  }
+
+  // Reuse the typed engine snapshot broadcast by the meter panel.
+  // LAeq source: calibrated display average when valid, otherwise the
+  // disclosed nominal estimate (raw dBFS + 100). Never current or max.
+  function render(snap) {
+    if (!root || !snap) return;
+    if (snap.weighting !== 'A') {
+      if (els.empty) { els.empty.textContent = root.dataset.needsA || ''; els.empty.hidden = false; }
+      if (els.grid) els.grid.hidden = true;
+      if (els.badge) els.badge.textContent = snap.weighting;
+      if (els.warns) els.warns.replaceChildren();
+      if (els.screeningNote) els.screeningNote.hidden = true;
+      return;
+    }
+    const calibrated = snap.calibrationValid === true && snap.result?.kind === 'calibrated';
+    const laeq = calibrated ? snap.display?.leq ?? null : nominalSoundEstimate(snap.stats?.leq ?? null);
+    const durationSec = snap.stats?.durationSec ?? 0;
+    const peak = snap.stats?.peakDb;
+    const clipping = Number.isFinite(peak) && peak >= -0.5;
+    const unstable = (snap.gapMs ?? 0) > 2000 || (snap.stats?.gapCount ?? 0) > 2;
+    const r = computeExposure({
+      laeqDb: laeq,
+      durationSec,
+      weighting: snap.weighting,
+      calibrated,
+      clipping,
+      gapCount: snap.stats?.gapCount ?? 0,
+      gapMs: snap.gapMs ?? 0,
+      calibrationStale: snap.calibrationStale === true,
+      unstable,
+    });
+    if (!r.eligible) {
+      if (els.empty) { els.empty.textContent = root.dataset.noData || ''; els.empty.hidden = false; }
+      if (els.grid) els.grid.hidden = true;
+      if (els.badge) els.badge.textContent = '--';
+      if (els.screeningNote) els.screeningNote.hidden = true;
+      return;
+    }
+    if (els.empty) els.empty.hidden = true;
+    if (els.grid) els.grid.hidden = false;
+    if (els.laeq) els.laeq.textContent = laeq == null ? '--' : `${formatDb(laeq)} dBA`;
+    if (els.dur) els.dur.textContent = formatDuration(r.durationSec);
+    if (els.allow) els.allow.textContent = fmtAllow(r.allowableSec);
+    if (els.dose) els.dose.textContent = r.dosePct == null ? '--' : `${r.dosePct < 0.1 ? '<0.1' : r.dosePct.toFixed(1)} %`;
+    if (els.proj) els.proj.textContent = r.projected8hDosePct == null ? '--' : `${r.projected8hDosePct.toFixed(0)} %`;
+    if (els.status) els.status.textContent = statusText(r.status);
+    if (els.cal) els.cal.textContent = calibrated ? F.exposureCalibration + ': ✓' : F.exposureUncalNote;
+    if (els.action) els.action.textContent = actionText(r.status);
+    if (els.screeningNote) els.screeningNote.hidden = calibrated;
+    if (els.badge) {
+      els.badge.textContent = r.status === 'low' ? '●○○○' : r.status === 'moderate' ? '●●○○' : r.status === 'elevated' ? '●●●○' : r.status === 'over' ? '●●●●' : '--';
+      els.badge.setAttribute('aria-label', statusText(r.status));
+    }
+    if (els.warns) {
+      els.warns.replaceChildren();
+      // Icon + text (never color alone): prefix each warning for non-color cues.
+      r.warnings.forEach((w) => {
+        const li = document.createElement('li');
+        li.textContent = `⚠ ${warnText(w)}`;
+        els.warns.appendChild(li);
+      });
+    }
+    // Expose the latest screening result for the PDF report (no audio data).
+    window.__rdmExposure = { laeqDb: r.laeqDb, dosePct: r.dosePct, status: r.status, calibrated };
+  }
+
+  document.addEventListener('rdm:snapshot', (e) => render(e.detail));
+  if (window.__rdmSnapshot) render(window.__rdmSnapshot);
+</script>

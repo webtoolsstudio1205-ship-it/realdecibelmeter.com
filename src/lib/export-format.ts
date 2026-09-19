@@ -164,12 +164,26 @@ export function sessionToJson(s: ExportSession): string {
   return JSON.stringify({ exportedAt: new Date().toISOString(), session: s }, null, 2);
 }
 
-/** Lazy-load jsPDF only when the user requests a PDF report. */
-export async function sessionToPdfBlob(s: ExportSession): Promise<Blob> {
+/** Lazy-load jsPDF only when the user requests a PDF report. Entirely local: no uploads. */
+export interface PdfExtras {
+  userFields?: { title: string; location: string; distance: string; source: string; position: string; notes: string; includeComparison: boolean };
+  exposure?: { laeqDb: number | null; dosePct: number | null; status: string; calibrated: boolean } | null;
+  comparison?: { aLabel: string; bLabel: string; deltaLeqDb: number | null; text: string } | null;
+  graphSeries?: (number | null)[];
+}
+
+export async function sessionToPdfBlob(s: ExportSession, extras: PdfExtras = {}): Promise<Blob> {
   const { jsPDF } = await import('jspdf');
+  const { buildReportRows, REPORT_NOTICE } = await import('./report.js');
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   const W = 540;
   let y = 56;
+  const needPage = (h = 22) => {
+    if (y + h > 780) {
+      doc.addPage();
+      y = 56;
+    }
+  };
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);
   doc.text('Real Decibel Meter — session report', 40, y);
@@ -178,38 +192,127 @@ export async function sessionToPdfBlob(s: ExportSession): Promise<Blob> {
   doc.setFontSize(10);
   doc.setTextColor(90);
   doc.text(`Exported ${new Date().toISOString()} · software v${s.softwareVersion}`, 40, y);
-  y += 24;
+  y += 10;
+  // Prominent reference-only notice (required on every report).
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(160, 30, 30);
+  needPage(28);
+  doc.text(doc.splitTextToSize(REPORT_NOTICE, W), 40, y);
+  y += 28;
+  doc.setTextColor(20);
   const F = (v: number | null, suffix = '') =>
     v == null || !Number.isFinite(v) ? '--' : `${v.toFixed(2)}${suffix}`;
-  const rows: [string, string][] = [
+  const baseRows: [string, string][] = [
     ['Session start', `${s.startedAtIso} (${s.timezone}, UTC${s.timezoneOffsetMin >= 0 ? '+' : ''}${s.timezoneOffsetMin / 60})`],
     ['Recorded / active', `${s.recordedSec.toFixed(1)} s recorded · ${s.activeSec.toFixed(1)} s active`],
-    ['Capture gaps', `${s.gapMs} ms across ${s.gaps.length} gap(s)`],
+    ['Capture gaps', `${s.gapMs} ms across ${s.gaps.length} gap(s) (${(s.gapMs / 1000).toFixed(1)} s total)`],
     ['Unit / mode', `${s.unit} · ${s.mode}`],
     ['Weighting / response', `${s.weighting} · ${s.response}`],
     ['Microphone', `${s.deviceLabel || 'unknown'} · ${s.sampleRate} Hz · ${s.channelCount} ch`],
     ['Processing (EC/NS/AGC)', `${s.processing.echoCancellation}/${s.processing.noiseSuppression}/${s.processing.autoGainControl}`],
-    ['Calibration', `${s.calibrationStatus} · ${s.calibrationMethod}${s.calibrationOffsetDb != null ? ` · offset ${s.calibrationOffsetDb.toFixed(2)} dB` : ''}`],
+    ['Relaxed constraints', s.relaxedConstraints.length ? s.relaxedConstraints.join('; ') : '--'],
+    ['Calibration', `${s.calibrationStatus} · ${s.calibrationMethod}${s.calibrationOffsetDb != null ? ` · offset ${s.calibrationOffsetDb.toFixed(2)} dB` : ''}${s.calibrationDateIso ? ` · ${s.calibrationDateIso}` : ''}`],
     ['Current', F(s.currentDb, ` ${s.unit}`)],
     ['Minimum', F(s.minDb, ` ${s.unit}`)],
     ['Energy average (Leq)', F(s.leqDb, ` ${s.unit}`)],
     ['Maximum', F(s.maxDb, ` ${s.unit}`)],
     ['Sampled digital peak', F(s.peakDb, ' dBFS')],
+    ['Invalid samples', String(s.invalidSamples)],
     ['Segments', String(s.segments.length)],
   ];
   doc.setTextColor(20);
-  for (const [k, v] of rows) {
-    if (y > 760) {
-      doc.addPage();
-      y = 56;
-    }
+  for (const [k, v] of baseRows) {
+    needPage();
     doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
     doc.text(k, 40, y, { maxWidth: 150 });
     doc.setFont('helvetica', 'normal');
     doc.text(v, 200, y, { maxWidth: W - 160 });
-    y += 22;
+    y += 20;
+  }
+  // User-entered context (already sanitized by the caller via report.ts).
+  if (extras.userFields) {
+    const uf = extras.userFields;
+    y += 6;
+    needPage();
+    doc.setFont('helvetica', 'bold');
+    doc.text('Session context', 40, y);
+    y += 16;
+    doc.setFont('helvetica', 'normal');
+    for (const row of buildReportRows(s, {
+      title: uf.title, location: uf.location, distance: uf.distance,
+      source: uf.source, position: uf.position, notes: uf.notes, includeComparison: false,
+    }).filter((r) => ['Session title', 'Location', 'Distance from source', 'Source / activity', 'Device position / orientation', 'Environmental notes'].includes(r.key))) {
+      needPage();
+      doc.setFont('helvetica', 'bold');
+      doc.text(row.key, 40, y, { maxWidth: 150 });
+      doc.setFont('helvetica', 'normal');
+      doc.text(row.value || '--', 200, y, { maxWidth: W - 160 });
+      y += 20;
+    }
+  }
+  // Exposure estimate (A weighting only).
+  if (extras.exposure) {
+    y += 6;
+    needPage();
+    doc.setFont('helvetica', 'bold');
+    doc.text('Exposure screening (A-weighted LAeq, NIOSH 3 dB)', 40, y);
+    y += 16;
+    doc.setFont('helvetica', 'normal');
+    const e = extras.exposure;
+    needPage();
+    doc.text(`LAeq ${F(e.laeqDb, ' dBA')} · dose ${e.dosePct == null ? '--' : `${e.dosePct.toFixed(1)} %`} · ${e.status} · ${e.calibrated ? 'calibrated device-specific estimate' : 'screening estimate based on an uncalibrated browser reading'}`, 40, y, { maxWidth: W });
+    y += 20;
+  }
+  // Optional comparison block.
+  if (extras.comparison) {
+    y += 6;
+    needPage(40);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Comparison: ${extras.comparison.aLabel} vs ${extras.comparison.bLabel}`, 40, y);
+    y += 16;
+    doc.setFont('helvetica', 'normal');
+    doc.text(doc.splitTextToSize(extras.comparison.text.slice(0, 1000), W), 40, y);
+    y += 44;
+  }
+  // History graph: simple local line plot from the bounded engine series.
+  const series = (extras.graphSeries || []).filter((v): v is number => v != null && Number.isFinite(v));
+  if (series.length > 1) {
+    y += 6;
+    needPage(120);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Level history', 40, y);
+    y += 8;
+    const gx = 40;
+    const gw = W;
+    const gh = 90;
+    const lo = Math.min(...series) - 2;
+    const hi = Math.max(...series) + 2;
+    const span = Math.max(1, hi - lo);
+    doc.setDrawColor(200);
+    doc.rect(gx, y, gw, gh);
+    doc.setDrawColor(59, 130, 246);
+    let prevX = gx;
+    let prevY = y + gh - ((series[0] - lo) / span) * gh;
+    for (let i = 1; i < series.length; i++) {
+      const x = gx + (i / (series.length - 1)) * gw;
+      const yy = y + gh - ((series[i] - lo) / span) * gh;
+      doc.line(prevX, prevY, x, yy);
+      prevX = x;
+      prevY = yy;
+    }
+    y += gh + 14;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(90);
+    doc.text(`${lo.toFixed(0)} – ${hi.toFixed(0)} ${s.unit} · ${series.length} points (local render, no uploads)`, 40, y);
+    doc.setTextColor(20);
+    doc.setFontSize(10);
+    y += 16;
   }
   y += 8;
+  needPage(30);
   doc.setFont('helvetica', 'bold');
   doc.text('Limitations', 40, y);
   y += 14;

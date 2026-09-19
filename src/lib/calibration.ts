@@ -43,6 +43,8 @@ export interface CalibrationProfileFull extends CalibrationProfile {
   referenceDurationSec: number;
   config: CaptureConfig;
   appVersion: string;
+  /** Optional second-point consistency check (never a certification). */
+  verification?: VerificationRecord;
 }
 
 export interface RelativeBaseline {
@@ -51,6 +53,60 @@ export interface RelativeBaseline {
   weighting: string;
   sampleRate: number;
   deviceLabel: string;
+}
+
+/**
+ * Second-point consistency check for an existing calibration offset.
+ * Product guidance only — never a certification. The verification run must
+ * use a DIFFERENT level or distance than the anchor capture so gain/AGC
+ * issues cannot hide behind a single-point fit.
+ */
+export type VerificationOutcome = 'consistent' | 'caution' | 'inconsistent';
+
+export interface VerificationRecord {
+  /** Original anchor: trusted reference level from the calibration capture. */
+  anchorReferenceDb: number;
+  /** Original anchor: browser digital average during the calibration capture. */
+  anchorBrowserDigitalDb: number;
+  appliedOffsetDb: number;
+  /** Second-point trusted reference level. */
+  verificationReferenceDb: number;
+  /** Second-point browser digital average (raw dBFS energy average). */
+  verificationBrowserDigitalDb: number;
+  /** Second-point browser estimate after the offset (= digital + offset). */
+  verificationBrowserEstimateDb: number;
+  /** Remaining error (= estimate − reference) at the verification point. */
+  residualDb: number;
+  verificationDateIso: string;
+  durationSec: 30 | 60;
+  outcome: VerificationOutcome;
+}
+
+/** Absolute residual ≤2 dB consistent, ≤5 dB caution, else inconsistent. */
+export function evaluateVerification(residualDb: number): VerificationOutcome {
+  const a = Math.abs(residualDb);
+  if (!Number.isFinite(a)) return 'inconsistent';
+  if (a <= 2) return 'consistent';
+  if (a <= 5) return 'caution';
+  return 'inconsistent';
+}
+
+export function validateVerificationInput(inp: {
+  verificationReferenceDb: number;
+  verificationBrowserDigitalDb: number | null;
+  durationSec: number;
+}): { ok: boolean; reasons: string[] } {
+  const reasons: string[] = [];
+  if (!Number.isFinite(inp.verificationReferenceDb) || inp.verificationReferenceDb < -20 || inp.verificationReferenceDb > 160) {
+    reasons.push('Verification reference must be a number between −20 and 160 dB.');
+  }
+  if (inp.verificationBrowserDigitalDb == null || !Number.isFinite(inp.verificationBrowserDigitalDb)) {
+    reasons.push('No valid verification capture was recorded. Run the 30–60 s verification capture first.');
+  }
+  if (inp.durationSec !== 30 && inp.durationSec !== 60) {
+    reasons.push('Verification capture must last 30 or 60 seconds.');
+  }
+  return { ok: reasons.length === 0, reasons };
 }
 
 export const UNCALIBRATED: CalibrationProfile = {
@@ -215,6 +271,18 @@ function isValidProfile(p: unknown): p is CalibrationProfileFull {
   if (typeof o.measuredDigitalLeqDb !== 'number' || !Number.isFinite(o.measuredDigitalLeqDb)) return false;
   if (typeof o.config !== 'object' || o.config == null) return false;
   if (typeof (o.config as Record<string, unknown>).sampleRate !== 'number') return false;
+  // Verification is optional (older profiles predate it). When present it
+  // must be a well-formed record; a malformed block invalidates the profile
+  // rather than silently dropping the check.
+  if (o.verification !== undefined) {
+    const v = o.verification as Record<string, unknown>;
+    if (typeof v !== 'object' || v == null) return false;
+    for (const k of ['verificationReferenceDb', 'verificationBrowserDigitalDb', 'verificationBrowserEstimateDb', 'residualDb', 'appliedOffsetDb'] as const) {
+      if (typeof v[k] !== 'number' || !Number.isFinite(v[k] as number) || Math.abs(v[k] as number) > 200) return false;
+    }
+    if (v.outcome !== 'consistent' && v.outcome !== 'caution' && v.outcome !== 'inconsistent') return false;
+    if (typeof v.verificationDateIso !== 'string' || Number.isNaN(Date.parse(v.verificationDateIso as string))) return false;
+  }
   return true;
 }
 

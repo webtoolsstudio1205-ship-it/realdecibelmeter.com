@@ -12,13 +12,16 @@ import {
   clearActiveProfileId,
   computeOffset,
   deleteProfile,
+  evaluateVerification,
   getActiveProfileId,
   loadProfiles,
   setActiveProfileId,
   storeProfile,
   validateCalibration,
   validateReferenceInput,
+  validateVerificationInput,
   type ReferenceInput,
+  type VerificationRecord,
 } from './calibration.js';
 import type {
   CalibrationProfile,
@@ -118,6 +121,8 @@ export class DecibelEngine {
   private spectrumDb: (number | null)[] = [];
   private refCapture: { durationSec: number; beganAt: number; energySum: number; samples: number } | null = null;
   private refMeasuredLeq: number | null = null;
+  private verifyCapture: { durationSec: number; beganAt: number; energySum: number; samples: number } | null = null;
+  private verifyMeasuredLeq: number | null = null;
   private lastEmitAt = 0;
   private startEpoch = 0;
   /** Wall time (nowFn ms) when stabilization ends; 0 when not stabilizing. */
@@ -312,6 +317,13 @@ export class DecibelEngine {
             elapsedSec: Math.min(this.refCapture.durationSec, (this.nowFn() - this.refCapture.beganAt) / 1000),
           }
         : null,
+      verificationCapture: this.verifyCapture
+        ? {
+            active: true,
+            durationSec: this.verifyCapture.durationSec,
+            elapsedSec: Math.min(this.verifyCapture.durationSec, (this.nowFn() - this.verifyCapture.beganAt) / 1000),
+          }
+        : null,
       meterRange: meterRangeFor(this.mode),
       storageOk: this.storageOk,
       appVersion: APP_VERSION,
@@ -409,6 +421,74 @@ export class DecibelEngine {
 
   getReferenceMeasuredLeq(): number | null {
     return this.refMeasuredLeq;
+  }
+
+  /** Second-point verification capture (30 or 60 s) at a DIFFERENT level/distance. */
+  startVerificationCapture(durationSec: 30 | 60): { ok: boolean; reason: string } {
+    if (this.state !== 'running') return { ok: false, reason: 'Start measuring before capturing a verification period.' };
+    if (!this.activeProfile) return { ok: false, reason: 'Calibrate first — verification checks an existing offset.' };
+    if (durationSec !== 30 && durationSec !== 60) return { ok: false, reason: 'Verification capture must last 30 or 60 seconds.' };
+    this.verifyCapture = { durationSec, beganAt: this.nowFn(), energySum: 0, samples: 0 };
+    this.verifyMeasuredLeq = null;
+    this.emit(true);
+    return { ok: true, reason: '' };
+  }
+
+  cancelVerificationCapture(): void {
+    this.verifyCapture = null;
+    this.emit(true);
+  }
+
+  getVerificationMeasuredLeq(): number | null {
+    return this.verifyMeasuredLeq;
+  }
+
+  getVerificationCapture(): { active: boolean; durationSec: number; elapsedSec: number } | null {
+    if (!this.verifyCapture) return null;
+    return {
+      active: true,
+      durationSec: this.verifyCapture.durationSec,
+      elapsedSec: Math.min(this.verifyCapture.durationSec, (this.nowFn() - this.verifyCapture.beganAt) / 1000),
+    };
+  }
+
+  /**
+   * Record the second reference-meter average and compute the residual after
+   * the stored offset. The verification is saved onto the active profile so
+   * it stays tied to the same microphone/weighting/response/processing setup.
+   */
+  applyVerification(verificationReferenceDb: number, durationSec: 30 | 60): { ok: boolean; reasons: string[]; record?: VerificationRecord } {
+    if (!this.activeProfile) return { ok: false, reasons: ['No active calibration profile to verify.'] };
+    const measured = this.verifyMeasuredLeq;
+    const v = validateVerificationInput({ verificationReferenceDb, verificationBrowserDigitalDb: measured, durationSec });
+    if (!v.ok) return { ok: false, reasons: v.reasons };
+    const browserEstimate = (measured as number) + this.activeProfile.offsetDb;
+    const residual = browserEstimate - verificationReferenceDb;
+    const record: VerificationRecord = {
+      anchorReferenceDb: this.activeProfile.referenceReadingDb,
+      anchorBrowserDigitalDb: this.activeProfile.measuredDigitalLeqDb,
+      appliedOffsetDb: this.activeProfile.offsetDb,
+      verificationReferenceDb,
+      verificationBrowserDigitalDb: measured as number,
+      verificationBrowserEstimateDb: browserEstimate,
+      residualDb: residual,
+      verificationDateIso: new Date(this.nowFn()).toISOString(),
+      durationSec,
+      outcome: evaluateVerification(residual),
+    };
+    const updated = { ...this.activeProfile, verification: record };
+    try {
+      storeProfile(updated);
+      this.profiles = loadProfiles();
+    } catch {
+      this.storageOk = false;
+      this.profiles = [updated, ...this.profiles.filter((p) => p.id !== updated.id)].slice(0, 10);
+    }
+    this.activeProfile = updated;
+    this.verifyCapture = null;
+    this.verifyMeasuredLeq = null;
+    this.emit(true);
+    return { ok: true, reasons: [], record };
   }
 
   applyReferenceCalibration(inp: ReferenceInput, label: string): { ok: boolean; reasons: string[] } {
@@ -705,6 +785,7 @@ export class DecibelEngine {
     this.capture = null;
     this.detachLifecycle();
     this.refCapture = null;
+    this.verifyCapture = null;
     this.spectrumDb = [];
     this.state = 'stopped';
     this.emit(true);
@@ -723,6 +804,8 @@ export class DecibelEngine {
     this.spectrumDb = [];
     this.refCapture = null;
     this.refMeasuredLeq = null;
+    this.verifyCapture = null;
+    this.verifyMeasuredLeq = null;
     this.state = 'idle';
     this.error = 'none';
     this.errorDetail = '';
@@ -815,7 +898,7 @@ export class DecibelEngine {
       // Keep one bounded raw digital series. Public presentation maps it to
       // nominal presentation estimate or a compatible calibration offset.
       this.graph.push(weightedDb);
-      // Reference capture accumulates raw digital energy only.
+      // Reference + verification captures accumulate raw digital energy only.
       if (this.refCapture) {
         this.refCapture.energySum += q.sumSq;
         this.refCapture.samples += q.n;
@@ -823,6 +906,15 @@ export class DecibelEngine {
         if (elapsed >= this.refCapture.durationSec && this.refCapture.samples > 0) {
           this.refMeasuredLeq = 10 * Math.log10(this.refCapture.energySum / this.refCapture.samples);
           this.refCapture = null;
+        }
+      }
+      if (this.verifyCapture) {
+        this.verifyCapture.energySum += q.sumSq;
+        this.verifyCapture.samples += q.n;
+        const elapsed = (now - this.verifyCapture.beganAt) / 1000;
+        if (elapsed >= this.verifyCapture.durationSec && this.verifyCapture.samples > 0) {
+          this.verifyMeasuredLeq = 10 * Math.log10(this.verifyCapture.energySum / this.verifyCapture.samples);
+          this.verifyCapture = null;
         }
       }
       this.emit(false);
