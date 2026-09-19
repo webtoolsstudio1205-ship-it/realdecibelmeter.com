@@ -1,6 +1,7 @@
 ---
 import Layout from '../components/Layout.astro';
 import MeterPanel from '../components/MeterPanel.astro';
+import SoundLevelGuide from '../components/SoundLevelGuide.astro';
 import { getDict } from '../i18n/dictionaries';
 import { SITE, webAppJsonLd, faqJsonLd, breadcrumbJsonLd } from '../lib/seo';
 
@@ -25,6 +26,11 @@ const guides = [
   { href: '/decibel-chart/', t: 'Decibel comparison chart', d: 'Understand decibel levels with approximate everyday examples.' },
   { href: '/db-vs-dba/', t: 'dB vs dBA', d: 'What A, C and Z weighting mean and which one to pick.' },
   { href: '/privacy/', t: 'Microphone privacy', d: 'How local audio processing keeps recordings on your device.' },
+];
+const tools = [
+  { href: '/microphone-noise-floor-test/', t: 'Microphone noise floor test', d: 'Run a focused 30-second raw dBFS diagnostic.' },
+  { href: '/background-noise-test/', t: 'Background noise test', d: 'A simple pause-and-resume workflow with honest calibrated and uncalibrated modes.' },
+  { href: '/dbfs-vs-db-spl/', t: 'dBFS vs dB SPL', d: 'Understand why digital microphone levels cannot be converted universally to sound pressure.' },
 ];
 ---
 
@@ -53,23 +59,24 @@ const guides = [
   </div>
 
   <div class="container-x pb-4" style="max-width:1120px">
-    <MeterPanel dict={dict} />
+    <MeterPanel dict={dict} locale={locale} />
     <p class="mt-3 text-sm" style="color:var(--muted);max-width:78ch">
-      Uncalibrated percentage readings show microphone input strength, not environmental sound pressure.
-      Calibrated environmental readings in dBA, dBC or dBZ depend on your device and calibration.
+      Uncalibrated readings are nominal dBA, dBC or dBZ estimates based on a common browser-microphone offset.
+      Calibration replaces that default with a device-specific offset for better accuracy.
       This free <a class="underline underline-offset-4 focus-ring" href="/methodology/">online sound meter</a>
       works as a sound level meter and noise level meter for quick checks — not as a certified instrument.
     </p>
+    <SoundLevelGuide locale={locale} />
   </div>
 
   <div class="container-x py-8 grid gap-4" style="max-width:1120px">
     <section class="panel p-6" data-reveal aria-labelledby="measure-browser">
       <h2 id="measure-browser" class="text-xl font-semibold tracking-tight">Measure sound in your browser</h2>
       <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
-        This online decibel meter reads your microphone through the Web Audio API and shows live input strength immediately —
+        This online decibel meter reads your microphone through the Web Audio API and shows a live estimated sound level immediately —
         no download, no account. Press <a class="underline underline-offset-4 focus-ring" href="#measure">Start Measuring</a>,
-        grant permission once, and watch current, average and peak values on the live graph.
-        For an estimated environmental sound level, <a class="underline underline-offset-4 focus-ring" href="/calibration/">calibrate your microphone</a> against a known reference first.
+        grant permission once, and watch current, minimum, average and maximum values on the live graph.
+        For better device-specific accuracy, <a class="underline underline-offset-4 focus-ring" href="/calibration/">calibrate your microphone</a> against a known reference.
       </p>
     </section>
 
@@ -78,8 +85,8 @@ const guides = [
       <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
         Each audio block is reduced to an RMS value, converted to a level in dB, corrected for the selected
         frequency weighting, smoothed with Fast (125&nbsp;ms) or Slow (1&nbsp;s) time response, and aggregated into an
-        energy-average Leq. Uncalibrated output is microphone input strength; a saved offset turns it into an estimated
-        environmental reading. Read the full <a class="underline underline-offset-4 focus-ring" href="/methodology/">methodology</a>.
+        energy-average Leq. Before calibration, a nominal +100 dB offset converts the weighted digital level into a clearly
+        labelled estimate; a saved calibration offset replaces it. Read the full <a class="underline underline-offset-4 focus-ring" href="/methodology/">methodology</a>.
       </p>
     </section>
 
@@ -87,8 +94,8 @@ const guides = [
       <h2 id="understand" class="text-xl font-semibold tracking-tight">Understanding your measurement</h2>
       <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
         Raw digital readings (dBFS) are negative because full scale is zero — silence sits near −100 and loud input approaches 0.
-        This meter maps that range to a 0–100% input-strength display so it stays readable. Environmental decibels work the other
-        way: a quiet bedroom is around 30&nbsp;dBA and normal conversation near 60&nbsp;dBA.
+        This meter adds a nominal 100 dB offset to show an immediate estimated environmental scale: a quiet bedroom is around
+        30&nbsp;dBA and normal conversation near 60&nbsp;dBA. Different devices can still disagree until calibrated.
         See <a class="underline underline-offset-4 focus-ring" href="/decibel-chart/">understand decibel levels</a> for approximate examples.
       </p>
     </section>
@@ -122,8 +129,8 @@ const guides = [
     <section class="panel p-6" data-reveal aria-labelledby="privacy-home">
       <h2 id="privacy-home" class="text-xl font-semibold tracking-tight">Microphone privacy</h2>
       <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
-        The browser processes microphone samples locally; this site uploads no recordings and sets no tracking cookies for
-        measurement. Saved session history stays in this browser. Details in
+        The browser processes microphone samples locally and this site uploads no recordings. Google Analytics receives
+        standard site-usage data, never microphone samples. Saved session history stays in this browser. Details in
         <a class="underline underline-offset-4 focus-ring" href="/privacy/">microphone privacy</a>.
       </p>
     </section>
@@ -172,6 +179,18 @@ const guides = [
         ))}
       </div>
       <p class="mt-3 text-sm" style="color:var(--muted)">Browse the full <a class="underline underline-offset-4 focus-ring" href="/guides/">sound-measurement guide hub</a>.</p>
+    </section>
+
+    <section data-reveal aria-labelledby="tools">
+      <h2 id="tools" class="text-xl font-semibold tracking-tight">Focused sound tests</h2>
+      <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {tools.map((tool) => (
+          <a href={tool.href} class="panel lift p-4 focus-ring block hover:opacity-90">
+            <h3 class="font-semibold text-[15px]">{tool.t}</h3>
+            <p class="text-sm mt-1" style="color:var(--muted)">{tool.d}</p>
+          </a>
+        ))}
+      </div>
     </section>
   </div>
 </Layout>

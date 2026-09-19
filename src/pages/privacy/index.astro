@@ -2,13 +2,13 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
 const title = 'Microphone and Audio-Processing Privacy';
-const description = 'Microphone audio is processed locally in your browser and never uploaded. Local storage, history and hosting notes.';
+const description = 'Microphone audio is processed locally and never uploaded. Learn how local storage, Google Analytics and hosting data are handled.';
 const url = `${SITE}/privacy/`;
 const jsonLd = [
-  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-16' }),
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-19' }),
   breadcrumbJsonLd([
     { name: 'Home', url: `${SITE}/` },
     { name: 'Privacy', url },
@@ -16,15 +16,17 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/privacy/" jsonLd={jsonLd}>
-  <Article title={title} intro="This meter is local-first: microphone audio is processed in your browser and never transmitted by this site." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy/' }]}>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/privacy/" hreflang={guideHreflang('privacy')} jsonLd={jsonLd}>
+  <Article title={title} intro="This meter is local-first: microphone audio is processed in your browser and never transmitted by this site." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Privacy', href: '/privacy/' }]}>
     <ul class="list-disc pl-5 mt-2 space-y-1">
       <li><strong class="text-white">Audio:</strong> analysed via the Web Audio API on-device; the microphone stream is never connected to speakers and never uploaded, recorded server-side, or shared. Stopping the meter disposes tracks and closes the audio context.</li>
       <li><strong class="text-white">Permissions:</strong> the browser asks for microphone access once per origin; you can revoke it any time in the address-bar site settings. Denying permission only shows the idle “--” display — nothing is captured.</li>
       <li><strong class="text-white">Storage:</strong> theme preference and up to 20 session summaries live in your browser's localStorage only. Clearing site data removes them.</li>
-      <li><strong class="text-white">Analytics/cookies:</strong> the app itself sets no tracking cookies and makes no measurement API calls.</li>
+      <li><strong class="text-white">Analytics/cookies:</strong> Google Analytics is used to understand site usage and may set analytics cookies or receive page, browser and device information. It never receives microphone audio or measurement samples.</li>
       <li><strong class="text-white">Hosting:</strong> static files are served over HTTPS; the host may keep standard access logs outside this app's control.</li>
     </ul>
+    <h2 class="text-white font-semibold mt-6">Sources and technical references</h2>
+    <p class="mt-2">Microphone permission and secure-context requirements are documented by <a class="underline underline-offset-4" href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">MDN getUserMedia()</a>. The site’s multilingual metadata follows <a class="underline underline-offset-4" href="https://developers.google.com/search/docs/specialty/international/localized-versions">Google’s localized-version guidance</a>; content is reviewed against its <a class="underline underline-offset-4" href="https://developers.google.com/search/docs/fundamentals/creating-helpful-content">people-first content guidance</a>.</p>
     <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/methodology/">How measurement works →</a></p>
   </Article>
 </Layout>

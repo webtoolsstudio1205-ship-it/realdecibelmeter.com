@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import type { EngineSnapshot } from './types.js';
-import { digitalDiagnostics, publicGauge, publicGraph, publicStats, transportControls } from './presentation.js';
+import { DEFAULT_ESTIMATE_OFFSET_DB, digitalDiagnostics, nominalSoundEstimate, publicGauge, publicGraph, publicStats, transportControls } from './presentation.js';
 
 function snapshot(overrides: Partial<EngineSnapshot> = {}): EngineSnapshot {
   return {
@@ -23,11 +23,13 @@ function snapshot(overrides: Partial<EngineSnapshot> = {}): EngineSnapshot {
 }
 
 describe('public measurement presentation', () => {
-  it('maps −53.2 dBFS to approximately 47% without exposing raw values', () => {
+  it('maps −53.2 dBFS to a clearly labelled 46.8 dBA nominal estimate', () => {
     const s = snapshot();
-    expect(publicGauge(s)).toMatchObject({ value: 46.8, unit: '%', lo: 0, hi: 100 });
+    expect(DEFAULT_ESTIMATE_OFFSET_DB).toBe(100);
+    expect(nominalSoundEstimate(-53.2)).toBeCloseTo(46.8, 9);
+    expect(publicGauge(s)).toMatchObject({ value: 46.8, unit: 'dBA', lo: 20, hi: 120, calibrated: false });
     const rendered = JSON.stringify(publicStats(s));
-    expect(rendered).toContain('47%');
+    expect(rendered).toContain('46.8 dBA');
     expect(rendered).not.toMatch(/-53\.2|dBFS|Raw Current|Digital Energy Average/i);
   });
 
@@ -47,19 +49,19 @@ describe('public measurement presentation', () => {
     expect(publicStats(s)[0]?.value).toBe('60.0 dBA');
   });
 
-  it('falls back to Input Strength when a profile is invalid or mismatched', () => {
+  it('falls back to a disclosed nominal estimate when a profile is invalid or mismatched', () => {
     const s = snapshot({
       calibrationValid: false,
       result: { kind: 'uncalibrated', reason: 'calibration-required', unit: 'dBA' },
       calibrationStale: true,
       calibrationStaleReasons: ['Microphone device changed.'],
     });
-    expect(publicGauge(s)).toMatchObject({ label: 'Microphone Input Strength', unit: '%' });
+    expect(publicGauge(s)).toMatchObject({ label: 'Estimated sound level', unit: 'dBA', calibrated: false });
   });
 
-  it('uses 0–100% for uncalibrated history and selected weighting for calibrated history', () => {
+  it('uses nominal dBA for uncalibrated history and selected weighting for calibrated history', () => {
     expect(publicGraph([-100, -53.2, 0], snapshot())).toEqual({
-      series: [0, 46.8, 100], lo: 0, hi: 100, label: 'Input strength (%)', unit: '%',
+      series: [0, 46.8, 100], lo: 20, hi: 120, label: 'Estimated sound level (dBA)', unit: 'dBA',
     });
     for (const unit of ['dBA', 'dBC', 'dBZ'] as const) {
       const result = publicGraph([-53.2], snapshot({

@@ -1,0 +1,269 @@
+---
+import type { Locale } from '../i18n/dictionaries';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+type GuideCopy = {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  current: string;
+  waiting: string;
+  estimated: string;
+  calibrated: string;
+  weighting: string;
+  level: string;
+  time: string;
+  meaning: string;
+  note: string;
+  sources: string;
+  bands: { level: string; time: string; meaning: string }[];
+};
+
+const COPY: Record<Locale, GuideCopy> = {
+  en: {
+    eyebrow: 'HEARING-SAFETY REFERENCE',
+    title: 'Understand your sound level',
+    intro: 'Compare the live A-weighted reading with evidence-based exposure guidance. The times below follow the NIOSH 3 dB exchange rate for workplace noise; every 3 dBA increase halves the recommended exposure time.',
+    current: 'Current range', waiting: 'Start measuring to highlight the matching range.', estimated: 'Estimated reading', calibrated: 'Calibrated estimate', weighting: 'Use A-weighting (dBA) to compare with this guide.',
+    level: 'Sound level', time: 'NIOSH daily exposure', meaning: 'What it means',
+    note: 'This is general education, not a personal safety clearance. Distance, duration, repeated exposure and individual susceptibility matter. For compliance or health decisions, use a properly calibrated sound level meter.',
+    sources: 'Research sources',
+    bands: [
+      { level: 'Up to 70 dBA', time: 'Long exposure unlikely to cause hearing loss', meaning: 'Normal conversation is commonly around 60–70 dBA.' },
+      { level: '71–84 dBA', time: 'Track duration and distance', meaning: 'Below the NIOSH limit, but repeated or long exposure still deserves attention.' },
+      { level: '85–87 dBA', time: '8 hours at 85 dBA', meaning: 'NIOSH recommended exposure limit begins at 85 dBA.' },
+      { level: '88–90 dBA', time: '4 hours at 88 dBA', meaning: 'A 3 dBA increase doubles sound energy and halves the time.' },
+      { level: '91–93 dBA', time: '2 hours at 91 dBA', meaning: 'Reduce time near the source and consider hearing protection.' },
+      { level: '94–96 dBA', time: '1 hour at 94 dBA', meaning: 'Loud music and events can reach or exceed this range.' },
+      { level: '97–99 dBA', time: '30 minutes at 97 dBA', meaning: 'Daily exposure allowance is now measured in minutes.' },
+      { level: '100 dBA and above', time: '15 minutes at 100 dBA; halves every +3 dBA', meaning: 'Move away, lower the level and protect your hearing.' },
+    ],
+  },
+  de: {
+    eyebrow: 'REFERENZ FÜR GEHÖRSCHUTZ', title: 'Schallpegel richtig einordnen',
+    intro: 'Vergleichen Sie den aktuellen A-bewerteten Wert mit wissenschaftlich fundierten Belastungszeiten. Die NIOSH-Regel halbiert die empfohlene Zeit bei jedem Anstieg um 3 dBA.',
+    current: 'Aktueller Bereich', waiting: 'Messung starten, um den passenden Bereich zu markieren.', estimated: 'Geschätzter Wert', calibrated: 'Kalibrierter Schätzwert', weighting: 'Für diesen Vergleich A-Bewertung (dBA) verwenden.',
+    level: 'Schallpegel', time: 'NIOSH-Tagesdosis', meaning: 'Einordnung',
+    note: 'Allgemeine Information, keine persönliche Sicherheitsfreigabe. Abstand, Dauer, Wiederholung und individuelle Empfindlichkeit zählen. Für Arbeitsschutz oder Gesundheitsentscheidungen ist ein geeignetes kalibriertes Messgerät erforderlich.', sources: 'Fachquellen',
+    bands: [
+      { level: 'Bis 70 dBA', time: 'Auch lange Belastung verursacht wahrscheinlich keinen Hörverlust', meaning: 'Normale Gespräche liegen häufig bei etwa 60–70 dBA.' },
+      { level: '71–84 dBA', time: 'Dauer und Abstand beachten', meaning: 'Unter dem NIOSH-Grenzwert, aber lange oder wiederholte Belastung bleibt wichtig.' },
+      { level: '85–87 dBA', time: '8 Stunden bei 85 dBA', meaning: 'Der empfohlene NIOSH-Grenzwert beginnt bei 85 dBA.' },
+      { level: '88–90 dBA', time: '4 Stunden bei 88 dBA', meaning: '3 dBA mehr verdoppeln die Schallenergie und halbieren die Zeit.' },
+      { level: '91–93 dBA', time: '2 Stunden bei 91 dBA', meaning: 'Zeit an der Quelle verkürzen und Gehörschutz erwägen.' },
+      { level: '94–96 dBA', time: '1 Stunde bei 94 dBA', meaning: 'Laute Musik und Veranstaltungen können diesen Bereich erreichen.' },
+      { level: '97–99 dBA', time: '30 Minuten bei 97 dBA', meaning: 'Die tägliche Belastungszeit wird jetzt in Minuten gemessen.' },
+      { level: 'Ab 100 dBA', time: '15 Minuten bei 100 dBA; halbiert sich je +3 dBA', meaning: 'Abstand vergrößern, Pegel senken und Gehör schützen.' },
+    ],
+  },
+  it: {
+    eyebrow: 'RIFERIMENTO PER LA PROTEZIONE DELL’UDITO', title: 'Interpreta il livello sonoro',
+    intro: 'Confronta la lettura ponderata A con tempi di esposizione basati sulle indicazioni NIOSH. Ogni aumento di 3 dBA dimezza il tempo consigliato.',
+    current: 'Intervallo attuale', waiting: 'Avvia la misurazione per evidenziare l’intervallo.', estimated: 'Lettura stimata', calibrated: 'Stima calibrata', weighting: 'Usa la ponderazione A (dBA) per questo confronto.', level: 'Livello sonoro', time: 'Esposizione giornaliera NIOSH', meaning: 'Significato',
+    note: 'Informazione generale, non autorizzazione personale di sicurezza. Contano distanza, durata, ripetizione e sensibilità individuale. Per conformità o decisioni sanitarie usa un fonometro correttamente calibrato.', sources: 'Fonti scientifiche',
+    bands: [
+      { level: 'Fino a 70 dBA', time: 'È improbabile che una lunga esposizione causi perdita uditiva', meaning: 'Una conversazione normale è spesso intorno a 60–70 dBA.' },
+      { level: '71–84 dBA', time: 'Controlla durata e distanza', meaning: 'Sotto il limite NIOSH, ma esposizioni lunghe o ripetute contano.' },
+      { level: '85–87 dBA', time: '8 ore a 85 dBA', meaning: 'Il limite raccomandato NIOSH inizia a 85 dBA.' },
+      { level: '88–90 dBA', time: '4 ore a 88 dBA', meaning: 'Ogni +3 dBA raddoppia l’energia e dimezza il tempo.' },
+      { level: '91–93 dBA', time: '2 ore a 91 dBA', meaning: 'Riduci il tempo vicino alla sorgente e valuta protezioni.' },
+      { level: '94–96 dBA', time: '1 ora a 94 dBA', meaning: 'Musica ed eventi rumorosi possono raggiungere questo intervallo.' },
+      { level: '97–99 dBA', time: '30 minuti a 97 dBA', meaning: 'L’esposizione giornaliera si misura ormai in minuti.' },
+      { level: '100 dBA e oltre', time: '15 minuti a 100 dBA; dimezza ogni +3 dBA', meaning: 'Allontanati, abbassa il livello e proteggi l’udito.' },
+    ],
+  },
+  ja: {
+    eyebrow: '聴覚保護の目安', title: '測定した騒音レベルの見方',
+    intro: 'A特性の測定値を、NIOSHの3 dB交換率に基づく曝露時間と比較できます。3 dBA上がるごとに推奨時間は半分になります。',
+    current: '現在の範囲', waiting: '測定を開始すると該当範囲が強調されます。', estimated: '推定値', calibrated: '校正済み推定値', weighting: 'この表との比較にはA特性（dBA）を使用してください。', level: '騒音レベル', time: 'NIOSHの1日曝露時間', meaning: '意味',
+    note: '一般的な参考情報であり、個人の安全を保証するものではありません。距離、時間、反復曝露、個人差が影響します。法令対応や健康上の判断には適切に校正された騒音計を使用してください。', sources: '参考資料',
+    bands: [
+      { level: '70 dBA以下', time: '長時間でも難聴を起こす可能性は低い', meaning: '通常の会話はおよそ60〜70 dBAです。' },
+      { level: '71〜84 dBA', time: '時間と距離を確認', meaning: 'NIOSH限度未満でも、長時間・反復曝露には注意が必要です。' },
+      { level: '85〜87 dBA', time: '85 dBAで8時間', meaning: 'NIOSH推奨曝露限度は85 dBAからです。' },
+      { level: '88〜90 dBA', time: '88 dBAで4時間', meaning: '3 dBA上がると音響エネルギーは2倍、時間は半分です。' },
+      { level: '91〜93 dBA', time: '91 dBAで2時間', meaning: '音源から離れ、聴覚保護具を検討してください。' },
+      { level: '94〜96 dBA', time: '94 dBAで1時間', meaning: '大音量の音楽やイベントで到達し得る範囲です。' },
+      { level: '97〜99 dBA', time: '97 dBAで30分', meaning: '1日の曝露時間は分単位になります。' },
+      { level: '100 dBA以上', time: '100 dBAで15分、+3 dBAごとに半減', meaning: '離れる、音量を下げる、耳を保護する対策が必要です。' },
+    ],
+  },
+  es: {
+    eyebrow: 'REFERENCIA DE PROTECCIÓN AUDITIVA', title: 'Comprende tu nivel de sonido',
+    intro: 'Compara la lectura ponderada A con tiempos de exposición basados en NIOSH. Cada aumento de 3 dBA reduce a la mitad el tiempo recomendado.',
+    current: 'Rango actual', waiting: 'Inicia la medición para resaltar el rango correspondiente.', estimated: 'Lectura estimada', calibrated: 'Estimación calibrada', weighting: 'Usa ponderación A (dBA) para comparar con esta guía.', level: 'Nivel sonoro', time: 'Exposición diaria NIOSH', meaning: 'Qué significa',
+    note: 'Información general, no una autorización personal de seguridad. Importan la distancia, la duración, la repetición y la sensibilidad individual. Para cumplimiento o decisiones de salud usa un sonómetro correctamente calibrado.', sources: 'Fuentes científicas',
+    bands: [
+      { level: 'Hasta 70 dBA', time: 'Es improbable que una exposición larga cause pérdida auditiva', meaning: 'Una conversación normal suele estar alrededor de 60–70 dBA.' },
+      { level: '71–84 dBA', time: 'Controla duración y distancia', meaning: 'Por debajo del límite NIOSH, pero la exposición larga o repetida importa.' },
+      { level: '85–87 dBA', time: '8 horas a 85 dBA', meaning: 'El límite recomendado por NIOSH comienza en 85 dBA.' },
+      { level: '88–90 dBA', time: '4 horas a 88 dBA', meaning: 'Cada +3 dBA duplica la energía y reduce el tiempo a la mitad.' },
+      { level: '91–93 dBA', time: '2 horas a 91 dBA', meaning: 'Reduce el tiempo cerca de la fuente y considera protección.' },
+      { level: '94–96 dBA', time: '1 hora a 94 dBA', meaning: 'La música y los eventos fuertes pueden alcanzar este rango.' },
+      { level: '97–99 dBA', time: '30 minutos a 97 dBA', meaning: 'La exposición diaria ya se mide en minutos.' },
+      { level: '100 dBA o más', time: '15 minutos a 100 dBA; se reduce a la mitad cada +3 dBA', meaning: 'Aléjate, baja el nivel y protege tu audición.' },
+    ],
+  },
+  fr: {
+    eyebrow: 'REPÈRE DE PROTECTION AUDITIVE', title: 'Comprendre votre niveau sonore',
+    intro: 'Comparez la mesure pondérée A aux durées d’exposition fondées sur les recommandations du NIOSH. Chaque hausse de 3 dBA divise la durée conseillée par deux.',
+    current: 'Plage actuelle', waiting: 'Lancez la mesure pour mettre en évidence la plage correspondante.', estimated: 'Mesure estimée', calibrated: 'Estimation calibrée', weighting: 'Utilisez la pondération A (dBA) pour cette comparaison.', level: 'Niveau sonore', time: 'Exposition quotidienne NIOSH', meaning: 'Interprétation',
+    note: 'Information générale, pas une validation individuelle de sécurité. La distance, la durée, la répétition et la sensibilité personnelle comptent. Pour la conformité ou une décision de santé, utilisez un sonomètre correctement calibré.', sources: 'Sources scientifiques',
+    bands: [
+      { level: 'Jusqu’à 70 dBA', time: 'Une longue exposition est peu susceptible de causer une perte auditive', meaning: 'Une conversation normale se situe souvent vers 60–70 dBA.' },
+      { level: '71–84 dBA', time: 'Surveillez la durée et la distance', meaning: 'Sous la limite NIOSH, mais une exposition longue ou répétée reste importante.' },
+      { level: '85–87 dBA', time: '8 heures à 85 dBA', meaning: 'La limite recommandée par le NIOSH commence à 85 dBA.' },
+      { level: '88–90 dBA', time: '4 heures à 88 dBA', meaning: 'Chaque +3 dBA double l’énergie et divise le temps par deux.' },
+      { level: '91–93 dBA', time: '2 heures à 91 dBA', meaning: 'Réduisez le temps près de la source et envisagez une protection.' },
+      { level: '94–96 dBA', time: '1 heure à 94 dBA', meaning: 'La musique forte et les événements peuvent atteindre cette plage.' },
+      { level: '97–99 dBA', time: '30 minutes à 97 dBA', meaning: 'L’exposition quotidienne se compte désormais en minutes.' },
+      { level: '100 dBA et plus', time: '15 minutes à 100 dBA ; durée divisée par deux tous les +3 dBA', meaning: 'Éloignez-vous, baissez le niveau et protégez votre audition.' },
+    ],
+  },
+  pt: {
+    eyebrow: 'REFERÊNCIA DE PROTEÇÃO AUDITIVA', title: 'Entenda o seu nível sonoro',
+    intro: 'Compare a leitura ponderada A com tempos de exposição baseados no NIOSH. Cada aumento de 3 dBA reduz pela metade o tempo recomendado.',
+    current: 'Faixa atual', waiting: 'Inicie a medição para destacar a faixa correspondente.', estimated: 'Leitura estimada', calibrated: 'Estimativa calibrada', weighting: 'Use ponderação A (dBA) para comparar com este guia.', level: 'Nível sonoro', time: 'Exposição diária NIOSH', meaning: 'O que significa',
+    note: 'Informação geral, não uma autorização pessoal de segurança. Distância, duração, repetição e sensibilidade individual importam. Para conformidade ou decisões de saúde, use um medidor devidamente calibrado.', sources: 'Fontes científicas',
+    bands: [
+      { level: 'Até 70 dBA', time: 'É improvável que uma exposição longa cause perda auditiva', meaning: 'Uma conversa normal costuma ficar perto de 60–70 dBA.' },
+      { level: '71–84 dBA', time: 'Observe duração e distância', meaning: 'Abaixo do limite NIOSH, mas exposições longas ou repetidas importam.' },
+      { level: '85–87 dBA', time: '8 horas a 85 dBA', meaning: 'O limite recomendado pelo NIOSH começa em 85 dBA.' },
+      { level: '88–90 dBA', time: '4 horas a 88 dBA', meaning: 'Cada +3 dBA duplica a energia e reduz o tempo pela metade.' },
+      { level: '91–93 dBA', time: '2 horas a 91 dBA', meaning: 'Reduza o tempo perto da fonte e considere proteção.' },
+      { level: '94–96 dBA', time: '1 hora a 94 dBA', meaning: 'Música e eventos altos podem atingir esta faixa.' },
+      { level: '97–99 dBA', time: '30 minutos a 97 dBA', meaning: 'A exposição diária passa a ser medida em minutos.' },
+      { level: '100 dBA ou mais', time: '15 minutos a 100 dBA; reduz pela metade a cada +3 dBA', meaning: 'Afaste-se, reduza o nível e proteja a audição.' },
+    ],
+  },
+  ko: {
+    eyebrow: '청력 보호 참고 기준', title: '측정한 소음 수준 이해하기',
+    intro: 'A가중 측정값을 NIOSH 3 dB 교환율에 따른 노출 시간과 비교하세요. 3 dBA가 증가할 때마다 권장 시간은 절반으로 줄어듭니다.',
+    current: '현재 구간', waiting: '측정을 시작하면 해당 구간이 강조됩니다.', estimated: '추정 측정값', calibrated: '교정된 추정값', weighting: '이 안내와 비교하려면 A가중(dBA)을 사용하세요.', level: '소음 수준', time: 'NIOSH 일일 노출 시간', meaning: '의미',
+    note: '일반 정보이며 개인의 안전을 보장하지 않습니다. 거리, 시간, 반복 노출, 개인별 민감도가 중요합니다. 규정 준수나 건강 판단에는 적절히 교정된 소음계를 사용하세요.', sources: '연구 출처',
+    bands: [
+      { level: '70 dBA 이하', time: '장시간 노출도 청력 손실 가능성이 낮음', meaning: '일반적인 대화는 보통 60–70 dBA입니다.' },
+      { level: '71–84 dBA', time: '시간과 거리를 확인', meaning: 'NIOSH 한도 미만이지만 장시간 또는 반복 노출은 중요합니다.' },
+      { level: '85–87 dBA', time: '85 dBA에서 8시간', meaning: 'NIOSH 권장 노출 한도는 85 dBA부터입니다.' },
+      { level: '88–90 dBA', time: '88 dBA에서 4시간', meaning: '3 dBA 증가하면 에너지는 두 배, 시간은 절반입니다.' },
+      { level: '91–93 dBA', time: '91 dBA에서 2시간', meaning: '음원 가까이 있는 시간을 줄이고 청력 보호를 고려하세요.' },
+      { level: '94–96 dBA', time: '94 dBA에서 1시간', meaning: '큰 음악과 행사 소음이 이 범위에 이를 수 있습니다.' },
+      { level: '97–99 dBA', time: '97 dBA에서 30분', meaning: '일일 노출 허용 시간이 분 단위로 줄어듭니다.' },
+      { level: '100 dBA 이상', time: '100 dBA에서 15분, +3 dBA마다 절반', meaning: '거리를 두고 소음을 낮추며 청력을 보호하세요.' },
+    ],
+  },
+};
+
+const copy = COPY[locale] ?? COPY.en;
+const ranges = [
+  { min: -Infinity, max: 70, color: '#22c55e' },
+  { min: 70, max: 85, color: '#84cc16' },
+  { min: 85, max: 88, color: '#eab308' },
+  { min: 88, max: 91, color: '#f59e0b' },
+  { min: 91, max: 94, color: '#f97316' },
+  { min: 94, max: 97, color: '#ef4444' },
+  { min: 97, max: 100, color: '#dc2626' },
+  { min: 100, max: Infinity, color: '#b91c1c' },
+];
+---
+
+<section id="sound-level-guide" class="panel mt-4 p-5 sm:p-6" aria-labelledby="sound-level-guide-title" data-waiting={copy.waiting} data-estimated={copy.estimated} data-calibrated={copy.calibrated} data-weighting={copy.weighting}>
+  <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div>
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h2 id="sound-level-guide-title" class="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">{copy.title}</h2>
+      <p class="mt-2 max-w-3xl text-sm leading-6" style="color:var(--muted)">{copy.intro}</p>
+    </div>
+    <div class="sound-current panel-raised p-4" aria-live="polite">
+      <p class="eyebrow">{copy.current}</p>
+      <p id="sound-guide-current" class="mt-1 text-sm font-medium">{copy.waiting}</p>
+    </div>
+  </div>
+
+  <div class="sound-table mt-5" role="table" aria-label={copy.title}>
+    <div class="sound-head hidden md:grid" role="row">
+      <span role="columnheader">{copy.level}</span>
+      <span role="columnheader">{copy.time}</span>
+      <span role="columnheader">{copy.meaning}</span>
+    </div>
+    <div role="rowgroup">
+      {copy.bands.map((band, index) => (
+        <article class="sound-row" role="row" data-sound-band data-min={ranges[index].min} data-max={ranges[index].max} style={`--band:${ranges[index].color}`}>
+          <div class="sound-level" role="cell">
+            <span class="sound-dot" aria-hidden="true"></span>
+            <h3>{band.level}</h3>
+          </div>
+          <p role="cell"><span class="md:hidden eyebrow">{copy.time}</span>{band.time}</p>
+          <p role="cell" style="color:var(--muted)"><span class="md:hidden eyebrow">{copy.meaning}</span>{band.meaning}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+
+  <div class="mt-5 rounded-xl p-4 text-sm leading-6" style="border:1px solid color-mix(in srgb,#f59e0b 40%,var(--border));background:color-mix(in srgb,#f59e0b 8%,var(--raised))">
+    <strong>{copy.note}</strong>
+  </div>
+  <p class="mt-4 text-xs leading-5" style="color:var(--muted)">
+    {copy.sources}: <a class="focus-ring underline underline-offset-4" href="https://www.cdc.gov/niosh/noise/prevent/understand.html">CDC/NIOSH exposure guidance</a>
+    · <a class="focus-ring underline underline-offset-4" href="https://www.nidcd.nih.gov/health/noise-induced-hearing-loss">NIDCD noise-induced hearing loss</a>
+  </p>
+</section>
+
+<script>
+  const guide = document.getElementById('sound-level-guide');
+  const current = document.getElementById('sound-guide-current');
+  const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-sound-band]'));
+
+  function renderSoundGuide(detail?: SoundGuideReading) {
+    if (!guide || !current) return;
+    rows.forEach((row) => row.removeAttribute('data-active'));
+    if (detail?.value == null) {
+      current.textContent = guide.dataset.waiting || '';
+      return;
+    }
+    const value = Number(detail?.value);
+    if (!Number.isFinite(value)) {
+      current.textContent = guide.dataset.waiting || '';
+      return;
+    }
+    if (detail?.unit !== 'dBA') {
+      current.textContent = guide.dataset.weighting || '';
+      return;
+    }
+    const matching = rows.find((row) => {
+      const min = Number(row.dataset.min);
+      const max = Number(row.dataset.max);
+      return value > min && value <= max;
+    });
+    matching?.setAttribute('data-active', 'true');
+    const kind = detail.calibrated ? guide.dataset.calibrated : guide.dataset.estimated;
+    current.textContent = `${kind}: ${value.toFixed(1)} dBA${matching ? ` · ${matching.querySelector('h3')?.textContent ?? ''}` : ''}`;
+  }
+
+  document.addEventListener('rdm:reading', (event) => renderSoundGuide(event.detail));
+  renderSoundGuide(window.__rdmReading);
+</script>
+
+<style>
+  .sound-current { min-width: min(100%, 270px); }
+  .sound-head,
+  .sound-row { grid-template-columns: minmax(150px, .75fr) minmax(190px, 1fr) minmax(240px, 1.5fr); }
+  .sound-head { gap: 16px; padding: 0 14px 9px; color: var(--muted); font: 600 11px/1.3 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
+  .sound-row { display: grid; gap: 8px 16px; align-items: center; margin-top: 7px; padding: 13px 14px; border: 1px solid var(--border); border-radius: 11px; background: var(--raised); transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+  .sound-row[data-active='true'] { border-color: var(--band); box-shadow: 0 0 0 2px color-mix(in srgb, var(--band) 22%, transparent), inset 4px 0 0 var(--band); transform: translateX(2px); }
+  .sound-level { display: flex; align-items: center; gap: 10px; }
+  .sound-level h3 { font-size: 15px; font-weight: 700; }
+  .sound-dot { width: 12px; height: 12px; flex: 0 0 auto; border-radius: 999px; background: var(--band); box-shadow: 0 0 16px color-mix(in srgb, var(--band) 55%, transparent); }
+  .sound-row p { font-size: 13px; line-height: 1.5; }
+  @media (max-width: 767px) {
+    .sound-row { grid-template-columns: 1fr; padding: 14px; }
+    .sound-row p .eyebrow { display: block; margin-bottom: 3px; }
+    .sound-row[data-active='true'] { transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .sound-row { transition: none; } }
+</style>

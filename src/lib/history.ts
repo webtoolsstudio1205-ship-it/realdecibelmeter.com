@@ -1,4 +1,5 @@
 import type { ExportSession } from './export-format.js';
+import { isStoredPayloadSizeOk } from './security.js';
 
 /**
  * Local session history: numeric summaries + settings + optional user labels.
@@ -26,12 +27,24 @@ function isValidEntry(e: unknown): e is SavedSession {
   if (typeof e !== 'object' || e == null) return false;
   const o = e as Record<string, unknown>;
   const s = o.session as Record<string, unknown> | undefined;
-  return (
-    typeof o.id === 'string' && typeof o.label === 'string' &&
-    typeof s === 'object' && s != null &&
-    typeof s.startedAtIso === 'string' && typeof s.unit === 'string' &&
-    typeof s.weighting === 'string' && typeof s.sampleRate === 'number'
-  );
+  // Labels are written truncated to 80 chars; reject tampered oversized ones.
+  // Numeric session fields are range-checked so a hand-edited store cannot
+  // inject absurd values into the history UI.
+  if (typeof o.id !== 'string' || o.id.length > 64) return false;
+  if (typeof o.label !== 'string' || o.label.length > 100) return false;
+  if (typeof o.savedAtIso !== 'string' || Number.isNaN(Date.parse(o.savedAtIso))) return false;
+  if (typeof s !== 'object' || s == null) return false;
+  if (typeof s.startedAtIso !== 'string' || typeof s.unit !== 'string') return false;
+  if (typeof s.weighting !== 'string' || typeof s.sampleRate !== 'number') return false;
+  for (const k of ['currentDb', 'minDb', 'leqDb', 'maxDb', 'peakDb'] as const) {
+    const v = s[k];
+    if (v != null && (typeof v !== 'number' || !Number.isFinite(v) || Math.abs(v) > 200)) return false;
+  }
+  for (const k of ['recordedSec', 'activeSec', 'gapMs'] as const) {
+    const v = s[k];
+    if (typeof v !== 'number' || !Number.isFinite(v) || v < 0 || v > 864000) return false;
+  }
+  return true;
 }
 
 function ambientStorage(): Pick<Storage, 'getItem' | 'setItem' | 'removeItem'> | undefined {
@@ -48,6 +61,8 @@ export function loadHistory(storage: Pick<Storage, 'getItem'> | undefined = ambi
   try {
     const raw = storage?.getItem(KEY);
     if (!raw) return { entries: [], storageOk: true };
+    // Reject absurdly large payloads before parsing (tampered store / DoS).
+    if (!isStoredPayloadSizeOk(raw)) return { entries: [], storageOk: true };
     const parsed = JSON.parse(raw) as Partial<HistoryStore>;
     if (parsed.schema !== HISTORY_SCHEMA || !Array.isArray(parsed.entries)) {
       return { entries: [], storageOk: true }; // old/foreign schema: start clean, loudly

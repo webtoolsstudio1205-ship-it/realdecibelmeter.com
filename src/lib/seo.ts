@@ -25,6 +25,34 @@ export interface HreflangEntry {
   href: string;
 }
 
+export type GuideKey = 'guides' | 'calibration' | 'accuracy' | 'decibel-chart' | 'db-vs-dba' | 'microphone-not-working' | 'how-to-use' | 'methodology' | 'privacy';
+
+const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
+  guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/' },
+  calibration: { en: '/calibration/', de: '/de/kalibrierung/', ja: '/ja/calibration/' },
+  accuracy: { en: '/accuracy/', de: '/de/genauigkeit/', ja: '/ja/accuracy/' },
+  'decibel-chart': { en: '/decibel-chart/', de: '/de/dezibel-tabelle/', ja: '/ja/decibel-chart/' },
+  'db-vs-dba': { en: '/db-vs-dba/', de: '/de/db-vs-dba/', ja: '/ja/db-vs-dba/' },
+  'microphone-not-working': { en: '/microphone-not-working/', de: '/de/mikrofon-funktioniert-nicht/', ja: '/ja/microphone-not-working/' },
+  'how-to-use': { en: '/how-to-use/', ja: '/ja/how-to-use/' },
+  methodology: { en: '/methodology/', ja: '/ja/methodology/' },
+  privacy: { en: '/privacy/', ja: '/ja/privacy/' },
+};
+
+export function guideHreflang(key: GuideKey): HreflangEntry[] {
+  const entries = Object.entries(GUIDE_PATHS[key]).map(([hreflang, path]) => ({
+    hreflang,
+    href: `${SITE}${path}`,
+  }));
+  const english = GUIDE_PATHS[key].en;
+  if (english) entries.push({ hreflang: 'x-default', href: `${SITE}${english}` });
+  return entries;
+}
+
+export function localizedGuidePath(key: GuideKey, locale: SeoLocale): string | undefined {
+  return GUIDE_PATHS[key][locale];
+}
+
 /** Reciprocal homepage language cluster. Only includes real locale homepages. */
 export function homepageHreflang(): HreflangEntry[] {
   return [

@@ -1,0 +1,282 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang, type GuideKey } from '../../lib/seo';
+
+interface JapaneseGuide {
+  slug: string;
+  title: string;
+  description: string;
+  intro: string;
+  label: string;
+  body: string;
+  article?: boolean;
+}
+
+const keyForSlug = (slug: string): GuideKey => slug as GuideKey;
+
+const pages: JapaneseGuide[] = [
+  {
+    slug: 'guides',
+    title: 'デシベル測定ガイド',
+    description: 'オンラインデシベル計の使い方、校正、測定精度、dBとdBAの違い、マイクの問題を日本語で解説します。',
+    intro: 'ブラウザで音の大きさを比較するための日本語ガイドです。目的に合わせて必要なページから読んでください。',
+    label: 'ガイド',
+    body: `
+      <h2>測定を始める</h2>
+      <ul>
+        <li><a href="/ja/how-to-use/">オンラインデシベル計の使い方</a> — マイク許可から記録のエクスポートまで。</li>
+        <li><a href="/ja/microphone-not-working/">マイクが使えないとき</a> — 権限、端末選択、他アプリとの競合を確認。</li>
+      </ul>
+      <h2>数値を理解する</h2>
+      <ul>
+        <li><a href="/ja/accuracy/">ブラウザのデシベル測定精度</a> — 端末ごとに結果が異なる理由。</li>
+        <li><a href="/ja/calibration/">デシベル計の校正方法</a> — 基準器との差をオフセットとして設定。</li>
+        <li><a href="/ja/db-vs-dba/">dBとdBAの違い</a> — A・C・Z特性とFast・Slow応答。</li>
+        <li><a href="/ja/decibel-chart/">デシベル比較表</a> — 日常の音の大きさの目安。</li>
+      </ul>
+      <h2>仕組みとプライバシー</h2>
+      <ul>
+        <li><a href="/ja/methodology/">ブラウザ音量測定の仕組み</a> — RMS、dBFS、重み付け、Leqの処理手順。</li>
+        <li><a href="/ja/privacy/">マイク音声のプライバシー</a> — ローカル処理とブラウザ保存の範囲。</li>
+      </ul>
+      <p><a href="/ja/#measure">オンラインデシベル測定を始める →</a></p>
+    `,
+  },
+  {
+    slug: 'how-to-use',
+    title: 'オンラインデシベル計の使い方',
+    description: 'ブラウザのデシベル計を使う手順。マイク許可、端末の置き方、校正、dBA測定、CSV・JSON保存まで解説。',
+    intro: 'アプリのインストールは不要です。マイクを許可し、端末を固定して、表示の種類を確認してください。',
+    label: '使い方',
+    article: true,
+    body: `
+      <h2>1. マイクを許可する</h2>
+      <p><a href="/ja/#measure">測定パネル</a>で「開始」を押し、ブラウザのマイク許可で「許可」を選びます。音声サンプルは端末内で処理され、このサイトのサーバーに録音として送信されません。</p>
+      <h2>2. 端末を固定する</h2>
+      <p>マイク穴を塞がず、風、手持ちノイズ、換気口を避けます。比較時は音源からの距離と端末の向きを変えないでください。数秒間待ってから平均値を読むと、短いピークの影響を抑えられます。</p>
+      <h2>3. 表示の種類を確認する</h2>
+      <p>未校正では、公称+100 dBオフセットによる推定dBA・dBC・dBZを表示します。端末固有の精度を高めるには、<a href="/ja/calibration/">基準器による校正</a>を行ってください。</p>
+      <h2>4. 設定と保存</h2>
+      <p>一般的な生活音の比較にはA特性、低音や大きなピークの比較にはC特性、補正なしにはZ特性を選びます。セッションはCSVまたはJSONで保存できます。値の意味は<a href="/ja/db-vs-dba/">dBとdBAの違い</a>を参照してください。</p>
+      <p><a href="/ja/microphone-not-working/">マイクが動かないとき →</a> · <a href="/ja/accuracy/">測定精度と限界 →</a></p>
+    `,
+  },
+  {
+    slug: 'methodology',
+    title: 'ブラウザ音量測定の仕組み',
+    description: 'マイク入力からRMS、dBFS、A・C・Z特性、Fast・Slow応答、Leqを計算するブラウザ音量測定の仕組み。',
+    intro: 'このページでは、マイク入力が画面上の値になるまでの処理を順番に説明します。',
+    label: '測定方法',
+    article: true,
+    body: `
+      <h2>マイク入力</h2>
+      <p>ブラウザのWeb Audio APIとgetUserMediaを使い、ユーザーが許可したマイクのサンプルを取得します。エコーキャンセル、ノイズ抑制、自動ゲイン制御はオフを要求しますが、端末やブラウザがその要求を完全に受け入れるとは限りません。</p>
+      <h2>RMSとdBFS</h2>
+      <p>短いオーディオブロックごとにRMS（二乗平均平方根）を計算し、デジタル信号の最大値を0 dBFSとする対数スケールに変換します。未校正では公称+100 dBオフセットを加え、推定値であることを明示して表示します。</p>
+      <h2>周波数重み付けと時間応答</h2>
+      <p>周波数分析にA・C・Z特性の補正を適用し、Fast（125 ms）またはSlow（1秒）で表示を平滑化します。測定中の平均は単純な算術平均ではなく、エネルギー平均のLeqとして累積します。</p>
+      <h2>校正後の推定値</h2>
+      <p>基準器との差を固定オフセットとして加えると、dBA・dBC・dBZの推定値を表示します。これはマイクの周波数特性や自動処理を補正するものではなく、認定騒音計の代わりにはなりません。</p>
+      <p><a href="/ja/calibration/">校正方法 →</a> · <a href="/ja/accuracy/">精度と限界 →</a> · <a href="/ja/privacy/">マイクのプライバシー →</a></p>
+    `,
+  },
+  {
+    slug: 'calibration',
+    title: 'オンラインデシベル計の校正方法',
+    description: 'ブラウザのデシベル計を基準騒音計に合わせる校正方法。オフセット、端末配置、重み付け、保存条件を解説。',
+    intro: 'ここでいう校正とは、同じ場所で基準器と比較し、一定のdBオフセットを加えることです。',
+    label: '校正',
+    article: true,
+    body: `
+      <h2>校正が必要な理由</h2>
+      <p>スマートフォンやパソコンのマイクは、通話用に設計されており、感度や内部ゲインが機種ごとに異なります。基準との差を測るまでは、環境のdBAではなく入力強度として利用してください。</p>
+      <h2>必要なもの</h2>
+      <ul>
+        <li>信頼できる校正済み騒音計、または既知レベルの安定した音響校正器。</li>
+        <li>後で測定に使うのと同じ端末、マイク、ブラウザ設定。</li>
+        <li>両方で一致させた周波数重み付け（A・C・Z）と時間応答（Fast・Slow）。</li>
+      </ul>
+      <h2>校正手順</h2>
+      <ol>
+        <li>端末と基準器を同じ位置に置き、マイク穴を塞がないようにします。</li>
+        <li>安定した基準音を入力し、表示が落ち着くまで待ちます。</li>
+        <li>「カスタマイズ」→「校正」で、「基準器の値 − このメーターの値」をオフセットとして入力します。</li>
+        <li>校正済み表示を確認し、同じ基準音でもう一度照合します。</li>
+      </ol>
+      <h2>再校正が必要なとき</h2>
+      <p>マイク、ヘッドセット、ブラウザ、入力ゲイン、重み付け、時間応答、端末の位置が変わった場合は再校正します。別の端末に同じオフセットを転用しないでください。</p>
+      <p><a href="/ja/#measure">メーターを開く →</a> · <a href="/ja/accuracy/">校正で改善できる範囲 →</a></p>
+    `,
+  },
+  {
+    slug: 'accuracy',
+    title: 'ブラウザのデシベル測定精度と限界',
+    description: 'オンラインデシベル計の精度を左右するマイク、自動ゲイン、周波数特性、校正の限界を解説。',
+    intro: '端末のマイクは通話用であり、音響測定用の計器ではありません。このページは、値をどこまで信用できるかを明確にします。',
+    label: '測定精度',
+    article: true,
+    body: `
+      <h2>表示値の意味</h2>
+      <p>未校正の表示は、Web Audioのデジタルサンプルから求めたマイク入力強度です。同じ音を測っても、マイクの感度、端末のゲイン、ケース、置き方によって数値が異なります。</p>
+      <h2>結果が異なる主な原因</h2>
+      <ul>
+        <li><strong>ハードウェア差:</strong> マイクカプセル、プリアンプ、マイク穴の位置が機種ごとに異なります。</li>
+        <li><strong>自動音声処理:</strong> OSやブラウザの自動ゲイン制御、ノイズ抑制、エコーキャンセルがレベルを変えることがあります。</li>
+        <li><strong>周波数特性:</strong> 一定のオフセットでは、低音から高音までの感度差を完全に補正できません。</li>
+        <li><strong>周囲環境:</strong> 反射、風、手持ちノイズ、音源からの距離が結果に影響します。</li>
+      </ul>
+      <h2>校正で改善できること</h2>
+      <p>基準器と比較した固定オフセットは、全体的なゲイン差の補正に役立ちます。一方で、周波数特性、歪み、クリッピング、レベルによって変わる自動処理は補正できません。</p>
+      <h2>認定計器が必要な場合</h2>
+      <p>職場の騒音評価、法的紛争、聴覚安全の判定、規格適合の証明には、校正されたClass 1またはClass 2の騒音計と適切な手順を使ってください。このブラウザツールは、傾向と相対比較のための推定値です。</p>
+      <p><a href="/ja/calibration/">校正の手順 →</a> · <a href="/ja/methodology/">計算方法 →</a> · <a href="/ja/#measure">メーターを開く →</a></p>
+    `,
+  },
+  {
+    slug: 'decibel-chart',
+    title: 'デシベル比較表 – 身近な音の大きさ',
+    description: '30〜120 dBAの身近な音の大きさを比較。寝室、図書館、会話、交通、バイク、コンサートの目安を一覧で確認できます。',
+    intro: '日常の音のおおよそのレベルです。距離、部屋の反射、測定時間、重み付けで実際の値は変わります。',
+    label: '比較表',
+    article: true,
+    body: `
+      <table>
+        <caption class="sr-only">身近な音のdBA目安</caption>
+        <thead><tr><th>レベル（目安）</th><th>音の例</th></tr></thead>
+        <tbody>
+          <tr><td>30 dBA</td><td>静かな寝室の夜</td></tr>
+          <tr><td>40 dBA</td><td>静かな図書館</td></tr>
+          <tr><td>50 dBA</td><td>静かな事務所、程度の雨</td></tr>
+          <tr><td>60 dBA</td><td>通常の会話</td></tr>
+          <tr><td>70 dBA</td><td>近距離の交通騒音</td></tr>
+          <tr><td>80 dBA</td><td>にぎやかな飲食店、目覚まし時計</td></tr>
+          <tr><td>90 dBA</td><td>芝刈り機、バイク</td></tr>
+          <tr><td>100 dBA</td><td>コンサート会場の前方</td></tr>
+          <tr><td>110 dBA</td><td>電動工具、大音量のライブ</td></tr>
+          <tr><td>120 dBA</td><td>近距離のサイレン</td></tr>
+        </tbody>
+      </table>
+      <h2>表の読み方</h2>
+      <p>デシベルは対数スケールで、10 dB増えると音のエネルギーは約10倍になります。<a href="/ja/#measure">オンラインデシベル計</a>の値と比較する場合は、<a href="/ja/calibration/">マイクを校正</a>し、表と同じA特性（dBA）を選んでください。</p>
+      <p>この表は教育用の目安であり、医療や法規制上の判定に使用できません。未校正のブラウザ測定だけで聴覚安全を判断しないでください。</p>
+      <p><a href="/ja/db-vs-dba/">dBとdBAの違い →</a> · <a href="/ja/accuracy/">測定精度 →</a></p>
+    `,
+  },
+  {
+    slug: 'db-vs-dba',
+    title: 'dBとdBAの違い – 周波数重み付けを解説',
+    description: 'dB、dBA、dBC、dBZの違いと、A・C・Z特性、Fast・Slow時間応答の選び方をオンライン騒音測定向けに解説。',
+    intro: 'dBは対数比を表す単位です。dBA・dBC・dBZは、どの周波数をどれだけ強く数えるかが異なります。',
+    label: '重み付け',
+    article: true,
+    body: `
+      <h2>dBFSとdB SPL</h2>
+      <p>ブラウザが直接受け取るのはdBFSで、デジタル信号の最大値を0 dBFSとする相対値です。環境音の大きさを示すdB SPLに近づけるには、マイクと基準器を比較する<a href="/ja/calibration/">校正</a>が必要です。</p>
+      <h2>A・C・Z特性</h2>
+      <ul>
+        <li><strong>A特性（dBA）:</strong> 人の聴感に近い重み付けで、日常環境や会話の比較によく使われます。</li>
+        <li><strong>C特性（dBC）:</strong> 低音をA特性より強く含め、大きな音やピークの比較に向きます。</li>
+        <li><strong>Z特性（dBZ）:</strong> 周波数重み付けを行わないフラットな表示です。</li>
+      </ul>
+      <h2>FastとSlow</h2>
+      <p>Fast（125 ms）は短い変化やピークを追いやすく、Slow（1秒）は表示のばらつきを抑えて平均的な状態を読みやすくします。比較するときは、途中で設定を変えないでください。</p>
+      <p><a href="/ja/decibel-chart/">デシベル比較表 →</a> · <a href="/ja/methodology/">計算方法 →</a></p>
+    `,
+  },
+  {
+    slug: 'microphone-not-working',
+    title: 'ブラウザでマイクが使えないときの対処法',
+    description: 'オンラインデシベル計でマイクが動かない場合の確認手順。ブラウザ権限、入力端末、HTTPS、他アプリの使用を確認。',
+    intro: '「開始」を押しても測定が始まらない場合は、上から順に確認してください。',
+    label: 'マイクの問題',
+    article: true,
+    body: `
+      <h2>1. マイク権限を確認</h2>
+      <p>アドレスバーのロックまたはサイト設定を開き、マイクを「許可」に変更します。変更後はページを再読み込みし、もう一度「開始」を押します。</p>
+      <h2>2. 入力端末を確認</h2>
+      <p>パソコンやスマートフォンの設定で、使いたいマイクが入力端末に選ばれているか確認します。USBマイクやヘッドセットを接続した場合は、接続後にページを再読み込みしてください。</p>
+      <h2>3. 他のアプリを閉じる</h2>
+      <p>通話、オンライン会議、録音アプリがマイクを使っていると、ブラウザが入力を開けないことがあります。それらを終了し、再度試してください。</p>
+      <h2>4. 安全な接続とブラウザ</h2>
+      <p>マイク機能はHTTPS接続で利用してください。プライベートモード、厳しい端末管理ポリシー、古いブラウザではマイク機能が制限されることがあります。最新版のChrome、Edge、Safari、Firefoxで確認してください。</p>
+      <p><a href="/ja/#measure">メーターに戻る →</a> · <a href="/ja/privacy/">マイクのプライバシー →</a></p>
+    `,
+  },
+  {
+    slug: 'privacy',
+    title: 'マイク音声のプライバシー',
+    description: 'オンラインデシベル計がマイク音声を端末内で処理する仕組み、ブラウザ権限、ローカル保存の範囲を説明。',
+    intro: '測定に必要なマイク許可と、音声やセッションデータの扱いを説明します。',
+    label: 'プライバシー',
+    article: true,
+    body: `
+      <h2>マイク権限</h2>
+      <p>測定は「開始」を押し、ブラウザで明示的に許可したときだけ始まります。許可はブラウザのサイト設定からいつでも取り消せます。</p>
+      <h2>音声の処理</h2>
+      <p>マイクのサンプルはWeb Audio APIを使ってそのブラウザ内で処理されます。このサイトはマイク音声を録音ファイルとして作成せず、サーバーへ送信しません。</p>
+      <h2>ブラウザに保存される情報</h2>
+      <p>校正プロファイル、テーマ、保存を選んだセッション履歴は、そのブラウザのローカルストレージに保存されます。履歴は画面から消去でき、ブラウザデータの削除でも取り除けます。</p>
+      <h2>アクセス解析</h2>
+      <p>サイトの利用状況を把握するためGoogle Analyticsを使用しています。ページ、ブラウザ、端末に関する情報や解析CookieがGoogleへ送られる場合がありますが、マイク音声や測定サンプルは送信されません。</p>
+      <h2>エクスポート</h2>
+      <p>CSVとJSONはブラウザ内で作成され、ユーザーが自分の端末に保存します。エクスポートに音声録音は含まれません。</p>
+      <p><a href="/ja/methodology/">ローカル処理の仕組み →</a> · <a href="/ja/#measure">メーターを開く →</a></p>
+    `,
+  },
+];
+
+export function getStaticPaths() {
+  return [
+    'guides',
+    'how-to-use',
+    'methodology',
+    'calibration',
+    'accuracy',
+    'decibel-chart',
+    'db-vs-dba',
+    'microphone-not-working',
+    'privacy',
+  ].map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const page = pages.find((candidate) => candidate.slug === slug);
+if (!page) throw new Error(`Unknown Japanese guide route: ${slug}`);
+const dict = getDict('ja');
+const url = `${SITE}/ja/${page.slug}/`;
+const breadcrumbs = [
+  { name: 'トップ', url: `${SITE}/ja/` },
+  { name: page.label, url },
+];
+const jsonLd = [
+  ...(page.article
+    ? [articleJsonLd({ headline: page.title, description: page.description, url, inLanguage: 'ja', dateModified: '2026-09-18' })]
+    : []),
+  breadcrumbJsonLd(breadcrumbs),
+];
+---
+
+<Layout
+  locale="ja"
+  dict={dict}
+  title={`${page.title} | Real Decibel Meter`}
+  description={page.description}
+  path={`/ja/${page.slug}/`}
+  hreflang={guideHreflang(keyForSlug(page.slug))}
+  jsonLd={jsonLd}
+  ogType={page.article ? 'article' : 'website'}
+>
+  <Article
+    title={page.title}
+    intro={page.intro}
+    reviewed="2026-09-18"
+    breadcrumb={[
+      { name: 'トップ', href: '/ja/' },
+      { name: page.label, href: `/ja/${page.slug}/` },
+    ]}
+  >
+    <div class="article-rich" set:html={page.body} />
+  </Article>
+</Layout>

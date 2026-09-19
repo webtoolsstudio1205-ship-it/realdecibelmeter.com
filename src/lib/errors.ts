@@ -55,10 +55,16 @@ export function describeError(code: ErrorCode, detail = ''): UiError {
     return { code, title: '', message: '', recovery: '' };
   }
   const base = MAP[code];
+  // Detail comes from browser DOMExceptions: keep only the first line
+  // (Error.message; later lines are stack frames with filesystem paths)
+  // collapsed to a single short string, so internals can never reach the
+  // UI or logs verbatim. Rendered via textContent by the panel (never HTML).
+  const firstLine = detail.split('\n', 1)[0] ?? '';
+  const safe = firstLine.replace(/[\r\t]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 200);
   return {
     code,
     title: base.title,
-    message: detail ? `${base.message} Detail: ${detail}` : base.message,
+    message: safe ? `${base.message} Detail: ${safe}` : base.message,
     recovery: base.recovery,
   };
 }

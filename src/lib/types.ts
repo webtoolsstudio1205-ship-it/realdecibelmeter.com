@@ -67,9 +67,9 @@ export interface EngineSnapshot {
   unit: DisplayUnit;
   /** Strict typed measurement result. Only `calibrated` carries an
    * environmental sound level (estimatedSPL = rawDbfs + profile.offset).
-   * `uncalibrated` is used for the main environmental meter when no
-   * compatible calibration profile exists — the UI must render `--`
-   * (never a negative dBFS value labelled as environmental dB). */
+   * `uncalibrated` is used when no compatible calibration profile exists.
+   * The public presentation may derive a disclosed nominal estimate, while
+   * the engine keeps this result free of invented SPL values. */
   result: MeasurementResult;
   /** Visual-only microphone input strength 0–100% (mapped from digital
    * −100…0 dBFS). NEVER export this as a decibel measurement. */

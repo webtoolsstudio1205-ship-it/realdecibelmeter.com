@@ -1,0 +1,71 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang, type GuideKey } from '../../lib/seo';
+
+interface GermanGuide {
+  slug: string; key: GuideKey; title: string; description: string; intro: string; label: string; body: string; article?: boolean;
+}
+
+const pages: GermanGuide[] = [
+  {
+    slug: 'anleitungen', key: 'guides', title: 'Anleitungen zum Online-Dezibelmesser',
+    description: 'Deutsche Anleitungen zu Online-Schallpegelmessung, Kalibrierung, Genauigkeit, Dezibel-Tabelle, dB und dBA sowie Mikrofonproblemen.',
+    intro: 'Wählen Sie die Anleitung passend zu Ihrer Aufgabe. Unkalibriert zeigt der Browser einen klar gekennzeichneten nominalen Schätzwert; eine Referenzkalibrierung verbessert die gerätespezifische Genauigkeit.', label: 'Anleitungen',
+    body: `<h2>Messen und einordnen</h2><ul><li><a href="/de/kalibrierung/">Dezibelmesser kalibrieren</a> — einen Geräte-Offset mit einer verlässlichen Referenz bestimmen.</li><li><a href="/de/genauigkeit/">Genauigkeit von Online-Dezibelmessern</a> — Hardware, automatische Verstärkung und Grenzen verstehen.</li><li><a href="/de/dezibel-tabelle/">Dezibel-Tabelle</a> — typische Alltagsgeräusche als grobe Orientierung.</li></ul><h2>Begriffe und Fehlerbehebung</h2><ul><li><a href="/de/db-vs-dba/">Unterschied zwischen dB und dBA</a> — A-, C- und Z-Bewertung verständlich erklärt.</li><li><a href="/de/mikrofon-funktioniert-nicht/">Mikrofon funktioniert nicht</a> — Berechtigungen, Geräteauswahl und Browser prüfen.</li></ul><p><a href="/de/#measure">Jetzt Lautstärke online messen →</a></p>`,
+  },
+  {
+    slug: 'kalibrierung', key: 'calibration', title: 'Online-Dezibelmesser kalibrieren',
+    description: 'So kalibrieren Sie einen Online-Dezibelmesser mit Referenzgerät, passender Bewertung und einem gerätespezifischen Offset.',
+    intro: 'Kalibrierung bedeutet hier: Sie vergleichen Browser und Referenz am selben Ort und speichern die Differenz als festen Offset. Das verbessert den Gesamtpegel, macht den Browser aber nicht zum zertifizierten Messgerät.', label: 'Kalibrierung', article: true,
+    body: `<h2>Was Sie benötigen</h2><ul><li>Ein kalibriertes Schallpegelmessgerät oder einen akustischen Kalibrator mit bekanntem Pegel.</li><li>Dasselbe Mikrofon, denselben Browser und dieselbe Position, die Sie später verwenden.</li><li>Übereinstimmende A-, C- oder Z-Bewertung und Fast- oder Slow-Zeitbewertung.</li></ul><h2>Kalibrierung in vier Schritten</h2><ol><li>Stellen Sie Referenzgerät und Browser-Gerät dicht nebeneinander; Mikrofonöffnungen bleiben frei.</li><li>Nutzen Sie einen möglichst stabilen Referenzschall und warten Sie, bis beide Anzeigen ruhig sind.</li><li>Erfassen Sie im Messdialog den digitalen Mittelwert und geben Sie den bekannten Referenzpegel ein.</li><li>Speichern Sie das Profil und kontrollieren Sie die Anzeige erneut gegen die Referenz.</li></ol><h2>Wann das Profil nicht mehr passt</h2><p>Wechseln Sie Mikrofon, Headset, Browser-Verarbeitung, Bewertung oder Geräteposition, muss die Kalibrierung geprüft werden. Ein Offset eines anderen Telefons ist nicht übertragbar. Lesen Sie auch <a href="/de/genauigkeit/">Genauigkeit und Grenzen</a> sowie <a href="/de/db-vs-dba/">dB und dBA</a>.</p><p><a href="/de/#measure">Deutschen Dezibelmesser öffnen →</a> · <a href="/de/anleitungen/">Alle Anleitungen →</a></p>`,
+  },
+  {
+    slug: 'genauigkeit', key: 'accuracy', title: 'Wie genau ist ein Online-Dezibelmesser?',
+    description: 'Genauigkeit von Dezibel-Apps im Browser: Mikrofonhardware, AGC, Frequenzgang, Kalibrierung und Einsatzgrenzen verständlich erklärt.',
+    intro: 'Smartphone- und Laptopmikrofone sind für Sprache optimiert, nicht für akustische Messtechnik. Deshalb sind Browserwerte nützlich für Vergleiche, aber ohne belastbare Referenz keine zertifizierten Schallpegel.', label: 'Genauigkeit', article: true,
+    body: `<h2>Warum Geräte unterschiedliche Werte zeigen</h2><ul><li><strong>Hardware:</strong> Mikrofonkapsel, Vorverstärker, Gehäuse und Einbauort unterscheiden sich.</li><li><strong>Automatische Verarbeitung:</strong> Betriebssystem oder Browser können Verstärkung, Rauschunterdrückung und Echounterdrückung anwenden.</li><li><strong>Frequenzgang:</strong> Ein einzelner Offset korrigiert keine frequenzabhängigen Abweichungen.</li><li><strong>Aufstellung:</strong> Abstand, Reflexionen, Wind und Handgeräusche verändern das Ergebnis.</li></ul><h2>Was Kalibrierung verbessert</h2><p>Ein Vergleich mit einem verlässlichen Messgerät kann den Gesamtpegel näher an die Referenz bringen. Er beseitigt weder Clipping noch wechselnde automatische Verstärkung. Die genaue Vorgehensweise steht unter <a href="/de/kalibrierung/">Dezibelmesser kalibrieren</a>.</p><h2>Wann ein zertifiziertes Messgerät nötig ist</h2><p>Für Arbeitsschutz, Rechtsfragen, Gehörschutzentscheidungen oder den Nachweis einer Norm benötigen Sie ein geeignetes, kalibriertes Klasse-1- oder Klasse-2-Gerät. Dieser Online-Schallpegelmesser gibt keine medizinische oder rechtliche Bewertung aus.</p><p><a href="/de/#measure">Messung starten →</a> · <a href="/de/dezibel-tabelle/">Dezibel-Tabelle →</a> · <a href="/de/anleitungen/">Alle Anleitungen →</a></p>`,
+  },
+  {
+    slug: 'dezibel-tabelle', key: 'decibel-chart', title: 'Dezibel-Tabelle: Lautstärke im Alltag',
+    description: 'Dezibel-Tabelle mit ungefähren dBA-Werten für Schlafzimmer, Bibliothek, Gespräch, Verkehr, Rasenmäher und Konzert.',
+    intro: 'Die Beispiele dienen nur der Orientierung. Abstand, Raum, Dauer und Frequenzbewertung können den tatsächlichen Pegel stark verändern.', label: 'Dezibel-Tabelle', article: true,
+    body: `<table><caption class="sr-only">Ungefähre Alltagspegel in dBA</caption><thead><tr><th>Pegel (ca.)</th><th>Beispiel</th></tr></thead><tbody><tr><td>30 dBA</td><td>Ruhiges Schlafzimmer nachts</td></tr><tr><td>40 dBA</td><td>Ruhige Bibliothek</td></tr><tr><td>50 dBA</td><td>Leiser Büroraum, mäßiger Regen</td></tr><tr><td>60 dBA</td><td>Normales Gespräch</td></tr><tr><td>70 dBA</td><td>Dichter Verkehr in kurzer Entfernung</td></tr><tr><td>80 dBA</td><td>Lautes Restaurant</td></tr><tr><td>90 dBA</td><td>Rasenmäher oder Motorrad</td></tr><tr><td>100 dBA</td><td>Vorderer Konzertbereich</td></tr><tr><td>110 dBA</td><td>Laute Elektrowerkzeuge</td></tr><tr><td>120 dBA</td><td>Sirene in kurzer Entfernung</td></tr></tbody></table><h2>Die Werte richtig verwenden</h2><p>Die Dezibelskala ist logarithmisch: 10 dB mehr entsprechen ungefähr der zehnfachen Schallenergie. Vergleichen Sie Browserwerte nur nach <a href="/de/kalibrierung/">Kalibrierung</a> und mit passender A-Bewertung. Die Tabelle ist keine Grundlage für Sicherheitsentscheidungen; beachten Sie die <a href="/de/genauigkeit/">Messgrenzen</a>.</p><p><a href="/de/#measure">Lautstärke online messen →</a> · <a href="/de/db-vs-dba/">dB und dBA verstehen →</a> · <a href="/de/anleitungen/">Alle Anleitungen →</a></p>`,
+  },
+  {
+    slug: 'db-vs-dba', key: 'db-vs-dba', title: 'dB und dBA: Was ist der Unterschied?',
+    description: 'Unterschied zwischen dB, dBA, dBC und dBZ sowie Fast- und Slow-Zeitbewertung bei Online-Schallpegelmessungen.',
+    intro: 'dB beschreibt ein logarithmisches Verhältnis. Die Zusätze A, C und Z geben an, wie Frequenzen für eine Schallpegelanzeige gewichtet werden.', label: 'dB und dBA', article: true,
+    body: `<h2>dBFS ist nicht dB SPL</h2><p>Der Browser erhält digitale Werte in dBFS. 0 dBFS ist der höchste darstellbare digitale Pegel, nicht Stille; normale Werte sind negativ. Ein Umgebungs-Schalldruckpegel in dB SPL benötigt Mikrofonempfindlichkeit und eine <a href="/de/kalibrierung/">Referenzkalibrierung</a>.</p><h2>A-, C- und Z-Bewertung</h2><ul><li><strong>dBA:</strong> betont Frequenzen ähnlich der menschlichen Hörwahrnehmung und wird oft für Alltagsschall genutzt.</li><li><strong>dBC:</strong> ist flacher und lässt tiefe Frequenzen stärker einfließen.</li><li><strong>dBZ:</strong> verwendet keine Frequenzbewertung.</li></ul><h2>Fast und Slow</h2><p>Fast folgt kurzen Änderungen schneller; Slow glättet die Anzeige. Für faire Vergleiche müssen Bewertung, Zeitkonstante, Position und Kalibrierprofil gleich bleiben.</p><p><a href="/de/#measure">Messgerät öffnen →</a> · <a href="/de/dezibel-tabelle/">Dezibel-Tabelle →</a> · <a href="/de/genauigkeit/">Genauigkeit →</a></p>`,
+  },
+  {
+    slug: 'mikrofon-funktioniert-nicht', key: 'microphone-not-working', title: 'Mikrofon funktioniert nicht: Browser-Hilfe',
+    description: 'Wenn der Online-Dezibelmesser kein Mikrofon erkennt: Berechtigung, Eingabegerät, HTTPS, andere Apps und Browser prüfen.',
+    intro: 'Beginnen Sie mit der Browserberechtigung und arbeiten Sie die Schritte der Reihe nach ab. Der Messwert bleibt „--“, solange kein echtes Audiosignal vorliegt.', label: 'Mikrofon-Hilfe', article: true,
+    body: `<h2>1. Berechtigung prüfen</h2><p>Öffnen Sie über das Schloss- oder Einstellungs-Symbol in der Adressleiste die Website-Berechtigungen. Setzen Sie Mikrofon auf „Zulassen“, laden Sie die Seite neu und starten Sie erneut.</p><h2>2. Richtiges Eingabegerät wählen</h2><p>Prüfen Sie die Audioeinstellungen des Betriebssystems. Nach dem Anschließen eines USB-Mikrofons oder Headsets aktualisieren Sie die Geräteliste oder laden die Seite neu.</p><h2>3. Andere Anwendungen schließen</h2><p>Telefonie-, Konferenz- oder Aufnahmeprogramme können das Mikrofon exklusiv belegen. Beenden Sie diese Anwendungen und versuchen Sie es erneut.</p><h2>4. Browser und sichere Verbindung</h2><p>Mikrofonzugriff erfordert HTTPS. Verwenden Sie eine aktuelle Version von Chrome, Edge, Firefox oder Safari. Private Fenster oder verwaltete Geräte können den Zugriff zusätzlich sperren.</p><p><a href="/de/#measure">Erneut messen →</a> · <a href="/de/genauigkeit/">Messgenauigkeit →</a> · <a href="/de/kalibrierung/">Kalibrierung →</a> · <a href="/de/anleitungen/">Alle Anleitungen →</a></p>`,
+  },
+];
+
+export function getStaticPaths() {
+  return ['anleitungen', 'kalibrierung', 'genauigkeit', 'dezibel-tabelle', 'db-vs-dba', 'mikrofon-funktioniert-nicht']
+    .map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const page = pages.find((candidate) => candidate.slug === slug);
+if (!page) throw new Error(`Unknown German guide route: ${slug}`);
+const dict = getDict('de');
+const path = `/de/${page.slug}/`;
+const url = `${SITE}${path}`;
+const jsonLd = [
+  ...(page.article ? [articleJsonLd({ headline: page.title, description: page.description, url, inLanguage: 'de', dateModified: '2026-09-19' })] : []),
+  breadcrumbJsonLd([{ name: 'Startseite', url: `${SITE}/de/` }, { name: page.label, url }]),
+];
+---
+
+<Layout locale="de" dict={dict} title={`${page.title} | Real Decibel Meter`} description={page.description} path={path} hreflang={guideHreflang(page.key)} jsonLd={jsonLd} ogType={page.article ? 'article' : 'website'}>
+  <Article title={page.title} intro={page.intro} reviewed="2026-09-19" breadcrumb={[{ name: 'Startseite', href: '/de/' }, { name: page.label, href: path }]}>
+    <div class="article-rich" set:html={page.body} />
+  </Article>
+</Layout>

@@ -1,5 +1,5 @@
 /**
- * Spec-compliance suite for the two-mode (input-strength vs calibrated-SPL)
+ * Spec-compliance suite for the two-mode (nominal estimate vs calibrated-SPL)
  * presentation model. Uses deterministic fixtures — no microphone required.
  */
 import { readFileSync } from 'node:fs';
@@ -19,7 +19,9 @@ import type { CaptureCallbacks, CaptureController, CaptureStartInfo } from './mi
 import { analyzeBlock as analyze, SosFilter, type SosSection } from './dsp.js';
 import {
   DIGITAL_FLOOR_DBFS,
+  DEFAULT_ESTIMATE_OFFSET_DB,
   digitalDiagnostics,
+  nominalSoundEstimate,
   publicGauge,
   publicGraph,
   publicMeasurementMode,
@@ -103,13 +105,14 @@ function stabilizingHarness() {
 }
 
 describe('spec fixtures', () => {
-  it('1. −53.2 dBFS becomes ≈47% input strength (floor −100)', () => {
+  it('1. −53.2 dBFS becomes a 46.8 dBA nominal estimate', () => {
     expect(DIGITAL_FLOOR_DBFS).toBe(-100);
+    expect(DEFAULT_ESTIMATE_OFFSET_DB).toBe(100);
+    expect(nominalSoundEstimate(-53.2)).toBeCloseTo(46.8, 9);
     expect(digitalToInputStrength(-53.2)).toBeCloseTo(46.8, 9);
-    expect(`${(digitalToInputStrength(-53.2) as number).toFixed(0)}%`).toBe('47%');
   });
 
-  it('2–3. uncalibrated public stats show no negative dBFS and no banned labels', () => {
+  it('2–3. uncalibrated public stats show estimated dBA and no raw dBFS', () => {
     const rendered = JSON.stringify(publicStats(snapshot()));
     expect(rendered).not.toMatch(/-\d+\.\d/);
     expect(rendered).not.toMatch(/dBFS/i);
@@ -117,8 +120,9 @@ describe('spec fixtures', () => {
       expect(rendered).not.toContain(banned);
     }
     expect(publicStats(snapshot()).map((s) => s.label)).toEqual(
-      ['Current Strength', 'Average Strength', 'Peak Strength', 'Duration'],
+      ['Current estimated sound level', 'Minimum', 'Energy average', 'Maximum', 'Duration'],
     );
+    expect(publicStats(snapshot())[0]?.value).toBe('46.8 dBA');
   });
 
   it('4. Digital Diagnostics keeps the original negative dBFS', () => {
@@ -136,8 +140,8 @@ describe('spec fixtures', () => {
     expect(publicStats(s)[0]?.value).toBe('60.0 dBA');
   });
 
-  it('6. mismatched calibration returns to input-strength mode', () => {
-    expect(publicMeasurementMode(snapshot())).toBe('input-strength');
+  it('6. mismatched calibration returns to nominal-estimate mode', () => {
+    expect(publicMeasurementMode(snapshot())).toBe('estimated-spl');
     const cal = snapshot({
       mode: 'calibrated', calibrationValid: true,
       result: { kind: 'calibrated', spl: 60, unit: 'dBA', profileId: 'p', offsetDb: 113.2 },
@@ -148,14 +152,14 @@ describe('spec fixtures', () => {
       result: { kind: 'uncalibrated', reason: 'calibration-required', unit: 'dBA' },
       calibrationStale: true, calibrationStaleReasons: ['Microphone device changed.'],
     });
-    expect(publicMeasurementMode(stale)).toBe('input-strength');
-    expect(publicGauge(stale)).toMatchObject({ unit: '%', lo: 0, hi: 100 });
+    expect(publicMeasurementMode(stale)).toBe('estimated-spl');
+    expect(publicGauge(stale)).toMatchObject({ unit: 'dBA', lo: 20, hi: 120, calibrated: false });
   });
 
-  it('7–8. input-strength gauge and graph use 0–100%', () => {
-    expect(publicGauge(snapshot())).toMatchObject({ unit: '%', lo: 0, hi: 100, value: 46.8 });
+  it('7–8. uncalibrated gauge and graph use nominal dBA estimates', () => {
+    expect(publicGauge(snapshot())).toMatchObject({ unit: 'dBA', lo: 20, hi: 120, value: 46.8 });
     expect(publicGraph([-100, -53.2, 0], snapshot())).toEqual({
-      series: [0, 46.8, 100], lo: 0, hi: 100, label: 'Input strength (%)', unit: '%',
+      series: [0, 46.8, 100], lo: 20, hi: 120, label: 'Estimated sound level (dBA)', unit: 'dBA',
     });
   });
 
@@ -171,10 +175,11 @@ describe('spec fixtures', () => {
     }
   });
 
-  it('10. input-strength mode carries no A/C/Z badge', () => {
+  it('10. nominal estimate carries the selected weighting and disclosure', () => {
     const g = publicGauge(snapshot());
-    expect(g.unit).toBe('%');
-    expect(`${g.label} ${g.status}`).not.toMatch(/[ACZ]-weighting|\bdBA\b|\bdBC\b|\bdBZ\b/);
+    expect(g.unit).toBe('dBA');
+    expect(g.calibrated).toBe(false);
+    expect(g.status).toMatch(/calibrat/i);
     const src = panelSource();
     expect(src).not.toMatch(/rdm-weight-badge|weight-badge|A-badge/);
   });

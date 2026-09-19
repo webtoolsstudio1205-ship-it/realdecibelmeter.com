@@ -1,0 +1,117 @@
+---
+interface Props { mode: 'noise-floor' | 'background' }
+const { mode } = Astro.props;
+const noiseFloor = mode === 'noise-floor';
+---
+
+<section class="panel meter-card p-5 md:p-7" data-focused-test data-mode={mode} aria-labelledby="focused-test-title">
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p class="eyebrow">{noiseFloor ? '30-second local test' : 'Local microphone measurement'}</p>
+      <h2 id="focused-test-title" class="text-xl font-semibold mt-1">{noiseFloor ? 'Measure your microphone noise floor' : 'Check background noise'}</h2>
+    </div>
+    <span data-ft-status class="chip rounded-full px-3 py-1.5 text-sm" style="border:1px solid var(--border);color:var(--muted)" role="status" aria-live="polite">Ready</span>
+  </div>
+
+  <p class="mt-3 text-sm" style="color:var(--muted);max-width:72ch">
+    {noiseFloor
+      ? 'Start the test in the quietest practical setting. The timer stops automatically after 30 seconds. Values are raw dBFS, not environmental dBA.'
+      : 'Start when the device is in a stable position. Without compatible calibration, the main result is microphone input strength rather than environmental dBA.'}
+  </p>
+
+  <div class="mt-5 grid gap-4 md:grid-cols-[1.2fr_1fr]">
+    <div class="panel-raised p-5 text-center">
+      <p data-ft-label class="eyebrow">{noiseFloor ? 'Current digital level' : 'Microphone input strength'}</p>
+      <p class="mt-2"><span data-ft-main class="tabular font-semibold" style="font-size:clamp(48px,10vw,76px);line-height:1">--</span> <span data-ft-unit style="color:var(--muted)">{noiseFloor ? 'dBFS' : '%'}</span></p>
+      <p data-ft-mode class="text-xs mt-2" style="color:var(--muted)">{noiseFloor ? 'Digital full-scale level' : 'Uncalibrated estimate — calibrate for better accuracy'}</p>
+      {noiseFloor && <progress data-ft-progress class="w-full mt-4" value="0" max="30" aria-label="Noise-floor test progress"></progress>}
+    </div>
+    <dl class="grid grid-cols-2 gap-2">
+      <div class="panel-raised p-3"><dt class="eyebrow">Current</dt><dd data-ft-current class="tabular text-xl font-semibold mt-1">--</dd></div>
+      <div class="panel-raised p-3"><dt class="eyebrow">Minimum</dt><dd data-ft-min class="tabular text-xl font-semibold mt-1">--</dd></div>
+      <div class="panel-raised p-3"><dt class="eyebrow">Energy average</dt><dd data-ft-average class="tabular text-xl font-semibold mt-1">--</dd></div>
+      <div class="panel-raised p-3"><dt class="eyebrow">Maximum</dt><dd data-ft-max class="tabular text-xl font-semibold mt-1">--</dd></div>
+    </dl>
+  </div>
+
+  <div class="mt-5 flex flex-wrap gap-2" role="group" aria-label="Test controls">
+    <button data-ft-start type="button" class="btn-primary focus-ring">{noiseFloor ? 'Start 30-second test' : 'Start measurement'}</button>
+    <button data-ft-pause type="button" class="btn-secondary focus-ring" hidden>Pause</button>
+    <button data-ft-resume type="button" class="btn-secondary focus-ring" hidden>Resume</button>
+    <button data-ft-stop type="button" class="btn-square focus-ring" hidden>Stop</button>
+    <button data-ft-new type="button" class="btn-primary focus-ring" hidden>Start new test</button>
+  </div>
+  <div data-ft-error class="hidden mt-4 rounded-xl p-4 text-sm" style="border:1px solid var(--border);background:var(--raised)" role="alert"></div>
+  <p class="mt-4 text-xs" style="color:var(--muted)">Audio is processed in this browser only. No recording or measurement sample is uploaded.</p>
+</section>
+
+<script>
+  import { DecibelEngine } from '../lib/engine.js';
+  import { formatDb } from '../lib/dsp.js';
+  import { publicGauge, publicMeasurementMode } from '../lib/presentation.js';
+
+  const root = document.querySelector('[data-focused-test]');
+  if (root) {
+    const mode = root.dataset.mode;
+    const engine = new DecibelEngine();
+    const el = (name) => root.querySelector(`[data-ft-${name}]`);
+    const status = el('status');
+    const start = el('start'); const pause = el('pause'); const resume = el('resume'); const stop = el('stop'); const fresh = el('new');
+    const show = (node, value) => { if (node) node.hidden = !value; };
+    const dbfs = (value) => value == null || !Number.isFinite(value) ? '--' : `${formatDb(value)} dBFS`;
+    let autoStopped = false;
+
+    const unsubscribe = engine.subscribe((snapshot) => {
+      status.textContent = snapshot.state === 'requesting-permission' ? 'Requesting microphone permission…'
+        : snapshot.state === 'stabilizing' ? 'Stabilizing…'
+          : snapshot.state === 'running' ? 'Measuring'
+            : snapshot.state === 'paused' ? 'Paused'
+              : snapshot.state === 'stopped' ? (autoStopped ? '30-second test complete' : 'Stopped')
+                : snapshot.state === 'error' ? 'Microphone needs attention' : 'Ready';
+      show(start, snapshot.state === 'idle');
+      show(pause, mode === 'background' && snapshot.state === 'running');
+      show(resume, mode === 'background' && snapshot.state === 'paused');
+      show(stop, ['requesting-permission', 'stabilizing', 'running', 'paused'].includes(snapshot.state));
+      show(fresh, snapshot.state === 'stopped' || snapshot.state === 'error');
+
+      el('current').textContent = dbfs(snapshot.stats.current);
+      el('min').textContent = dbfs(snapshot.stats.min);
+      el('average').textContent = dbfs(snapshot.stats.leq);
+      el('max').textContent = dbfs(snapshot.stats.max);
+
+      if (mode === 'noise-floor') {
+        el('main').textContent = snapshot.stats.current == null ? '--' : formatDb(snapshot.stats.current);
+        const progress = el('progress');
+        if (progress) progress.value = Math.min(30, snapshot.stats.durationSec);
+        if (!autoStopped && snapshot.state === 'running' && snapshot.stats.durationSec >= 30) {
+          autoStopped = true;
+          engine.stop();
+        }
+      } else {
+        const gauge = publicGauge(snapshot);
+        el('main').textContent = gauge.value == null ? '--' : formatDb(gauge.value);
+        el('unit').textContent = gauge.unit;
+        el('label').textContent = gauge.label;
+        el('mode').textContent = publicMeasurementMode(snapshot) === 'calibrated-spl'
+          ? `${gauge.status}. The compatible local calibration profile is active.`
+          : 'Uncalibrated estimate using a nominal device offset. Calibrate for better accuracy.';
+      }
+
+      const error = el('error');
+      if (snapshot.state === 'error') {
+        error.classList.remove('hidden');
+        error.textContent = snapshot.error === 'permission-denied'
+          ? 'Microphone access was denied. Allow it in the address-bar site settings, then start a new test.'
+          : 'The microphone could not be opened. Check the selected input, close other apps using it, and try again.';
+      } else error.classList.add('hidden');
+    });
+
+    const begin = () => { autoStopped = false; engine.reset(); engine.start(); };
+    start?.addEventListener('click', begin);
+    fresh?.addEventListener('click', begin);
+    pause?.addEventListener('click', () => engine.pause());
+    resume?.addEventListener('click', () => engine.resume());
+    stop?.addEventListener('click', () => engine.stop());
+    window.addEventListener('pagehide', () => { unsubscribe(); engine.stop(); }, { once: true });
+  }
+</script>

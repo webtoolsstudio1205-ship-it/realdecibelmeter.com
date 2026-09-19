@@ -1,8 +1,9 @@
 ---
 import Layout from '../../components/Layout.astro';
 import MeterPanel from '../../components/MeterPanel.astro';
+import SoundLevelGuide from '../../components/SoundLevelGuide.astro';
 import { getDict, type Locale } from '../../i18n/dictionaries';
-import { SITE, webAppJsonLd, faqJsonLd } from '../../lib/seo';
+import { SITE, webAppJsonLd, faqJsonLd, breadcrumbJsonLd } from '../../lib/seo';
 
 export function getStaticPaths() {
   return (['de', 'it', 'ja', 'es', 'fr', 'pt', 'ko'] as Locale[]).map((locale) => ({
@@ -16,100 +17,101 @@ const prefix = `/${locale}`;
 
 const COPY: Record<Locale, { intro: string; howT: string; howB: string; calT: string; calB: string; accT: string; guides: { t: string; d: string; href: string }[] }> = {
   de: {
-    intro: 'Prüfen Sie die Mikrofon-Eingangsstärke sofort – kostenlos, ohne App und ohne Download. Für einen Schallpegel in dBA, dBC oder dBZ kalibrieren Sie Ihr Gerät mit einer bekannten Referenz.',
+    intro: 'Messen Sie sofort einen geschätzten Schallpegel in dBA – kostenlos, ohne App und ohne Download. Kalibrieren Sie mit einer bekannten Referenz für eine bessere gerätespezifische Genauigkeit.',
     howT: 'Wie der Dezibelmesser funktioniert',
-    howB: 'Das Mikrofon wird über die Web Audio API ausgelesen: RMS pro Block, Umrechnung in dB, Korrektur für A-, C- oder Z-Bewertung, Glättung mit Fast (125 ms) oder Slow (1 s) und Mittelung als Leq. Unkalibriert sehen Sie die Eingangsstärke in Prozent; mit Offset wird daraus ein Schallpegel-Schätzwert. Details zur Schallpegelmessung und Methode finden Sie in den Anleitungen.',
+    howB: 'Das Mikrofon wird über die Web Audio API ausgelesen: RMS pro Block, Umrechnung in dB, A-, C- oder Z-Bewertung, Fast/Slow-Glättung und Leq-Mittelung. Unkalibriert nutzt die Anzeige einen nominalen +100-dB-Offset; ein gespeichertes Profil ersetzt ihn durch Ihren Referenzwert.',
     calT: 'Kalibrierung für Dezibel-Schätzwerte',
     calB: 'Jedes Mikrofon verstärkt anders – daher ist eine Kalibrierung vor jedem dBA-Wert nötig. Vergleichen Sie mit einer stabilen Referenz, tragen Sie die Differenz als Offset ein und behalten Sie Mikrofon, Position und Einstellungen bei.',
     accT: 'Genauigkeit im Browser',
     guides: [
-      { t: 'Kalibrierung', d: 'Mikrofon mit Referenz abgleichen.', href: '/calibration/' },
-      { t: 'Genauigkeit', d: 'Was Browser-Schätzwerte leisten.', href: '/accuracy/' },
-      { t: 'Dezibel-Tabelle', d: 'Typische Alltagspegel im Vergleich.', href: '/decibel-chart/' },
+      { t: 'Kalibrierung', d: 'Mikrofon mit Referenz abgleichen.', href: '/de/kalibrierung/' },
+      { t: 'Genauigkeit', d: 'Was Browser-Schätzwerte leisten.', href: '/de/genauigkeit/' },
+      { t: 'Dezibel-Tabelle', d: 'Typische Alltagspegel im Vergleich.', href: '/de/dezibel-tabelle/' },
     ],
   },
   it: {
-    intro: 'Controlla subito il segnale del microfono – gratis, senza app e senza download. Per una stima in dBA, dBC o dBZ, calibra il dispositivo con un riferimento noto.',
+    intro: 'Misura subito un livello sonoro stimato in dBA – gratis, senza app e senza download. Calibra con un riferimento noto per una migliore precisione del dispositivo.',
     howT: 'Come funziona il fonometro online',
-    howB: 'Il microfono viene letto tramite Web Audio API: RMS per blocco, conversione in dB, correzione per la ponderazione A, C o Z, smoothing Fast (125 ms) o Slow (1 s) e media energetica Leq. Senza calibrazione vedi il segnale in percentuale; con l’offset ottieni una stima del livello in decibel.',
+    howB: 'Il microfono viene letto tramite Web Audio API: RMS per blocco, conversione in dB, ponderazione A, C o Z, smoothing Fast/Slow e media Leq. Senza calibrazione usa un offset nominale di +100 dB; un profilo salvato lo sostituisce con il riferimento del dispositivo.',
     calT: 'Calibrazione per la misura dei decibel',
     calB: 'Ogni microfono ha un guadagno diverso: la calibrazione è necessaria prima di fidarsi di un valore in dBA. Confronta con un riferimento stabile, inserisci la differenza come offset e mantieni microfono, posizione e impostazioni.',
     accT: 'Precisione nel browser',
     guides: [
-      { t: 'Calibrazione', d: 'Allinea il microfono a un riferimento.', href: '/calibration/' },
-      { t: 'Precisione', d: 'Cosa possono dire le stime browser.', href: '/accuracy/' },
-      { t: 'Tabella decibel', d: 'Livelli tipici a confronto.', href: '/decibel-chart/' },
+      { t: 'Calibrazione', d: 'Allinea il microfono a un riferimento.', href: '/it/#cal' },
+      { t: 'Precisione', d: 'Cosa possono dire le stime browser.', href: '/it/#acc' },
+      { t: 'Guida alla misurazione', d: 'Passaggi, impostazioni e limiti.', href: '/it/#steps' },
     ],
   },
   ja: {
-    intro: 'マイク入力レベルを今すぐ確認 — 無料・ダウンロード不要。dBA・dBC・dBZの推定値には、既知の基準器による校正が必要です。',
+    intro: '推定dBAを今すぐ測定 — 無料・ダウンロード不要。既知の基準器で校正すると端末ごとの精度が向上します。',
     howT: 'オンラインデシベル測定の仕組み',
-    howB: 'Web Audio APIでマイクを読み取り、ブロックごとにRMS→dB変換、A・C・Z重み付け補正、Fast（125ms）・Slow（1s）の時定数で平滑化し、Leqとして平均します。未校正では入力レベルを％表示し、オフセット適用でデシベル推定値を表示します。',
+    howB: 'Web Audio APIでマイクを読み取り、RMS→dB変換、A・C・Z重み付け、Fast/Slow平滑化、Leq平均を行います。未校正では公称+100 dBオフセットを使い、保存した校正プロファイルが端末固有の基準値に置き換えます。',
     calT: 'デシベル推定のための校正',
     calB: 'マイクの感度は機器ごとに異なるため、dBA値を読む前に校正が必要です。安定した基準音と比較し、差分をオフセットとして入力し、マイク・位置・設定を固定してください。',
     accT: 'ブラウザ測定の精度',
     guides: [
-      { t: '校正', d: '基準器に合わせる。', href: '/calibration/' },
-      { t: '精度', d: 'ブラウザ推定値の限界。', href: '/accuracy/' },
-      { t: 'デシベル表', d: '身近な音の目安。', href: '/decibel-chart/' },
+      { t: '校正', d: '基準器に合わせてデシベル推定値を調整する。', href: '/ja/calibration/' },
+      { t: '測定精度', d: 'ブラウザと端末マイクによる推定値の限界を知る。', href: '/ja/accuracy/' },
+      { t: 'デシベル比較表', d: '日常の音の大きさをdBAの目安で比較する。', href: '/ja/decibel-chart/' },
     ],
   },
   es: {
-    intro: 'Comprueba la señal del micrófono al instante – gratis, sin app y sin descargas. Para estimar decibelios en dBA, dBC o dBZ, calibra tu dispositivo con una referencia conocida.',
+    intro: 'Mide de inmediato un nivel sonoro estimado en dBA – gratis, sin app y sin descargas. Calibra con una referencia conocida para mejorar la precisión del dispositivo.',
     howT: 'Cómo funciona el sonómetro online',
-    howB: 'El micrófono se lee con Web Audio API: RMS por bloque, conversión a dB, corrección por ponderación A, C o Z, suavizado Fast (125 ms) o Slow (1 s) y promedio energético Leq. Sin calibrar ves la señal en porcentaje; con el offset obtienes una estimación en decibelios.',
+    howB: 'El micrófono se lee con Web Audio API: RMS por bloque, conversión a dB, ponderación A, C o Z, suavizado Fast/Slow y promedio Leq. Sin calibrar usa un desplazamiento nominal de +100 dB; un perfil guardado lo sustituye por la referencia del dispositivo.',
     calT: 'Calibración para medir decibelios',
     calB: 'Cada micrófono tiene distinta ganancia: calibrar es imprescindible antes de confiar en un valor dBA. Compara con una referencia estable, introduce la diferencia como offset y mantén micrófono, posición y ajustes.',
     accT: 'Precisión en el navegador',
     guides: [
-      { t: 'Calibración', d: 'Ajusta el micrófono a una referencia.', href: '/calibration/' },
-      { t: 'Precisión', d: 'Qué pueden decir las estimaciones.', href: '/accuracy/' },
-      { t: 'Tabla de decibelios', d: 'Niveles típicos comparados.', href: '/decibel-chart/' },
+      { t: 'Calibración', d: 'Ajusta el micrófono a una referencia.', href: '/es/#cal' },
+      { t: 'Precisión', d: 'Qué pueden decir las estimaciones.', href: '/es/#acc' },
+      { t: 'Guía de medición', d: 'Pasos, ajustes y límites.', href: '/es/#steps' },
     ],
   },
   fr: {
-    intro: 'Vérifiez le signal du microphone aussitôt – gratuit, sans application ni téléchargement. Pour une estimation en dBA, dBC ou dBZ, calibrez votre appareil avec une référence connue.',
+    intro: 'Mesurez immédiatement un niveau sonore estimé en dBA – gratuitement, sans application. Calibrez avec une référence connue pour améliorer la précision de l’appareil.',
     howT: 'Comment fonctionne le sonomètre en ligne',
-    howB: 'Le microphone est lu via Web Audio API : RMS par bloc, conversion en dB, correction de pondération A, C ou Z, lissage Fast (125 ms) ou Slow (1 s) et moyenne énergétique Leq. Sans calibrage vous voyez le signal en pourcentage ; avec l’offset vous obtenez une estimation en décibels.',
+    howB: 'Le microphone est lu via Web Audio API : RMS par bloc, conversion en dB, pondération A, C ou Z, lissage Fast/Slow et moyenne Leq. Sans calibrage, un décalage nominal de +100 dB est utilisé ; un profil enregistré le remplace par la référence de l’appareil.',
     calT: 'Calibrage pour mesurer les décibels',
     calB: 'Chaque microphone a un gain différent : le calibrage est indispensable avant de croire une valeur dBA. Comparez avec une référence stable, saisissez l’écart comme offset et gardez micro, position et réglages.',
     accT: 'Précision dans le navigateur',
     guides: [
-      { t: 'Calibrage', d: 'Ajuster le micro à une référence.', href: '/calibration/' },
-      { t: 'Précision', d: 'Ce que valent les estimations.', href: '/accuracy/' },
-      { t: 'Tableau des décibels', d: 'Niveaux typiques comparés.', href: '/decibel-chart/' },
+      { t: 'Calibrage', d: 'Ajuster le micro à une référence.', href: '/fr/#cal' },
+      { t: 'Précision', d: 'Ce que valent les estimations.', href: '/fr/#acc' },
+      { t: 'Guide de mesure', d: 'Étapes, réglages et limites.', href: '/fr/#steps' },
     ],
   },
   pt: {
-    intro: 'Verifique o sinal do microfone na hora – grátis, sem app e sem download. Para estimar decibéis em dBA, dBC ou dBZ, calibre o dispositivo com uma referência conhecida.',
+    intro: 'Meça imediatamente um nível sonoro estimado em dBA – grátis, sem app e sem download. Calibre com uma referência conhecida para melhorar a precisão do dispositivo.',
     howT: 'Como funciona o medidor online',
-    howB: 'O microfone é lido via Web Audio API: RMS por bloco, conversão em dB, correção de ponderação A, C ou Z, suavização Fast (125 ms) ou Slow (1 s) e média energética Leq. Sem calibrar você vê o sinal em percentagem; com o offset obtém uma estimativa em decibéis.',
+    howB: 'O microfone é lido via Web Audio API: RMS por bloco, conversão em dB, ponderação A, C ou Z, suavização Fast/Slow e média Leq. Sem calibração usa um offset nominal de +100 dB; um perfil guardado substitui-o pela referência do dispositivo.',
     calT: 'Calibração para medir decibéis',
     calB: 'Cada microfone tem ganho diferente: calibrar é essencial antes de confiar num valor dBA. Compare com uma referência estável, introduza a diferença como offset e mantenha microfone, posição e ajustes.',
     accT: 'Precisão no navegador',
     guides: [
-      { t: 'Calibração', d: 'Ajustar o microfone a uma referência.', href: '/calibration/' },
-      { t: 'Precisão', d: 'O que valem as estimativas.', href: '/accuracy/' },
-      { t: 'Tabela de decibéis', d: 'Níveis típicos comparados.', href: '/decibel-chart/' },
+      { t: 'Calibração', d: 'Ajustar o microfone a uma referência.', href: '/pt/#cal' },
+      { t: 'Precisão', d: 'O que valem as estimativas.', href: '/pt/#acc' },
+      { t: 'Guia de medição', d: 'Passos, ajustes e limites.', href: '/pt/#steps' },
     ],
   },
   ko: {
-    intro: '마이크 입력 레벨을 바로 확인 — 무료·다운로드 불필요. dBA·dBC·dBZ 추정값에는 알려진 기준기로 교정이 필요합니다.',
+    intro: '추정 dBA를 즉시 측정 — 무료·다운로드 불필요. 알려진 기준기로 교정하면 기기별 정확도가 향상됩니다.',
     howT: '온라인 데시벨 측정기 원리',
-    howB: 'Web Audio API로 마이크를 읽어 블록별 RMS→dB 변환, A·C·Z 가중 보정, Fast(125ms)·Slow(1s) 평활화 후 Leq로 평균합니다. 미교정 상태에서는 입력 레벨을 %로 표시하고, 오프셋 적용 시 데시벨 추정값을 표시합니다.',
+    howB: 'Web Audio API로 마이크를 읽어 RMS→dB 변환, A·C·Z 가중, Fast/Slow 평활화, Leq 평균을 계산합니다. 미교정 상태에서는 공칭 +100 dB 오프셋을 사용하고, 저장된 교정 프로파일이 기기 기준값으로 대체합니다.',
     calT: '데시벨 추정을 위한 교정',
     calB: '마이크 감도는 기기마다 다르므로 dBA 값을 읽기 전 교정이 필수입니다. 안정적인 기준음과 비교해 차이를 오프셋으로 입력하고, 마이크·위치·설정을 고정하세요.',
     accT: '브라우저 측정의 정확도',
     guides: [
-      { t: '교정', d: '기준기에 맞추기.', href: '/calibration/' },
-      { t: '정확도', d: '브라우저 추정치의 한계.', href: '/accuracy/' },
-      { t: '데시벨 표', d: '일상 소음의 기준.', href: '/decibel-chart/' },
+      { t: '교정', d: '기준기에 맞추기.', href: '/ko/#cal' },
+      { t: '정확도', d: '브라우저 추정치의 한계.', href: '/ko/#acc' },
+      { t: '측정 안내', d: '단계, 설정 및 제한.', href: '/ko/#steps' },
     ],
   },
   en: { intro: '', howT: '', howB: '', calT: '', calB: '', accT: '', guides: [] },
 };
 
 const copy = COPY[locale] ?? COPY.de;
+const accuracyHref = locale === 'de' ? '/de/genauigkeit/' : locale === 'ja' ? '/ja/accuracy/' : `/${locale}/#acc`;
 const langName: Record<string, string> = { de: 'de', it: 'it', ja: 'ja', es: 'es', fr: 'fr', pt: 'pt', ko: 'ko' };
 const jsonLd = [
   webAppJsonLd({
@@ -119,6 +121,7 @@ const jsonLd = [
     inLanguage: langName[locale] ?? locale,
   }),
   faqJsonLd(dict.faq),
+  breadcrumbJsonLd([{ name: dict.heroH1, url: `${SITE}${prefix}/` }]),
 ];
 ---
 
@@ -132,13 +135,14 @@ const jsonLd = [
       <p class="mt-2 text-[15px] leading-6 anim-rise" style="--d:150ms;color:var(--muted);max-width:60ch">{copy.intro}</p>
       <div class="mt-4 flex flex-wrap gap-2 anim-rise" style="--d:180ms">
         <a href="#measure" class="btn-primary focus-ring">{dict.startMeasuring}</a>
-        <a href="/accuracy/" class="btn-secondary focus-ring">{dict.howAccuracy}</a>
+        <a href={accuracyHref} class="btn-secondary focus-ring">{dict.howAccuracy}</a>
       </div>
     </div>
   </div>
 
   <div class="container-x pb-4" style="max-width:1120px">
-    <MeterPanel dict={dict} />
+    <MeterPanel dict={dict} locale={locale} />
+    <SoundLevelGuide locale={locale} />
   </div>
 
   <div class="container-x py-8 grid gap-4" style="max-width:1120px">

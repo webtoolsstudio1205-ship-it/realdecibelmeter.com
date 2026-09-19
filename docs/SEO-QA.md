@@ -1,6 +1,6 @@
 # SEO QA — Real Decibel Meter
 
-Executed: 2026-09-16. All checks below were run; results recorded honestly.
+Executed: 2026-09-18. All checks below were run; results recorded honestly.
 
 ## Baseline (before changes)
 
@@ -70,10 +70,10 @@ materially expanded in this pass except `/terms/` (light touch only).
 19. No unsupported accuracy claims — PASS (no 100%/professional-grade/lab-accuracy/compliance claims; automated + grep).
 20. No accidental English in localized main content — PASS for landing copy/FAQ/meter chrome (initial HTML);
     LIMITATION: runtime calibration-modal/diagnostics/error strings remain English-first (documented below).
-21. Production build — PASS (21 pages incl. 404, sitemap-index.xml emitted).
+21. Production build — PASS (31 pages incl. 404/500; sitemap contains 29 canonical URLs).
 
-- Tests: `npx tsc --noEmit` PASS; `npm test` 72/72 PASS (55 pre-existing + 17 new SEO tests).
-- `npm run build` PASS (21 pages).
+- Tests: `npm run typecheck` PASS; full discovered Vitest suite 311/311 PASS, including 19 current SEO tests.
+- `npm run build` PASS (31 generated pages; 29 canonical sitemap URLs).
 
 ## Known remaining limitations
 
@@ -82,8 +82,7 @@ materially expanded in this pass except `/terms/` (light touch only).
   Crawlable landing content is fully localized; full app-chrome translation needs a follow-up i18n pass
   (new dict keys + runtime wiring) without touching DSP logic.
 - Guide pages are English-only; hreflang covers homepages until professional guide translation exists.
-- OG image is SVG (`og-image.svg`); if any platform requires raster PNG, render one from the SVG source
-  (not done here — no tooling run in this pass).
+- Social metadata now uses the self-hosted 1200×630 PNG (`public/og-image.png`).
 - Sitemap `lastmod` values come from file mtimes via the integration; all guide pages carry a visible
   "Last materially reviewed: 2026-09-16" date that matches this change.
 - Rankings/traffic impact can only be assessed with future Search Console data (see SEO-STRATEGY §7).
@@ -98,3 +97,18 @@ materially expanded in this pass except `/terms/` (light touch only).
 - `dist/500.html` added and verified like the 404 page (one H1, noindex, single non-self
   canonical, recovery links); sitemap filter excludes `/404` and `/500` (20 URLs, verified).
   `seo.test.ts` 18/18; full suite 91/91.
+
+## 2026-09-18 Japanese cluster
+
+- Production build: PASS, 31 generated pages including 404/500; sitemap contains 29 indexable canonical URLs.
+- TypeScript check: PASS.
+- Added one Japanese hub and eight Japanese guides with unique titles, descriptions, H1s, self-canonicals,
+  visible breadcrumbs and matching JSON-LD.
+- Japanese homepage, desktop/mobile navigation and footer now link to Japanese guide destinations.
+- Shared layout now emits `theme-color` and `twitter:image` metadata.
+- Full discovered Vitest suite: PASS, 311/311. TypeScript: PASS. Production build: PASS.
+- Generated-output crawl: 31 HTML pages checked, zero broken internal links.
+- Indexable-output SEO check: 29 pages, 29 sitemap URLs, zero missing/duplicate titles, H1-count,
+  canonical-count, description-count or JSON-LD parse errors.
+- Live-host check: BLOCKED — the new, independent `realdecibelmeter.com` did not resolve in DNS on 2026-09-18.
+  Deployment and DNS were not changed here. No redirects or migration relationship with `.bond` are intended.

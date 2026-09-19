@@ -1,19 +1,47 @@
 ---
-import type { Dict } from '../i18n/dictionaries';
+import type { Dict, Locale } from '../i18n/dictionaries';
 
 interface Props {
   dict: Dict;
+  locale: Locale;
 }
 
-const { dict } = Astro.props;
+const { dict, locale } = Astro.props;
+
+const CAL_COPY: Record<Locale, {
+  intro: string;
+  captureTitle: string;
+  captureBody: string;
+  referenceTitle: string;
+  referenceBody: string;
+  reviewTitle: string;
+  reviewBody: string;
+  recommended: string;
+  previewTitle: string;
+  previewWaiting: string;
+  previewTemplate: string;
+}> = {
+  en: { intro: 'Use a trusted sound-level reference. The browser measures the same steady sound, then calculates the device-specific correction.', captureTitle: 'Capture', captureBody: 'Run the meter and capture a steady reference sound.', referenceTitle: 'Enter reference', referenceBody: 'Type the dBA shown by the trusted meter at the same position.', reviewTitle: 'Review and save', reviewBody: 'Check the calculated correction, method and profile name.', recommended: 'recommended', previewTitle: 'Calculated correction', previewWaiting: 'Complete a reference capture and enter the trusted meter reading to preview the correction.', previewTemplate: '{reference} dBA reference − {measured} dBFS captured = {offset} dB correction' },
+  de: { intro: 'Verwenden Sie eine verlässliche Schallpegel-Referenz. Der Browser erfasst denselben konstanten Schall und berechnet daraus die gerätespezifische Korrektur.', captureTitle: 'Erfassen', captureBody: 'Messung starten und einen konstanten Referenzschall erfassen.', referenceTitle: 'Referenz eingeben', referenceBody: 'Den dBA-Wert des Referenzgeräts an derselben Position eingeben.', reviewTitle: 'Prüfen und speichern', reviewBody: 'Berechnete Korrektur, Methode und Profilnamen kontrollieren.', recommended: 'empfohlen', previewTitle: 'Berechnete Korrektur', previewWaiting: 'Referenz erfassen und den Wert des Messgeräts eingeben, um die Korrektur zu prüfen.', previewTemplate: '{reference} dBA Referenz − {measured} dBFS erfasst = {offset} dB Korrektur' },
+  it: { intro: 'Usa un riferimento affidabile. Il browser acquisisce lo stesso suono stabile e calcola la correzione specifica del dispositivo.', captureTitle: 'Acquisisci', captureBody: 'Avvia il misuratore e acquisisci un suono di riferimento stabile.', referenceTitle: 'Inserisci il riferimento', referenceBody: 'Digita il valore dBA del fonometro affidabile nella stessa posizione.', reviewTitle: 'Controlla e salva', reviewBody: 'Verifica correzione, metodo e nome del profilo.', recommended: 'consigliato', previewTitle: 'Correzione calcolata', previewWaiting: 'Acquisisci il riferimento e inserisci la lettura affidabile per vedere la correzione.', previewTemplate: '{reference} dBA di riferimento − {measured} dBFS acquisiti = correzione di {offset} dB' },
+  ja: { intro: '信頼できる騒音計を基準にします。同じ安定した音をブラウザで取得し、端末固有の補正値を計算します。', captureTitle: '取得', captureBody: '測定を開始し、安定した基準音を取得します。', referenceTitle: '基準値を入力', referenceBody: '同じ位置に置いた基準騒音計のdBA値を入力します。', reviewTitle: '確認して保存', reviewBody: '補正値、方法、プロファイル名を確認します。', recommended: '推奨', previewTitle: '計算された補正値', previewWaiting: '基準音を取得し、騒音計の値を入力すると補正値を確認できます。', previewTemplate: '基準 {reference} dBA − 取得値 {measured} dBFS = 補正 {offset} dB' },
+  es: { intro: 'Usa un sonómetro de referencia fiable. El navegador captura el mismo sonido estable y calcula la corrección específica del dispositivo.', captureTitle: 'Captura', captureBody: 'Inicia el medidor y captura un sonido de referencia estable.', referenceTitle: 'Introduce la referencia', referenceBody: 'Escribe el valor dBA del sonómetro fiable en la misma posición.', reviewTitle: 'Revisa y guarda', reviewBody: 'Comprueba la corrección, el método y el nombre del perfil.', recommended: 'recomendado', previewTitle: 'Corrección calculada', previewWaiting: 'Captura la referencia e introduce la lectura fiable para ver la corrección.', previewTemplate: '{reference} dBA de referencia − {measured} dBFS capturados = corrección de {offset} dB' },
+  fr: { intro: 'Utilisez un sonomètre de référence fiable. Le navigateur mesure le même son stable puis calcule la correction propre à l’appareil.', captureTitle: 'Capturer', captureBody: 'Lancez le sonomètre et capturez un son de référence stable.', referenceTitle: 'Saisir la référence', referenceBody: 'Saisissez la valeur dBA du sonomètre fiable placé au même endroit.', reviewTitle: 'Vérifier et enregistrer', reviewBody: 'Contrôlez la correction, la méthode et le nom du profil.', recommended: 'recommandé', previewTitle: 'Correction calculée', previewWaiting: 'Capturez la référence et saisissez la valeur fiable pour prévisualiser la correction.', previewTemplate: '{reference} dBA de référence − {measured} dBFS capturés = correction de {offset} dB' },
+  pt: { intro: 'Use um medidor de referência fiável. O navegador capta o mesmo som estável e calcula a correção específica do dispositivo.', captureTitle: 'Capturar', captureBody: 'Inicie o medidor e capture um som de referência estável.', referenceTitle: 'Introduzir referência', referenceBody: 'Digite o valor dBA do medidor fiável na mesma posição.', reviewTitle: 'Rever e guardar', reviewBody: 'Confirme a correção, o método e o nome do perfil.', recommended: 'recomendado', previewTitle: 'Correção calculada', previewWaiting: 'Capture a referência e introduza a leitura fiável para ver a correção.', previewTemplate: '{reference} dBA de referência − {measured} dBFS captados = correção de {offset} dB' },
+  ko: { intro: '신뢰할 수 있는 소음계를 기준으로 사용하세요. 브라우저가 같은 안정된 소리를 측정한 뒤 기기별 보정값을 계산합니다.', captureTitle: '캡처', captureBody: '측정을 시작하고 안정된 기준음을 캡처합니다.', referenceTitle: '기준값 입력', referenceBody: '같은 위치에 둔 기준 소음계의 dBA 값을 입력합니다.', reviewTitle: '검토 후 저장', reviewBody: '계산된 보정값, 방법, 프로파일 이름을 확인합니다.', recommended: '권장', previewTitle: '계산된 보정값', previewWaiting: '기준음을 캡처하고 소음계 측정값을 입력하면 보정값을 미리 볼 수 있습니다.', previewTemplate: '기준 {reference} dBA − 캡처 {measured} dBFS = 보정 {offset} dB' },
+};
+
+const calCopy = CAL_COPY[locale] ?? CAL_COPY.en;
 ---
 
-<section id="measure" aria-label={dict.liveRegion} class="scroll-mt-20" data-st-idle={dict.statusIdle} data-st-req={dict.statusRequesting} data-st-run={dict.statusRunning} data-st-pause={dict.statusPaused} data-st-stop={dict.statusStopped} data-st-err={dict.statusError} data-p-unknown={dict.permUnknown} data-p-granted={dict.permGranted} data-p-denied={dict.permDenied} data-p-prompt={dict.permPrompt} data-cal-u={dict.calibrationUncal} data-cal-c={dict.calibrationCal} data-mic-default={dict.micDefault}>
+<section id="measure" aria-label={dict.liveRegion} class="scroll-mt-20" data-st-idle={dict.statusIdle} data-st-req={dict.statusRequesting} data-st-run={dict.statusRunning} data-st-pause={dict.statusPaused} data-st-stop={dict.statusStopped} data-st-err={dict.statusError} data-p-unknown={dict.permUnknown} data-p-granted={dict.permGranted} data-p-denied={dict.permDenied} data-p-prompt={dict.permPrompt} data-cal-u={dict.calibrationUncal} data-cal-c={dict.calibrationCal} data-cal-required={dict.statusCalRequired} data-input-strength={dict.inputStrength} data-duration={dict.statDuration} data-resp-fast={dict.respFast} data-resp-slow={dict.respSlow} data-mic-default={dict.micDefault}>
+  <script id="rdm-ui-strings" type="application/json" set:html={JSON.stringify(dict.ui)} />
+  <script id="rdm-cal-strings" type="application/json" set:html={JSON.stringify(calCopy)} />
   <h2 class="sr-only">{dict.navMeasure}</h2>
   <div id="rdm-panel" class="panel meter-card p-4 sm:p-6 md:p-8" data-live="false" data-state="idle">
     <div id="rdm-announcer" class="sr-only" role="status" aria-live="polite"></div>
 
-    <div class="flex flex-wrap items-center gap-2" aria-label="Status">
+    <div class="flex flex-wrap items-center gap-2" aria-label={dict.ui.status}>
       <span class="chip chip-1 inline-flex items-center gap-2 text-[13px] font-medium rounded-full px-3 py-1.5" style="border:1px solid var(--border);background:var(--raised)">
         <span id="rdm-state-dot" class="inline-block rounded-full" style="width:8px;height:8px;background:var(--muted)" aria-hidden="true"></span>
         <span id="rdm-state-text">{dict.statusIdle}</span>
@@ -29,9 +57,9 @@ const { dict } = Astro.props;
     <div class="meter-shell">
       <div class="meter-wrap">
       <div class="rdm-grid-bg" aria-hidden="true"></div>
-      <p id="rdm-view-label" class="eyebrow meter-eyebrow">Microphone Input Strength</p>
+      <p id="rdm-view-label" class="eyebrow meter-eyebrow">{dict.ui.estimatedSound}</p>
 
-      <svg id="rdm-gauge" viewBox="0 0 320 196" role="img" aria-label="Level gauge">
+      <svg id="rdm-gauge" viewBox="0 0 320 196" role="img" aria-label={dict.ui.gauge}>
         <defs>
           <linearGradient id="rdm-arc-grad" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" stop-color="#22D3EE" />
@@ -42,22 +70,22 @@ const { dict } = Astro.props;
         <path d="M 24 172 A 136 136 0 0 1 296 172" fill="none" stroke="currentColor" opacity="0.14" stroke-width="14" stroke-linecap="round" />
         <path id="rdm-arc" d="M 24 172 A 136 136 0 0 1 296 172" fill="none" stroke="url(#rdm-arc-grad)" stroke-width="14" stroke-linecap="round" stroke-dasharray="428" stroke-dashoffset="428" />
         <g id="rdm-ticks" class="tabular" style="font-size:11px;fill:var(--muted)">
-          <text id="rdm-tick-lo" x="24" y="192" text-anchor="start">0</text>
-          <text id="rdm-tick-mid" x="160" y="192" text-anchor="middle">50</text>
-          <text id="rdm-tick-hi" x="296" y="192" text-anchor="end">100</text>
+          <text id="rdm-tick-lo" x="24" y="192" text-anchor="start">20</text>
+          <text id="rdm-tick-mid" x="160" y="192" text-anchor="middle">70</text>
+          <text id="rdm-tick-hi" x="296" y="192" text-anchor="end">120</text>
         </g>
       </svg>
       <div id="rdm-gauge-glow" aria-hidden="true"></div>
 
       <div id="rdm-halo" class="big-halo flex items-baseline justify-center gap-3 mt-1" data-live="false" style="isolation:isolate">
         <span id="rdm-big" class="tabular font-semibold tracking-tight" style="font-size:clamp(56px,12vw,92px);line-height:1" aria-live="off">--</span>
-        <span id="rdm-unit" class="text-sm font-medium" style="color:var(--muted)">%</span>
+        <span id="rdm-unit" class="text-sm font-medium" style="color:var(--muted)">dBA</span>
       </div>
       <p id="rdm-mode-status" class="meter-status">{dict.statusCalRequired}</p>
       <button id="rdm-cta-cal" type="button" class="btn-secondary focus-ring mt-4">{dict.calibrateCta}</button>
       </div>
 
-      <div class="meter-controls flex flex-wrap justify-center gap-2" role="group" aria-label="Transport">
+      <div class="meter-controls flex flex-wrap justify-center gap-2" role="group" aria-label={dict.ui.transport}>
         <button id="rdm-start" type="button" class="btn-primary focus-ring grad-edge">{dict.btnStartMeasuring}</button>
         <button id="rdm-req" type="button" class="btn-primary focus-ring" disabled hidden>
           <svg class="mic-pulse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
@@ -65,7 +93,7 @@ const { dict } = Astro.props;
         </button>
         <button id="rdm-stab" type="button" class="btn-primary focus-ring" disabled hidden>
           <svg class="mic-pulse" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/></svg>
-          <span>Stabilizing…</span>
+          <span>{dict.ui.stabilizing}</span>
         </button>
         <button id="rdm-cancel" type="button" class="btn-secondary focus-ring" hidden>{dict.btnCancel}</button>
         <button id="rdm-pause" type="button" class="btn-square focus-ring" hidden>{dict.btnPause}</button>
@@ -80,9 +108,9 @@ const { dict } = Astro.props;
       </div>
 
       <dl id="rdm-stats" class="stats-grid meter-stats">
-        <div class="panel-raised p-3"><dt id="rdm-l1" class="eyebrow">Current Strength</dt><dd id="rdm-s1" class="tabular text-2xl font-semibold mt-1">--</dd></div>
-        <div class="panel-raised p-3"><dt id="rdm-l2" class="eyebrow">Average Strength</dt><dd id="rdm-s2" class="tabular text-2xl font-semibold mt-1">--</dd></div>
-        <div class="panel-raised p-3"><dt id="rdm-l3" class="eyebrow">Peak Strength</dt><dd id="rdm-s3" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3"><dt id="rdm-l1" class="eyebrow">{dict.ui.currentStrength}</dt><dd id="rdm-s1" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3"><dt id="rdm-l2" class="eyebrow">{dict.ui.averageStrength}</dt><dd id="rdm-s2" class="tabular text-2xl font-semibold mt-1">--</dd></div>
+        <div class="panel-raised p-3"><dt id="rdm-l3" class="eyebrow">{dict.ui.peakStrength}</dt><dd id="rdm-s3" class="tabular text-2xl font-semibold mt-1">--</dd></div>
         <div class="panel-raised p-3"><dt id="rdm-l4" class="eyebrow">{dict.statDuration}</dt><dd id="rdm-s4" class="tabular text-2xl font-semibold mt-1">00:00</dd></div>
         <div id="rdm-stat-5" class="panel-raised p-3" hidden><dt id="rdm-l5" class="eyebrow">{dict.statDuration}</dt><dd id="rdm-s5" class="tabular text-2xl font-semibold mt-1">00:00</dd></div>
       </dl>
@@ -90,24 +118,24 @@ const { dict } = Astro.props;
     <p id="rdm-save-msg" class="text-xs text-center mt-2" style="color:var(--muted)" role="status"></p>
 
     <section id="rdm-quality" class="mt-6 panel-raised p-4" aria-labelledby="rdm-quality-title">
-      <h4 id="rdm-quality-title" class="eyebrow mb-2">Measurement quality</h4>
+      <h3 id="rdm-quality-title" class="eyebrow mb-2">{dict.ui.quality}</h3>
       <dl class="text-sm grid gap-x-4 gap-y-1 sm:grid-cols-2">
-        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Overall</dt><dd id="rdm-q-overall" class="tabular text-right font-medium">Ready</dd></div>
-        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Calibration</dt><dd id="rdm-q-cal" class="tabular text-right">Not calibrated</dd></div>
-        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Signal</dt><dd id="rdm-q-signal" class="tabular text-right">—</dd></div>
-        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Browser processing</dt><dd id="rdm-q-proc" class="tabular text-right">—</dd></div>
-        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Sample rate</dt><dd id="rdm-q-rate" class="tabular text-right">—</dd></div>
-        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Channels</dt><dd id="rdm-q-chan" class="tabular text-right">—</dd></div>
-        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Active duration</dt><dd id="rdm-q-dur" class="tabular text-right">00:00</dd></div>
-        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Processing gaps</dt><dd id="rdm-q-gaps" class="tabular text-right">0</dd></div>
-        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Last calibration</dt><dd id="rdm-q-caldate" class="tabular text-right">—</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.overall}</dt><dd id="rdm-q-overall" class="tabular text-right font-medium">{dict.ui.ready}</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.calibration}</dt><dd id="rdm-q-cal" class="tabular text-right">{dict.ui.notCalibrated}</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.signal}</dt><dd id="rdm-q-signal" class="tabular text-right">—</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.browserProcessing}</dt><dd id="rdm-q-proc" class="tabular text-right">—</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.sampleRate}</dt><dd id="rdm-q-rate" class="tabular text-right">—</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.channels}</dt><dd id="rdm-q-chan" class="tabular text-right">—</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.activeDuration}</dt><dd id="rdm-q-dur" class="tabular text-right">00:00</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.processingGaps}</dt><dd id="rdm-q-gaps" class="tabular text-right">0</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.lastCalibration}</dt><dd id="rdm-q-caldate" class="tabular text-right">—</dd></div>
       </dl>
     </section>
 
     <div id="rdm-error" class="hidden mt-4 rounded-xl p-4" role="alert" style="border:1px solid var(--border);background:var(--raised)">
       <p id="rdm-error-title" class="font-semibold text-[15px]"></p>
       <p id="rdm-error-msg" class="text-sm mt-1" style="color:var(--muted)"></p>
-      <p class="text-sm mt-2"><strong>Recovery: </strong><span id="rdm-error-fix"></span></p>
+      <p class="text-sm mt-2"><strong>{dict.ui.recovery}: </strong><span id="rdm-error-fix"></span></p>
     </div>
 
     <div class="mt-5" aria-hidden="true">
@@ -149,13 +177,13 @@ const { dict } = Astro.props;
     </div>
 
     <div class="mt-6 panel-raised p-4">
-      <h4 class="eyebrow mb-2">{dict.exportTitle}</h4>
+      <h3 class="eyebrow mb-2">{dict.exportTitle}</h3>
       <div class="flex flex-wrap gap-2">
         <button id="rdm-exp-csv" type="button" class="btn-square focus-ring" disabled>{dict.exportCsv}</button>
         <button id="rdm-exp-json" type="button" class="btn-square focus-ring" disabled>{dict.exportJson}</button>
       </div>
-      <h4 class="eyebrow mt-4 mb-2">{dict.historyTitle}</h4>
-      <p id="rdm-storage-warn" class="hidden text-xs mb-2" style="color:var(--muted)">Session history unavailable: storage is blocked. Export CSV instead.</p>
+      <h3 class="eyebrow mt-4 mb-2">{dict.historyTitle}</h3>
+      <p id="rdm-storage-warn" class="hidden text-xs mb-2" style="color:var(--muted)">{dict.ui.storageBlocked}</p>
       <ul id="rdm-history" class="text-sm space-y-1"></ul>
       <p id="rdm-history-empty" class="text-xs" style="color:var(--muted)">{dict.historyEmpty}</p>
       <button id="rdm-history-clear" type="button" class="btn-square focus-ring mt-2">{dict.historyClear}</button>
@@ -163,7 +191,7 @@ const { dict } = Astro.props;
   </div>
 
   <div id="rdm-modal-wrap" hidden>
-    <button id="rdm-modal-veil" type="button" aria-label="Close measurement options"></button>
+    <button id="rdm-modal-veil" type="button" aria-label={dict.ui.closeOptions}></button>
     <div id="rdm-modal" role="dialog" aria-modal="true" aria-labelledby="rdm-modal-title">
       <div class="flex items-center justify-between gap-2 mb-3">
         <h3 id="rdm-modal-title" class="text-base font-semibold">{dict.customizeTitle}</h3>
@@ -172,22 +200,32 @@ const { dict } = Astro.props;
 
       <section class="modal-sec" aria-labelledby="rdm-m-cal">
         <h4 id="rdm-m-cal" class="eyebrow mb-2">{dict.calTitle}</h4>
+        <p class="text-sm leading-6" style="color:var(--muted)">{calCopy.intro}</p>
+        <ol class="mt-3 grid gap-2 sm:grid-cols-3" aria-label={dict.calTitle}>
+          <li class="panel-raised p-3"><span class="cal-step" aria-hidden="true">1</span><strong class="block mt-2 text-sm">{calCopy.captureTitle}</strong><span class="block mt-1 text-xs leading-5" style="color:var(--muted)">{calCopy.captureBody}</span></li>
+          <li class="panel-raised p-3"><span class="cal-step" aria-hidden="true">2</span><strong class="block mt-2 text-sm">{calCopy.referenceTitle}</strong><span class="block mt-1 text-xs leading-5" style="color:var(--muted)">{calCopy.referenceBody}</span></li>
+          <li class="panel-raised p-3"><span class="cal-step" aria-hidden="true">3</span><strong class="block mt-2 text-sm">{calCopy.reviewTitle}</strong><span class="block mt-1 text-xs leading-5" style="color:var(--muted)">{calCopy.reviewBody}</span></li>
+        </ol>
         <p id="rdm-cal-state" class="text-sm" style="color:var(--muted)"></p>
         <p id="rdm-cal-stale" class="hidden text-xs mt-1" style="color:#fbbf24"></p>
         <div class="flex flex-wrap items-center gap-2 mt-2 text-sm">
-          <span>Reference capture:</span>
-          <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-refdur" value="30" checked /> 30 s</label>
-          <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-refdur" value="60" /> 60 s</label>
-          <button id="rdm-ref-start" type="button" class="btn-square focus-ring">Capture</button>
+          <span>{dict.ui.referenceCapture}:</span>
+          <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-refdur" value="30" /> 30 s</label>
+          <label class="inline-flex items-center gap-1"><input type="radio" name="rdm-refdur" value="60" checked /> 60 s <span class="text-xs" style="color:var(--muted)">({calCopy.recommended})</span></label>
+          <button id="rdm-ref-start" type="button" class="btn-square focus-ring">{dict.ui.capture}</button>
           <button id="rdm-ref-cancel" type="button" class="btn-square focus-ring">{dict.btnCancel}</button>
         </div>
         <p id="rdm-ref-progress" class="text-xs mt-1" style="color:var(--muted)"></p>
         <div class="grid gap-2 sm:grid-cols-2 mt-2">
           <label class="block text-sm">{dict.calOffset}<input id="rdm-ref-reading" name="reference-reading" autocomplete="off" inputmode="decimal" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="number" step="0.1" min="-20" max="160" placeholder="94.0" /></label>
-          <label class="block text-sm">Method<select id="rdm-ref-method" name="reference-method" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"><option value="">—</option><option value="reference-meter">Reference meter</option><option value="acoustic-calibrator">Acoustic calibrator</option><option value="other-documented">Other (documented)</option></select></label>
+          <label class="block text-sm">{dict.ui.method}<select id="rdm-ref-method" name="reference-method" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"><option value="">—</option><option value="reference-meter">{dict.ui.referenceMeter}</option><option value="acoustic-calibrator">{dict.ui.acousticCalibrator}</option><option value="other-documented">{dict.ui.otherDocumented}</option></select></label>
         </div>
-        <label class="block text-sm mt-2" for="rdm-ref-note">Note (max 200 chars)<input id="rdm-ref-note" name="reference-note" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="text" maxlength="200" /></label>
+        <label class="block text-sm mt-2" for="rdm-ref-note">{dict.ui.note}<input id="rdm-ref-note" name="reference-note" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="text" maxlength="200" /></label>
         <label class="block text-sm mt-2" for="rdm-cal-label">{dict.calLabel}<input id="rdm-cal-label" name="calibration-label" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="text" maxlength="80" /></label>
+        <div class="mt-3 rounded-xl p-3" style="border:1px solid var(--border);background:var(--surface)">
+          <p class="eyebrow">{calCopy.previewTitle}</p>
+          <p id="rdm-cal-preview" class="mt-1 text-sm tabular" style="color:var(--muted)">{calCopy.previewWaiting}</p>
+        </div>
         <div class="mt-2 flex flex-wrap gap-2">
           <button id="rdm-cal-apply" type="button" class="btn-square focus-ring">{dict.calApply}</button>
           <button id="rdm-cal-reset" type="button" class="btn-square focus-ring">{dict.calReset}</button>
@@ -197,31 +235,31 @@ const { dict } = Astro.props;
       </section>
 
       <details class="modal-sec advanced-details">
-        <summary class="focus-ring font-semibold">Advanced</summary>
+        <summary class="focus-ring font-semibold">{dict.ui.advanced}</summary>
         <details class="diagnostics" id="rdm-diagnostics">
-          <summary class="focus-ring font-semibold">Digital Diagnostics</summary>
+          <summary class="focus-ring font-semibold">{dict.ui.diagnostics}</summary>
           <section aria-labelledby="rdm-m-dig">
-            <h4 id="rdm-m-dig" class="eyebrow mb-2">Technical digital microphone data</h4>
-            <p class="text-xs mb-3" style="color:var(--muted)">Digital microphone readings use dBFS and are normally negative. These values are intended for diagnostics and are not environmental sound-pressure readings.</p>
+            <h4 id="rdm-m-dig" class="eyebrow mb-2">{dict.ui.technicalData}</h4>
+            <p class="text-xs mb-3" style="color:var(--muted)">{dict.ui.diagnosticsHelp}</p>
             <dl class="dig-grid text-sm">
-              <div><dt style="color:var(--muted)">Current</dt><dd id="rdm-d-cur" class="tabular">--</dd></div>
-              <div><dt style="color:var(--muted)">Minimum</dt><dd id="rdm-d-min" class="tabular">--</dd></div>
-              <div><dt style="color:var(--muted)">Digital energy average</dt><dd id="rdm-d-avg" class="tabular">--</dd></div>
-              <div><dt style="color:var(--muted)">Maximum</dt><dd id="rdm-d-max" class="tabular">--</dd></div>
-              <div><dt style="color:var(--muted)">Digital peak</dt><dd id="rdm-d-peak" class="tabular">--</dd></div>
+              <div><dt style="color:var(--muted)">{dict.ui.current}</dt><dd id="rdm-d-cur" class="tabular">--</dd></div>
+              <div><dt style="color:var(--muted)">{dict.ui.minimum}</dt><dd id="rdm-d-min" class="tabular">--</dd></div>
+              <div><dt style="color:var(--muted)">{dict.ui.digitalAverage}</dt><dd id="rdm-d-avg" class="tabular">--</dd></div>
+              <div><dt style="color:var(--muted)">{dict.ui.maximum}</dt><dd id="rdm-d-max" class="tabular">--</dd></div>
+              <div><dt style="color:var(--muted)">{dict.ui.digitalPeak}</dt><dd id="rdm-d-peak" class="tabular">--</dd></div>
             </dl>
-            <svg id="rdm-diagnostic-graph" viewBox="0 0 600 120" class="w-full mt-3" style="height:120px;display:block" role="img" aria-label="Digital diagnostics history from −100 to 0 dBFS" preserveAspectRatio="none">
+            <svg id="rdm-diagnostic-graph" viewBox="0 0 600 120" class="w-full mt-3" style="height:120px;display:block" role="img" aria-label={dict.ui.diagnosticsGraph} preserveAspectRatio="none">
               <path id="rdm-diagnostic-path" d="" fill="none" stroke="url(#rdm-edge)" stroke-width="2" />
             </svg>
             <p class="text-xs mt-1" style="color:var(--muted)">−100 <span class="float-right">0 dBFS</span></p>
           </section>
         </details>
         <section class="diagnostics" aria-labelledby="rdm-m-rel">
-          <h4 id="rdm-m-rel" class="eyebrow mb-2">Relative Level (dB)</h4>
-          <p id="rdm-rel-state" class="text-sm" style="color:var(--muted)">No baseline captured.</p>
+          <h4 id="rdm-m-rel" class="eyebrow mb-2">{dict.ui.relativeLevel}</h4>
+          <p id="rdm-rel-state" class="text-sm" style="color:var(--muted)">{dict.ui.noBaseline}</p>
           <div class="mt-2 flex flex-wrap gap-2">
-            <button id="rdm-rel-cap" type="button" class="btn-square focus-ring">Capture baseline</button>
-            <button id="rdm-rel-clear" type="button" class="btn-square focus-ring">Clear</button>
+            <button id="rdm-rel-cap" type="button" class="btn-square focus-ring">{dict.ui.captureBaseline}</button>
+            <button id="rdm-rel-clear" type="button" class="btn-square focus-ring">{dict.ui.clear}</button>
           </div>
           <p id="rdm-rel-msg" class="text-xs mt-2" style="color:var(--muted)"></p>
         </section>
@@ -236,16 +274,16 @@ const { dict } = Astro.props;
             </select>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </div>
-          <button id="rdm-refresh-mics" type="button" class="btn-square focus-ring refresh-btn" title="Refresh microphone list" aria-label="Refresh microphone list">
+          <button id="rdm-refresh-mics" type="button" class="btn-square focus-ring refresh-btn" title={dict.ui.refreshMics} aria-label={dict.ui.refreshMics}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg>
           </button>
         </div>
         <dl class="text-sm space-y-1 mt-3">
-          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Device</dt><dd id="rdm-dev" class="tabular text-right">—</dd></div>
-          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Sample rate</dt><dd id="rdm-rate" class="tabular text-right">—</dd></div>
-          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Channels</dt><dd id="rdm-chan" class="tabular text-right">—</dd></div>
-          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Processing</dt><dd id="rdm-proc" class="tabular text-right">—</dd></div>
-          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Samples</dt><dd id="rdm-meta-n" class="tabular text-right">0</dd></div>
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.device}</dt><dd id="rdm-dev" class="tabular text-right">—</dd></div>
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.sampleRate}</dt><dd id="rdm-rate" class="tabular text-right">—</dd></div>
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.channels}</dt><dd id="rdm-chan" class="tabular text-right">—</dd></div>
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.processing}</dt><dd id="rdm-proc" class="tabular text-right">—</dd></div>
+          <div class="flex justify-between gap-2"><dt style="color:var(--muted)">{dict.ui.samples}</dt><dd id="rdm-meta-n" class="tabular text-right">0</dd></div>
         </dl>
         <p id="rdm-relaxed" class="text-xs mt-2" style="color:var(--muted)"></p>
       </section>
@@ -265,7 +303,7 @@ const { dict } = Astro.props;
           <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-r" value="fast" checked /> {dict.respFast}</label>
           <label class="inline-flex items-center gap-2"><input type="radio" name="rdm-r" value="slow" /> {dict.respSlow}</label>
         </div>
-        <p class="text-xs mt-2" style="color:var(--muted)">Weighting: <span id="rdm-meta-w">A</span> · Response: <span id="rdm-meta-r">fast</span></p>
+        <p class="text-xs mt-2" style="color:var(--muted)">{dict.ui.weighting}: <span id="rdm-meta-w">A</span> · {dict.ui.response}: <span id="rdm-meta-r">fast</span></p>
       </section>
     </div>
   </div>
@@ -278,17 +316,29 @@ const { dict } = Astro.props;
   import { digitalDiagnostics, publicGauge, publicGraph, publicMeasurementMode, publicStats, transportControls } from '../lib/presentation.js';
   import { buildExportSession, sessionToCsv, sessionToJson, downloadText } from '../lib/export-format.js';
   import { loadHistory, saveSession, clearHistory } from '../lib/history.js';
-  import { describeError } from '../lib/errors.js';
   import { MicCapture } from '../lib/microphone.js';
 
   const $ = (id) => document.getElementById(id);
   const engine = new DecibelEngine();
   const section = document.getElementById('measure');
+  const uiNode = document.getElementById('rdm-ui-strings');
+  const calNode = document.getElementById('rdm-cal-strings');
+  const UI = JSON.parse(uiNode?.textContent || '{}');
+  const CAL = JSON.parse(calNode?.textContent || '{}');
+  const fill = (value, vars = {}) => Object.entries(vars).reduce((text, [key, replacement]) => text.replaceAll(`{${key}}`, String(replacement)), value || '');
   const T = (k, fb) => section?.getAttribute(k) ?? fb;
+  const PRESENTATION = {
+    current: UI.current, minimum: UI.minimum, digitalAverage: UI.digitalAverage, maximum: UI.maximum, digitalPeak: UI.digitalPeak,
+    currentEstimated: UI.estimatedSound, inputStrength: T('data-input-strength', UI.inputStrengthGraph),
+    calibrationRequired: T('data-cal-required', 'Calibration required for environmental dB'), calibratedEstimate: UI.calibratedEstimate,
+    currentSound: UI.currentSound, energyAverage: UI.energyAverage, duration: T('data-duration', 'Duration'),
+    currentStrength: UI.currentStrength, averageStrength: UI.averageStrength, peakStrength: UI.peakStrength,
+    estimatedSound: UI.estimatedSound, inputStrengthGraph: UI.inputStrengthGraph,
+  };
   const STATUS = () => ({
     idle: T('data-st-idle', 'Idle'),
     'requesting-permission': T('data-st-req', 'Requesting permission…'),
-    stabilizing: 'Stabilizing…',
+    stabilizing: UI.stabilizing,
     running: T('data-st-run', 'Measuring'),
     paused: T('data-st-pause', 'Paused'),
     stopped: T('data-st-stop', 'Stopped'),
@@ -300,6 +350,7 @@ const { dict } = Astro.props;
     denied: T('data-p-denied', 'Denied'),
     prompt: T('data-p-prompt', 'Prompt'),
   });
+  const methodName = (method) => method === 'reference-meter' ? UI.referenceMeter : method === 'acoustic-calibrator' ? UI.acousticCalibrator : method === 'other-documented' ? UI.otherDocumented : method;
   const els = {
     announcer: $('rdm-announcer'), panel: $('rdm-panel'),
     stateText: $('rdm-state-text'), stateDot: $('rdm-state-dot'),
@@ -325,7 +376,7 @@ const { dict } = Astro.props;
     mic: $('rdm-mic'), refresh: $('rdm-refresh-mics'),
     dev: $('rdm-dev'), rate: $('rdm-rate'), chan: $('rdm-chan'), proc: $('rdm-proc'),
     metaN: $('rdm-meta-n'), relaxed: $('rdm-relaxed'), metaW: $('rdm-meta-w'), metaR: $('rdm-meta-r'),
-    calState: $('rdm-cal-state'), calStale: $('rdm-cal-stale'), calMsg: $('rdm-cal-msg'),
+    calState: $('rdm-cal-state'), calStale: $('rdm-cal-stale'), calMsg: $('rdm-cal-msg'), calPreview: $('rdm-cal-preview'),
     refReading: $('rdm-ref-reading'), refMethod: $('rdm-ref-method'), refNote: $('rdm-ref-note'),
     calLabel: $('rdm-cal-label'), calApply: $('rdm-cal-apply'), calReset: $('rdm-cal-reset'),
     refStart: $('rdm-ref-start'), refCancel: $('rdm-ref-cancel'), refProgress: $('rdm-ref-progress'),
@@ -346,7 +397,7 @@ const { dict } = Astro.props;
   let prevCalibrated = false;
   let historyEntries = [];
   let lastAnnounced = '';
-  let graphView = { series: [], lo: 0, hi: 100, label: 'Input strength (%)', unit: '%' };
+  let graphView = { series: [], lo: 20, hi: 120, label: `${UI.estimatedSound} (dBA)`, unit: 'dBA' };
   let pauseMarkers = [];
   const DATE_TIME = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
   const DATE_ONLY = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' });
@@ -360,7 +411,7 @@ const { dict } = Astro.props;
   let shownFrac = 0;
 
   function mainTarget(s) {
-    return publicGauge(s);
+    return publicGauge(s, PRESENTATION);
   }
 
   function fracFor(value, lo, hi) {
@@ -383,7 +434,7 @@ const { dict } = Astro.props;
 
   function tickLabels() {
     if (!latest) return;
-    const gauge = publicGauge(latest);
+    const gauge = publicGauge(latest, PRESENTATION);
     els.tickLo.textContent = String(gauge.lo);
     els.tickMid.textContent = String((gauge.lo + gauge.hi) / 2);
     els.tickHi.textContent = String(gauge.hi);
@@ -462,7 +513,7 @@ const { dict } = Astro.props;
   }
 
   function renderHistory() {
-    els.history.innerHTML = '';
+    els.history.replaceChildren();
     els.historyEmpty.style.display = historyEntries.length ? 'none' : '';
     historyEntries.slice(0, 5).forEach((e) => {
       const li = document.createElement('li');
@@ -470,10 +521,10 @@ const { dict } = Astro.props;
       const sess = e.session || {};
       // Never label raw dBFS averages as `Leq`.
       const saved = new Date(String(e.savedAtIso || ''));
-      const when = Number.isNaN(saved.getTime()) ? 'Unknown date' : DATE_TIME.format(saved);
+      const when = Number.isNaN(saved.getTime()) ? UI.unknownDate : DATE_TIME.format(saved);
       li.textContent = sess.mode === 'calibrated' && /^dB[ACZ]$/.test(sess.unit || '')
-        ? `${when} · ${sess.unit} energy average ${formatDb(sess.leqDb)} · ${formatDuration(sess.activeSec || 0)}`
-        : `${when} · Uncalibrated input session · ${formatDuration(sess.activeSec || 0)}`;
+        ? `${when} · ${sess.unit} ${UI.savedEnergyAverage} ${formatDb(sess.leqDb)} · ${formatDuration(sess.activeSec || 0)}`
+        : `${when} · ${UI.uncalibratedSession} · ${formatDuration(sess.activeSec || 0)}`;
       els.history.appendChild(li);
     });
   }
@@ -482,7 +533,7 @@ const { dict } = Astro.props;
     const devices = await MicCapture.listDevices();
     const sel = els.mic;
     const prev = sel.value;
-    sel.innerHTML = '';
+    sel.replaceChildren();
     const def = document.createElement('option');
     def.value = '';
     def.textContent = T('data-mic-default', 'Default microphone');
@@ -490,19 +541,19 @@ const { dict } = Astro.props;
     devices.forEach((d, i) => {
       const o = document.createElement('option');
       o.value = d.deviceId;
-      o.textContent = d.label || `Microphone ${i + 1}`;
+      o.textContent = d.label || `${UI.microphone} ${i + 1}`;
       sel.appendChild(o);
     });
     if ([...sel.options].some((o) => o.value === prev)) sel.value = prev;
   }
 
   function renderProfiles(s) {
-    els.profiles.innerHTML = '';
+    els.profiles.replaceChildren();
     const list = engine.listProfiles();
     if (!list.length) {
       const li = document.createElement('li');
       li.style.color = 'var(--muted)';
-      li.textContent = 'No saved calibration profiles yet.';
+      li.textContent = UI.noProfiles;
       els.profiles.appendChild(li);
       return;
     }
@@ -510,21 +561,21 @@ const { dict } = Astro.props;
       const li = document.createElement('li');
       li.className = 'profile-row';
       const active = s.activeProfile && s.activeProfile.id === p.id;
-      li.textContent = `${p.label} (${p.offsetDb >= 0 ? '+' : ''}${p.offsetDb.toFixed(1)} dB)${active ? ' · active' : ''} `;
+      li.textContent = `${p.label} (${p.offsetDb >= 0 ? '+' : ''}${p.offsetDb.toFixed(1)} dB)${active ? ` · ${UI.active}` : ''} `;
       const apply = document.createElement('button');
       apply.type = 'button';
       apply.className = 'btn-square focus-ring btn-mini';
-      apply.textContent = 'Apply';
+      apply.textContent = UI.apply;
       apply.addEventListener('click', () => {
         const r = engine.applyProfile(p.id);
-        els.calMsg.textContent = r.ok ? `Applied ${p.label}. Main meter now shows estimated ${publicGauge(engine.snapshot()).unit}.` : r.reason;
+        els.calMsg.textContent = r.ok ? fill(UI.appliedProfile, { name: p.label, unit: publicGauge(engine.snapshot(), PRESENTATION).unit }) : UI.operationFailed;
       });
       const del = document.createElement('button');
       del.type = 'button';
       del.className = 'btn-square focus-ring btn-mini';
-      del.textContent = 'Delete';
+      del.textContent = UI.delete;
       del.addEventListener('click', () => {
-        if (window.confirm(`Delete the calibration profile “${p.label}”?`)) engine.deleteProfile(p.id);
+        if (window.confirm(fill(UI.deleteProfile, { name: p.label }))) engine.deleteProfile(p.id);
       });
       li.appendChild(apply);
       li.appendChild(del);
@@ -553,7 +604,7 @@ const { dict } = Astro.props;
   function updateStats(s) {
     const hasData = s.stats.current != null;
     els.stats.classList.toggle('has-data', hasData);
-    const stats = publicStats(s);
+    const stats = publicStats(s, PRESENTATION);
     const labels = [els.l1, els.l2, els.l3, els.l4, els.l5];
     const values = [els.s1, els.s2, els.s3, els.s4, els.s5];
     for (let i = 0; i < stats.length; i++) {
@@ -564,42 +615,58 @@ const { dict } = Astro.props;
   }
 
   function updateMainMeta(s) {
-    const gauge = publicGauge(s);
+    const gauge = publicGauge(s, PRESENTATION);
     els.modeStatus.textContent = gauge.calibrated && s.result.kind === 'calibrated'
-      ? `${gauge.status} · ${s.calibration.label} · ${s.weighting}-weighting`
+      ? `${gauge.status} · ${s.calibration.label} · ${s.weighting}`
       : gauge.status;
     els.ctaCal.hidden = gauge.calibrated;
+  }
+
+  function updateCalibrationPreview() {
+    const measured = engine.getReferenceMeasuredLeq();
+    const reference = Number.parseFloat(els.refReading.value);
+    if (measured == null || !Number.isFinite(measured) || !Number.isFinite(reference)) {
+      els.calPreview.textContent = CAL.previewWaiting || '';
+      return;
+    }
+    const offset = reference - measured;
+    els.calPreview.textContent = fill(CAL.previewTemplate, {
+      reference: reference.toFixed(1),
+      measured: measured.toFixed(1),
+      offset: `${offset >= 0 ? '+' : ''}${offset.toFixed(1)}`,
+    });
   }
 
   function updateModal(s) {
     // Calibration section
     els.calState.textContent = s.activeProfile
-      ? `Active: ${s.activeProfile.label} (${s.activeProfile.offsetDb >= 0 ? '+' : ''}${s.activeProfile.offsetDb.toFixed(1)} dB, ${s.activeProfile.referenceMethod}, ${DATE_ONLY.format(new Date(s.activeProfile.calibrationDateIso))})`
-      : 'No calibration profile active. Complete a reference comparison against a known sound source.';
+      ? `${fill(UI.activeProfile, { name: s.activeProfile.label })} (${s.activeProfile.offsetDb >= 0 ? '+' : ''}${s.activeProfile.offsetDb.toFixed(1)} dB, ${methodName(s.activeProfile.referenceMethod)}, ${DATE_ONLY.format(new Date(s.activeProfile.calibrationDateIso))})`
+      : UI.noActiveProfile;
     if (s.calibrationStale && s.calibrationStaleReasons.length) {
       els.calStale.classList.remove('hidden');
-      els.calStale.textContent = `Profile no longer matches this setup: ${s.calibrationStaleReasons.join(' ')}`;
+      els.calStale.textContent = UI.staleProfile;
     } else {
       els.calStale.classList.add('hidden');
     }
     if (s.referenceCapture) {
-      els.refProgress.textContent = `Capturing reference… ${s.referenceCapture.elapsedSec.toFixed(0)} / ${s.referenceCapture.durationSec} s (keep the sound steady)`;
+      els.refProgress.textContent = `${fill(UI.capturingReference, { elapsed: s.referenceCapture.elapsedSec.toFixed(0), duration: s.referenceCapture.durationSec })} (${UI.keepSteady})`;
     } else {
       const m = engine.getReferenceMeasuredLeq();
       els.refProgress.textContent = m != null && Number.isFinite(m)
-        ? `Measured digital level: ${formatDb(m)} dBFS — enter the reference reading and apply.`
+        ? fill(UI.measuredDigital, { value: formatDb(m) })
         : '';
     }
+    updateCalibrationPreview();
     renderProfiles(s);
     // Digital Diagnostics — the ONLY place raw negative dBFS is shown.
-    const diagnostic = digitalDiagnostics(s);
+    const diagnostic = digitalDiagnostics(s, PRESENTATION);
     [els.dCur, els.dMin, els.dAvg, els.dMax, els.dPeak].forEach((el, i) => {
       el.textContent = diagnostic[i].value;
     });
     // Relative card
     els.relState.textContent = s.baseline
-      ? `Baseline: ${formatDb(s.baseline.energyDb)} dBFS (${s.baseline.weighting}-weighting, ${DATE_TIME.format(new Date(s.baseline.capturedAtIso))})`
-      : 'No baseline captured.';
+      ? `${UI.baseline}: ${formatDb(s.baseline.energyDb)} dBFS (${s.baseline.weighting}, ${DATE_TIME.format(new Date(s.baseline.capturedAtIso))})`
+      : UI.noBaseline;
     // Mic card
     els.dev.textContent = s.deviceLabel || '—';
     els.rate.textContent = s.sampleRate ? `${s.sampleRate} Hz` : '—';
@@ -610,30 +677,30 @@ const { dict } = Astro.props;
     els.metaN.textContent = String(s.stats.samples);
     els.relaxed.textContent = s.relaxedConstraints.length ? s.relaxedConstraints.join(' ') : '';
     els.metaW.textContent = s.weighting;
-    els.metaR.textContent = s.response;
+    els.metaR.textContent = s.response === 'fast' ? T('data-resp-fast', 'Fast') : T('data-resp-slow', 'Slow');
   }
 
   function updateQuality(s) {
     const mode = publicMeasurementMode(s);
     // Overall: Ready / Check setup / Not calibrated / Invalid reading (never a fake accuracy %).
-    let overall = 'Ready';
-    if (s.state === 'error') overall = 'Check setup';
-    else if (mode === 'input-strength' && (s.state === 'running' || s.state === 'stabilizing' || s.state === 'paused')) overall = 'Not calibrated';
-    else if ((s.state === 'running' || s.state === 'stabilizing') && s.stats.current == null) overall = 'Invalid reading';
+    let overall = UI.ready;
+    if (s.state === 'error') overall = UI.checkSetup;
+    else if (mode === 'estimated-spl' && (s.state === 'running' || s.state === 'stabilizing' || s.state === 'paused')) overall = UI.notCalibrated;
+    else if ((s.state === 'running' || s.state === 'stabilizing') && s.stats.current == null) overall = UI.invalidReading;
     els.qOverall.textContent = overall;
     els.qCal.textContent = s.calibrationValid && s.activeProfile
       ? `Calibrated (${s.activeProfile.offsetDb >= 0 ? '+' : ''}${s.activeProfile.offsetDb.toFixed(1)} dB)`
-      : 'Not calibrated';
+      : UI.notCalibrated;
     // Signal: Stable / Variable / Below measurement floor / Clipping / Disconnected.
     let signal = '—';
-    if (s.state === 'error' && s.error === 'device-disconnected') signal = 'Disconnected';
+    if (s.state === 'error' && s.error === 'device-disconnected') signal = UI.disconnected;
     else if (s.state === 'running' || s.state === 'paused' || s.state === 'stabilizing') {
       const peak = s.stats.peakDb;
-      if (s.stats.current == null || !Number.isFinite(s.stats.current)) signal = 'Below measurement floor';
-      else if (Number.isFinite(peak) && peak >= -0.5) signal = 'Clipping';
-      else if (s.stats.current <= -90) signal = 'Below measurement floor';
-      else if (s.gapMs > 2000 || s.stats.gapCount > 2) signal = 'Variable';
-      else signal = 'Stable';
+      if (s.stats.current == null || !Number.isFinite(s.stats.current)) signal = UI.belowFloor;
+      else if (Number.isFinite(peak) && peak >= -0.5) signal = UI.clipping;
+      else if (s.stats.current <= -90) signal = UI.belowFloor;
+      else if (s.gapMs > 2000 || s.stats.gapCount > 2) signal = UI.variable;
+      else signal = UI.stable;
     }
     els.qSignal.textContent = signal;
     els.qProc.textContent = s.sampleRate
@@ -650,6 +717,10 @@ const { dict } = Astro.props;
 
   const unsubscribe = engine.subscribe((s) => {
     latest = s;
+    const guideReading = publicGauge(s, PRESENTATION);
+    const readingDetail = { value: guideReading.value, unit: guideReading.unit, calibrated: guideReading.calibrated };
+    window.__rdmReading = readingDetail;
+    document.dispatchEvent(new CustomEvent('rdm:reading', { detail: readingDetail }));
     const st = s.state;
     const calibratedNow = s.calibrationValid && s.result.kind === 'calibrated';
     els.panel.dataset.state = st;
@@ -714,11 +785,11 @@ const { dict } = Astro.props;
     // The engine retains raw digital history; this public layer selects one
     // honest scale and unit for the active calibration state.
     const rawSeries = engine.graph.series().slice(-180);
-    graphView = publicGraph(rawSeries, s);
+    graphView = publicGraph(rawSeries, s, PRESENTATION);
     const line = seriesToPath(graphView.series, 600, 160, graphView.lo, graphView.hi);
     els.path.setAttribute('d', line);
     els.areaPath.setAttribute('d', seriesToAreaPath(graphView.series, 600, 160, graphView.lo, graphView.hi));
-    els.graph.setAttribute('aria-label', `${graphView.label}, ${graphView.lo} to ${graphView.hi}`);
+    els.graph.setAttribute('aria-label', fill(UI.graphRange, { label: graphView.label, lo: graphView.lo, hi: graphView.hi }));
     els.graphEmpty.style.display = graphView.series.length ? 'none' : '';
     els.graphMeta.textContent = graphView.series.length ? `${graphView.label} · ${graphView.lo}–${graphView.hi}${graphView.unit}` : graphView.label;
     const lastIndex = graphView.series.length - 1;
@@ -747,7 +818,13 @@ const { dict } = Astro.props;
     els.expJson.disabled = !hasData;
 
     if (st === 'error') {
-      const info = describeError(s.error, s.errorDetail);
+      const info = s.error === 'unsupported-browser'
+        ? { title: UI.errorUnsupportedTitle, message: UI.errorUnsupportedMessage, recovery: UI.errorUnsupportedRecovery }
+        : s.error === 'permission-denied'
+          ? { title: UI.errorPermissionTitle, message: UI.errorPermissionMessage, recovery: UI.errorPermissionRecovery }
+          : ['no-device', 'device-busy', 'device-disconnected', 'overconstrained'].includes(s.error)
+            ? { title: UI.errorDeviceTitle, message: UI.errorDeviceMessage, recovery: UI.errorDeviceRecovery }
+            : { title: UI.errorGenericTitle, message: UI.errorGenericMessage, recovery: UI.errorGenericRecovery };
       els.err.classList.remove('hidden');
       els.errTitle.textContent = info.title;
       els.errMsg.textContent = info.message;
@@ -756,7 +833,7 @@ const { dict } = Astro.props;
       els.err.classList.add('hidden');
     }
 
-    const announce = `${st}${st === 'error' ? ': ' + s.error : ''}`;
+    const announce = `${STATUS()[st] ?? st}${st === 'error' ? ': ' + UI.errorGenericTitle : ''}`;
     if (announce !== lastAnnounced) {
       lastAnnounced = announce;
       els.announcer.textContent = announce;
@@ -781,7 +858,7 @@ const { dict } = Astro.props;
     const res = saveSession(exported, `${s.weighting}/${s.response} ${s.unit}`);
     historyEntries = res.entries;
     if (!res.ok) els.storageWarn.classList.remove('hidden');
-    els.saveMsg.textContent = res.ok ? 'Saved to local history.' : res.reason;
+    els.saveMsg.textContent = res.ok ? UI.savedHistory : UI.operationFailed;
     renderHistory();
   });
   els.ctaCal?.addEventListener('click', () => openModal());
@@ -830,23 +907,25 @@ const { dict } = Astro.props;
   els.refStart?.addEventListener('click', () => {
     const dur = document.querySelector('input[name="rdm-refdur"]:checked')?.value === '60' ? 60 : 30;
     const r = engine.startReferenceCapture(dur);
-    els.calMsg.textContent = r.ok ? `Capturing ${dur} s reference…` : r.reason;
+    els.calMsg.textContent = r.ok ? fill(UI.capturingReference, { elapsed: 0, duration: dur }) : r.reason;
   });
-  els.refCancel?.addEventListener('click', () => { engine.cancelReferenceCapture(); els.calMsg.textContent = 'Reference capture cancelled.'; });
+  els.refCancel?.addEventListener('click', () => { engine.cancelReferenceCapture(); els.calMsg.textContent = UI.captureCancelled; });
+  els.refReading?.addEventListener('input', updateCalibrationPreview);
   els.calApply?.addEventListener('click', () => {
     const reading = parseFloat(els.refReading.value);
+    const duration = document.querySelector('input[name="rdm-refdur"]:checked')?.value === '60' ? 60 : 30;
     const res = engine.applyReferenceCalibration(
       {
         referenceReadingDb: Number.isFinite(reading) ? reading : Number.NaN,
         measuredDigitalLeqDb: Number.NaN,
         method: els.refMethod.value,
-        durationSec: 30,
+        durationSec: duration,
         note: els.refNote.value ?? '',
       },
       els.calLabel.value ?? '',
     );
     els.calMsg.textContent = res.ok
-      ? `Calibrated. Main meter now shows estimated ${publicGauge(engine.snapshot()).unit} (raw dBFS + offset).`
+      ? fill(UI.calibratedDone, { unit: publicGauge(engine.snapshot(), PRESENTATION).unit })
       : res.reasons.join(' ');
     if (res.ok) {
       tickLabels();
@@ -856,13 +935,14 @@ const { dict } = Astro.props;
     engine.resetCalibration();
     els.refReading.value = '';
     els.calLabel.value = '';
-    els.calMsg.textContent = 'Reset to uncalibrated. Main meter shows -- with input strength.';
+    updateCalibrationPreview();
+    els.calMsg.textContent = publicGauge(engine.snapshot(), PRESENTATION).status;
   });
   els.relCap?.addEventListener('click', () => {
     const r = engine.setBaseline();
-    els.relMsg.textContent = r.ok ? 'Baseline captured. Switch the meter view to dB Δ to see relative change.' : r.reason;
+    els.relMsg.textContent = r.ok ? UI.baselineCaptured : UI.operationFailed;
   });
-  els.relClear?.addEventListener('click', () => { engine.clearBaseline(); els.relMsg.textContent = 'Baseline cleared.'; });
+  els.relClear?.addEventListener('click', () => { engine.clearBaseline(); els.relMsg.textContent = UI.baselineCleared; });
 
   els.expCsv?.addEventListener('click', () => {
     const s = engine.snapshot();
@@ -873,7 +953,7 @@ const { dict } = Astro.props;
     downloadText(`decibel-session-${Date.now()}.json`, sessionToJson(buildExport(s)), 'application/json');
   });
   els.historyClear?.addEventListener('click', () => {
-    if (!window.confirm('Clear all locally saved measurement sessions?')) return;
+    if (!window.confirm(UI.clearHistoryConfirm)) return;
     if (clearHistory()) { historyEntries = []; renderHistory(); }
     else els.storageWarn.classList.remove('hidden');
   });
@@ -888,7 +968,7 @@ const { dict } = Astro.props;
   } catch { els.storageWarn.classList.remove('hidden'); }
   renderHistory();
   tickLabels();
-  paintMain({ value: null, lo: 0, hi: 100, unit: '%' }, true);
+  paintMain({ value: null, lo: 20, hi: 120, unit: 'dBA' }, true);
 
   function graphPointerMove(e) {
     if (!graphView.series.length || REDUCED) return;

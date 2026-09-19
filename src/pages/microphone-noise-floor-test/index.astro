@@ -1,0 +1,23 @@
+---
+import Layout from '../../components/Layout.astro';
+import FocusedTestPanel from '../../components/FocusedTestPanel.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+const dict = getDict('en');
+const title = 'Microphone Noise Floor Test – 30 Seconds';
+const description = 'Run a private 30-second browser microphone noise-floor test with real current, minimum, energy-average and maximum dBFS readings.';
+const url = `${SITE}/microphone-noise-floor-test/`;
+const jsonLd = [articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-19' }), breadcrumbJsonLd([{ name:'Home', url:`${SITE}/` }, { name:'Microphone noise floor test', url }])];
+---
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/microphone-noise-floor-test/" jsonLd={jsonLd}>
+  <div class="container-x py-10" style="max-width:1040px">
+    <header class="mb-6"><p class="eyebrow">Digital microphone diagnostic</p><h1 class="hero-title mt-2">Microphone Noise Floor Test</h1><p class="hero-sub">Measure the quiet digital floor of your current microphone input for 30 seconds. Results are real dBFS samples processed locally.</p></header>
+    <FocusedTestPanel mode="noise-floor" />
+    <div class="article-rich panel p-6 mt-6">
+      <h2>What the result means</h2><p>dBFS describes level relative to the maximum digital signal the browser can receive. Values are usually negative; 0 dBFS is digital full scale, not silence. A lower, more negative quiet-room result usually means less digital input noise, but microphone gain and browser processing can change it.</p>
+      <h2>How to run a useful test</h2><ol><li>Choose the microphone you actually plan to use and close calling or recording apps.</li><li>Move away from fans, keyboards and handling noise, then leave the device untouched.</li><li>Start the test and let the full 30 seconds complete. Compare only tests made with the same device and settings.</li></ol>
+      <h2>What this test cannot tell you</h2><p>The result is not dBA or dB SPL and cannot describe environmental loudness without microphone sensitivity data and calibration. Read <a href="/dbfs-vs-db-spl/">dBFS vs dB SPL</a>, then see <a href="/calibration/">calibration</a> and <a href="/accuracy/">browser measurement accuracy</a>.</p>
+      <p><a href="/background-noise-test/">Try the background-noise workflow →</a> · <a href="/#measure">Open the full meter →</a></p>
+    </div>
+  </div>
+</Layout>

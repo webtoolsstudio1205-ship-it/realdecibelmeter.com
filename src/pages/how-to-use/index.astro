@@ -2,7 +2,7 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
 const title = 'How to Use the Online Decibel Meter';
 const description = 'Grant permission, place the device, read input strength or calibrated dBA, then export your session — step by step.';
@@ -17,12 +17,12 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/how-to-use/" jsonLd={jsonLd}>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/how-to-use/" hreflang={guideHreflang('how-to-use')} jsonLd={jsonLd}>
   <Article title={title} intro="Three steps: allow the microphone, watch the live panel, tune and export." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'How to use', href: '/how-to-use/' }]}>
     <h2 class="text-white font-semibold">1. Allow the microphone</h2>
     <p class="mt-2">Press Start and accept the browser prompt. Use HTTPS; file:// and plain HTTP origins may block capture. Pick the input in the selector if you have several. If nothing happens, follow <a class="underline underline-offset-4" href="/microphone-not-working/">microphone troubleshooting</a>.</p>
     <h2 class="text-white font-semibold mt-6">2. Place the device and read the panel</h2>
-    <p class="mt-2">Set the device on a stable surface at ear height, away from wind, vents and handling. Uncalibrated, the gauge shows input strength in percent — not environmental decibels. Current is the smoothed live value; Leq is the energy average; min/max bracket the session. Wait a few seconds for Fast/Slow smoothing to settle. For dBA estimates, <a class="underline underline-offset-4" href="/calibration/">calibrate your microphone</a> first.</p>
+    <p class="mt-2">Set the device on a stable surface at ear height, away from wind, vents and handling. The gauge immediately shows an estimated dBA value using a nominal device offset. Current is the smoothed live value; Leq is the energy average; min/max bracket the session. Wait a few seconds for Fast/Slow smoothing to settle, then <a class="underline underline-offset-4" href="/calibration/">calibrate your microphone</a> for better device-specific accuracy.</p>
     <h2 class="text-white font-semibold mt-6">3. Tune, compare and export</h2>
     <p class="mt-2">Choose A-weighting for everyday checks (see <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a>), compare against the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a>, then export CSV for spreadsheets or JSON for code. History stays in this browser only (<a class="underline underline-offset-4" href="/privacy/">privacy</a>).</p>
     <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/methodology/">How the meter works →</a></p>

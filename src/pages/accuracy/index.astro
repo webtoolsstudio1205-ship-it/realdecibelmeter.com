@@ -2,13 +2,13 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
 const title = 'Browser Decibel-Meter Accuracy and Limitations';
 const description = 'Browser decibel readings are estimates, not certified measurements. Learn how hardware, AGC and calibration affect accuracy.';
 const url = `${SITE}/accuracy/`;
 const jsonLd = [
-  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-16' }),
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-19' }),
   breadcrumbJsonLd([
     { name: 'Home', url: `${SITE}/` },
     { name: 'Accuracy', url },
@@ -16,8 +16,8 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/accuracy/" jsonLd={jsonLd}>
-  <Article title={title} intro="Your microphone was built for calls, not metrology. This page states plainly what the meter can and cannot claim." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Accuracy', href: '/accuracy/' }]}>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/accuracy/" hreflang={guideHreflang('accuracy')} jsonLd={jsonLd}>
+  <Article title={title} intro="Your microphone was built for calls, not metrology. This page states plainly what the meter can and cannot claim." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Accuracy', href: '/accuracy/' }]}>
     <h2 class="text-white font-semibold">What the number means</h2>
     <p class="mt-2">The panel shows an <strong>uncalibrated browser estimate</strong> derived from Web Audio time-domain samples. Gain, placement, case resonance and frequency response differ per device, so two phones side by side can disagree by many decibels. Readings are never presented as approved, professional or lab-tested instrument results.</p>
     <h2 class="text-white font-semibold mt-6">Why results differ between devices and browsers</h2>
@@ -37,6 +37,8 @@ const jsonLd = [
       <li>Use A-weighting for speech-like environments, C or Z when comparing spectra (<a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a>).</li>
       <li>Let Fast/Slow smoothing settle for a few seconds before comparing with a <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a>.</li>
     </ul>
+    <h2 class="text-white font-semibold mt-6">Sources and technical references</h2>
+    <p class="mt-2">The practical limits above are consistent with <a class="underline underline-offset-4" href="https://www.cdc.gov/niosh/noise/about/app.html">CDC/NIOSH guidance on sound-level apps</a> and the browser permission model documented by <a class="underline underline-offset-4" href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">MDN getUserMedia()</a>.</p>
     <p class="mt-4"><a class="underline underline-offset-4" href="/calibration/">Next: calibration →</a> · <a class="underline underline-offset-4" href="/methodology/">Methodology →</a> · <a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a></p>
   </Article>
 </Layout>

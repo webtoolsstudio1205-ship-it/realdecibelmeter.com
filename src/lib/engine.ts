@@ -200,9 +200,9 @@ export class DecibelEngine {
   /**
    * Strict typed result. Environmental SPL exists ONLY as
    * rawDbfs + profile.offset with a compatible profile — otherwise the
-   * `uncalibrated` variant carries no numeric dB so the UI cannot render
-   * raw dBFS as an environmental level. No Math.abs, no clamping of the
-   * stored value, no arbitrary offsets anywhere in this path.
+   * `uncalibrated` carries no engine-level SPL. The presentation layer may
+   * derive a clearly disclosed nominal estimate; raw storage remains dBFS.
+   * No Math.abs or clamping changes the stored value in this path.
    */
   private buildResult(rawCurrent: number | null): MeasurementResult {
     if (this.mode === 'digital') {
@@ -813,7 +813,7 @@ export class DecibelEngine {
       this.session.ingest({ sumSq: q.sumSq, n: q.n, peak: q.peak, weightedDb, atMs: now });
       this.lastQuantumAt = now;
       // Keep one bounded raw digital series. Public presentation maps it to
-      // input-strength percent or adds a compatible calibration offset.
+      // nominal presentation estimate or a compatible calibration offset.
       this.graph.push(weightedDb);
       // Reference capture accumulates raw digital energy only.
       if (this.refCapture) {

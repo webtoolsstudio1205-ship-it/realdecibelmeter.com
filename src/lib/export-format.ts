@@ -8,6 +8,7 @@ import type { CalibrationMode } from './calibration.js';
 import type { GapRecord, SegmentSummary } from './session.js';
 import { formatDb } from './dsp.js';
 import { APP_VERSION } from './calibration.js';
+import { sanitizeExportFilename } from './security.js';
 
 export interface ExportSession {
   startedAtIso: string;
@@ -115,8 +116,9 @@ function isNumericCell(cell: string): boolean {
 export function csvCell(v: string): string {
   let cell = v;
   if (/^[=+\-@]/.test(cell) && !isNumericCell(cell)) cell = `'${cell}`;
-  if (cell.startsWith("'")) return cell;
-  return /[",\n]/.test(cell) ? `"${cell.replace(/"/g, '""')}"` : cell;
+  // Quote AFTER prefixing so a leading apostrophe cannot smuggle an
+  // unescaped quote, comma or newline into the CSV structure.
+  return /[",\n]/.test(cell) || cell.startsWith("'") ? `"${cell.replace(/"/g, '""')}"` : cell;
 }
 
 export function sessionToCsv(s: ExportSession): string {
@@ -223,10 +225,11 @@ export function downloadText(filename: string, text: string, mime: string): void
 }
 
 export function downloadBlob(filename: string, blob: Blob): void {
+  const safe = sanitizeExportFilename(filename);
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = filename;
+  a.download = safe;
   document.body.appendChild(a);
   a.click();
   a.remove();

@@ -2,7 +2,7 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
 const title = 'Decibel Comparison Chart';
 const description = 'Approximate everyday sound levels from 30 to 120 dBA for context. Browser readings remain estimates, not medical advice.';
@@ -20,7 +20,7 @@ const rows = [
   ['120 dBA', 'Siren at close range'],
 ];
 const jsonLd = [
-  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-16' }),
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-19' }),
   breadcrumbJsonLd([
     { name: 'Home', url: `${SITE}/` },
     { name: 'Decibel chart', url },
@@ -28,8 +28,8 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/decibel-chart/" jsonLd={jsonLd}>
-  <Article title={title} intro="Approximate reference levels for everyday sounds. Use for context only — your browser reading is an estimate, not a verified instrument measurement." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Decibel chart', href: '/decibel-chart/' }]}>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/decibel-chart/" hreflang={guideHreflang('decibel-chart')} jsonLd={jsonLd}>
+  <Article title={title} intro="Approximate reference levels for everyday sounds. Use for context only — your browser reading is an estimate, not a verified instrument measurement." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Decibel chart', href: '/decibel-chart/' }]}>
     <table class="w-full text-sm mt-2" style="border-collapse:collapse">
       <caption class="sr-only">Approximate everyday sound levels in dBA</caption>
       <thead><tr style="border-bottom:1px solid var(--border)"><th scope="col" class="text-left py-2 pr-4">Level (approx.)</th><th scope="col" class="text-left py-2">Example</th></tr></thead>
@@ -40,6 +40,8 @@ const jsonLd = [
     <h2 class="text-white font-semibold mt-6">How to read this table</h2>
     <p class="mt-2">All examples are approximate: distance, room reflections, duration and weighting change real readings. The decibel scale is logarithmic — 10 dB more means roughly ten times the sound energy. Compare your <a class="underline underline-offset-4" href="/#measure">online decibel meter</a> result only after <a class="underline underline-offset-4" href="/calibration/">calibrating your microphone</a>, and match the weighting (usually dBA).</p>
     <p class="mt-3 text-sm">This table is educational context, not medical or regulatory advice. No hearing-safety verdicts are shown on this site because uncalibrated browser readings cannot support them. For protection decisions consult qualified guidance such as <a class="underline underline-offset-4" href="https://www.cdc.gov/niosh/noise/about/noiseandsound.html">CDC/NIOSH</a> and a calibrated meter (<a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>).</p>
+    <h2 class="text-white font-semibold mt-6">Sources and technical references</h2>
+    <p class="mt-2">Example levels are intentionally approximate. For occupational measurement practice and app limitations, consult <a class="underline underline-offset-4" href="https://www.cdc.gov/niosh/noise/about/app.html">CDC/NIOSH Sound Level Meter guidance</a>.</p>
     <p class="mt-4"><a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA →</a> · <a class="underline underline-offset-4" href="/#measure">Open the meter →</a></p>
   </Article>
 </Layout>

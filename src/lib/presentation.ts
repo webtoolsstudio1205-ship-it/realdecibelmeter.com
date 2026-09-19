@@ -1,30 +1,51 @@
-import { digitalToInputStrength, formatDb, formatDuration } from './dsp.js';
+import { formatDb, formatDuration } from './dsp.js';
 import type { EngineSnapshot, MeasurementState } from './types.js';
 
 /**
  * Authoritative two-mode public presentation model.
- * - "input-strength": no compatible calibration — percentages only, never dB/SPL.
- * - "calibrated-spl": compatible profile active — estimated dBA/dBC/dBZ.
+ * - "estimated-spl": no compatible calibration — a clearly disclosed nominal
+ *   estimate derived from digital dBFS + 100 dB.
+ * - "calibrated-spl": compatible profile active — device-specific estimated
+ *   dBA/dBC/dBZ.
  * Determined centrally here; components must not guess the mode themselves.
  */
 export type PublicMeasurementMode =
-  | 'input-strength'
+  | 'estimated-spl'
   | 'calibrated-spl';
 
 export const DIGITAL_FLOOR_DBFS = -100;
+/**
+ * Consumer browser meters commonly use a nominal +100 dB bridge from dBFS to
+ * a familiar environmental scale. It makes −34.1 dBFS display as 65.9 dBA.
+ * This is a convenience estimate, not a device calibration; a compatible
+ * calibration profile always replaces it.
+ */
+export const DEFAULT_ESTIMATE_OFFSET_DB = 100;
+
+function estimateUnit(weighting: EngineSnapshot['weighting']): 'dBA' | 'dBC' | 'dBZ' {
+  if (weighting === 'C') return 'dBC';
+  if (weighting === 'Z') return 'dBZ';
+  return 'dBA';
+}
+
+export function nominalSoundEstimate(valueDbfs: number | null): number | null {
+  return valueDbfs == null || !Number.isFinite(valueDbfs)
+    ? null
+    : valueDbfs + DEFAULT_ESTIMATE_OFFSET_DB;
+}
 
 export function publicMeasurementMode(
   s: Pick<EngineSnapshot, 'calibrationValid' | 'result'>,
 ): PublicMeasurementMode {
   return s.calibrationValid && s.result.kind === 'calibrated'
     ? 'calibrated-spl'
-    : 'input-strength';
+    : 'estimated-spl';
 }
 
 export type PublicGauge = {
   calibrated: boolean;
   value: number | null;
-  unit: '%' | 'dBA' | 'dBC' | 'dBZ';
+  unit: 'dBA' | 'dBC' | 'dBZ';
   lo: number;
   hi: number;
   label: string;
@@ -33,18 +54,45 @@ export type PublicGauge = {
 
 export type PublicStat = { label: string; value: string };
 
-export function digitalDiagnostics(s: EngineSnapshot): PublicStat[] {
+export interface PresentationLabels {
+  current: string;
+  minimum: string;
+  digitalAverage: string;
+  maximum: string;
+  digitalPeak: string;
+  currentEstimated: string;
+  inputStrength: string;
+  calibrationRequired: string;
+  calibratedEstimate: string;
+  currentSound: string;
+  energyAverage: string;
+  duration: string;
+  currentStrength: string;
+  averageStrength: string;
+  peakStrength: string;
+  estimatedSound: string;
+  inputStrengthGraph: string;
+}
+
+const EN: PresentationLabels = {
+  current: 'Current', minimum: 'Minimum', digitalAverage: 'Digital energy average', maximum: 'Maximum', digitalPeak: 'Digital peak',
+  currentEstimated: 'Current estimated sound level', inputStrength: 'Microphone Input Strength', calibrationRequired: 'Estimated dBA — calibrate for better accuracy', calibratedEstimate: 'Calibrated estimate',
+  currentSound: 'Current sound level', energyAverage: 'Energy average', duration: 'Duration', currentStrength: 'Current Strength', averageStrength: 'Average Strength', peakStrength: 'Peak Strength',
+  estimatedSound: 'Estimated sound level', inputStrengthGraph: 'Input strength',
+};
+
+export function digitalDiagnostics(s: EngineSnapshot, labels: PresentationLabels = EN): PublicStat[] {
   const dbfs = (value: number | null) => value == null ? '--' : `${formatDb(value)} dBFS`;
   return [
-    { label: 'Current', value: dbfs(s.stats.current) },
-    { label: 'Minimum', value: dbfs(s.stats.min) },
-    { label: 'Digital energy average', value: dbfs(s.stats.leq) },
-    { label: 'Maximum', value: dbfs(s.stats.max) },
-    { label: 'Digital peak', value: dbfs(Number.isFinite(s.stats.peakDb) ? s.stats.peakDb : null) },
+    { label: labels.current, value: dbfs(s.stats.current) },
+    { label: labels.minimum, value: dbfs(s.stats.min) },
+    { label: labels.digitalAverage, value: dbfs(s.stats.leq) },
+    { label: labels.maximum, value: dbfs(s.stats.max) },
+    { label: labels.digitalPeak, value: dbfs(Number.isFinite(s.stats.peakDb) ? s.stats.peakDb : null) },
   ];
 }
 
-export function publicGauge(s: EngineSnapshot): PublicGauge {
+export function publicGauge(s: EngineSnapshot, labels: PresentationLabels = EN): PublicGauge {
   if (s.calibrationValid && s.result.kind === 'calibrated') {
     return {
       calibrated: true,
@@ -52,65 +100,69 @@ export function publicGauge(s: EngineSnapshot): PublicGauge {
       unit: s.result.unit,
       lo: 20,
       hi: 120,
-      label: 'Current estimated sound level',
-      status: 'Calibrated estimate',
+      label: labels.currentEstimated,
+      status: labels.calibratedEstimate,
     };
   }
   return {
     calibrated: false,
-    value: s.inputStrengthPct,
-    unit: '%',
-    lo: 0,
-    hi: 100,
-    label: 'Microphone Input Strength',
-    status: 'Calibration required for environmental dB',
+    value: nominalSoundEstimate(s.stats.current),
+    unit: estimateUnit(s.weighting),
+    lo: 20,
+    hi: 120,
+    label: labels.estimatedSound,
+    status: labels.calibrationRequired,
   };
 }
 
-export function publicStats(s: EngineSnapshot): PublicStat[] {
+export function publicStats(s: EngineSnapshot, labels: PresentationLabels = EN): PublicStat[] {
   if (s.calibrationValid && s.result.kind === 'calibrated') {
     const unit = s.result.unit;
     const level = (value: number | null) => value == null ? '--' : `${formatDb(value)} ${unit}`;
     return [
-      { label: 'Current sound level', value: level(s.display.current) },
-      { label: 'Minimum', value: level(s.display.min) },
-      { label: 'Energy average', value: level(s.display.leq) },
-      { label: 'Maximum', value: level(s.display.max) },
-      { label: 'Duration', value: formatDuration(s.stats.durationSec) },
+      { label: labels.currentSound, value: level(s.display.current) },
+      { label: labels.minimum, value: level(s.display.min) },
+      { label: labels.energyAverage, value: level(s.display.leq) },
+      { label: labels.maximum, value: level(s.display.max) },
+      { label: labels.duration, value: formatDuration(s.stats.durationSec) },
     ];
   }
-  const strength = (value: number | null) => {
-    const pct = digitalToInputStrength(value);
-    return pct == null ? '--' : `${pct.toFixed(0)}%`;
+  const unit = estimateUnit(s.weighting);
+  const level = (value: number | null) => {
+    const estimate = nominalSoundEstimate(value);
+    return estimate == null ? '--' : `${formatDb(estimate)} ${unit}`;
   };
   return [
-    { label: 'Current Strength', value: strength(s.stats.current) },
-    { label: 'Average Strength', value: strength(s.stats.leq) },
-    { label: 'Peak Strength', value: strength(Number.isFinite(s.stats.peakDb) ? s.stats.peakDb : null) },
-    { label: 'Duration', value: formatDuration(s.stats.durationSec) },
+    { label: labels.currentEstimated, value: level(s.stats.current) },
+    { label: labels.minimum, value: level(s.stats.min) },
+    { label: labels.energyAverage, value: level(s.stats.leq) },
+    { label: labels.maximum, value: level(s.stats.max) },
+    { label: labels.duration, value: formatDuration(s.stats.durationSec) },
   ];
 }
 
 export function publicGraph(
   rawSeries: (number | null)[],
-  s: Pick<EngineSnapshot, 'calibrationValid' | 'result'>,
-): { series: (number | null)[]; lo: number; hi: number; label: string; unit: '%' | 'dBA' | 'dBC' | 'dBZ' } {
+  s: Pick<EngineSnapshot, 'calibrationValid' | 'result' | 'weighting'>,
+  labels: PresentationLabels = EN,
+): { series: (number | null)[]; lo: number; hi: number; label: string; unit: 'dBA' | 'dBC' | 'dBZ' } {
   if (s.calibrationValid && s.result.kind === 'calibrated') {
     const result = s.result;
     return {
       series: rawSeries.map((value) => value == null ? null : value + result.offsetDb),
       lo: 20,
       hi: 120,
-      label: `Estimated sound level (${result.unit})`,
+      label: `${labels.estimatedSound} (${result.unit})`,
       unit: result.unit,
     };
   }
+  const unit = estimateUnit(s.weighting);
   return {
-    series: rawSeries.map(digitalToInputStrength),
-    lo: 0,
-    hi: 100,
-    label: 'Input strength (%)',
-    unit: '%',
+    series: rawSeries.map(nominalSoundEstimate),
+    lo: 20,
+    hi: 120,
+    label: `${labels.estimatedSound} (${unit})`,
+    unit,
   };
 }
 

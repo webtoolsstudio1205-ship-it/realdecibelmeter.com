@@ -9,6 +9,15 @@ never stuffed. No spelling-variant doorway pages.
 | `/de/` | de | dezibelmesser online | dezibel messer online, dezibel messen, lautstärke messen, lautstärke messen online, schallpegelmesser, schallpegel messen, db messen online kostenlos, lautstärkemesser online, ohne app | Measure loudness in browser, free, no app | Dezibelmesser Online – Lautstärke im Browser messen | Dezibelmesser Online | Localized tool page; ohne-App/kostenlos in description + intro, not title | calibration, accuracy, decibel-chart | Single German meter intent; no extra /de/* keyword pages |
 | `/it/` | it | fonometro online | fonometro online gratis, misuratore decibel online, misura decibel online, misurazione decibel online | Free in-browser fonometro | Fonometro Online Gratis – Misura i Decibel nel Browser | Fonometro Online | CTR rebuild: same intent, sharper SERP relevance | calibration, accuracy, decibel-chart | Only Italian meter page |
 | `/ja/` | ja | デシベル測定 | デシベル計測, デシベル 計測, 音量測定, デシベル計, デシベル測定 ブラウザ | Browser デシベル計測 | デシベル測定オンライン – ブラウザで音量を計測 | オンラインデシベル測定 | Preserve intent; deepen how-it-works + calibration support | calibration, accuracy, decibel-chart | 計測/測定 variants covered on one page, not split |
+| `/ja/guides/` | ja | デシベル測定ガイド | デシベル計 使い方, 測定ガイド | Navigate Japanese guidance | デシベル測定ガイド | デシベル測定ガイド | Japanese hub for all supporting intents | all Japanese guides + meter | Hub only; does not retarget the meter query |
+| `/ja/how-to-use/` | ja | オンラインデシベル計 使い方 | マイク許可, 測定手順, CSV保存 | Complete a measurement | オンラインデシベル計の使い方 | オンラインデシベル計の使い方 | Task steps in Japanese | meter, calibration, troubleshooting, accuracy | Task intent only |
+| `/ja/methodology/` | ja | ブラウザ 音量測定 仕組み | RMS, dBFS, Leq, Web Audio | Understand the pipeline | ブラウザ音量測定の仕組み | ブラウザ音量測定の仕組み | Implementation-accurate method | calibration, accuracy, privacy | Theory intent; avoids meter landing query |
+| `/ja/calibration/` | ja | デシベル計 校正 | 騒音計 校正, オフセット | Calibrate browser estimates | オンラインデシベル計の校正方法 | オンラインデシベル計の校正方法 | Reference comparison workflow | meter, accuracy | Only Japanese calibration intent |
+| `/ja/accuracy/` | ja | デシベル測定 精度 | スマホ 騒音計 精度, ブラウザ測定 限界 | Judge whether to trust a reading | ブラウザのデシベル測定精度と限界 | ブラウザのデシベル測定精度と限界 | Limits and certified-meter boundary | calibration, methodology, meter | Only Japanese accuracy intent |
+| `/ja/decibel-chart/` | ja | デシベル 比較表 | 音の大きさ dB 目安, 騒音レベル | Compare everyday levels | デシベル比較表 – 身近な音の大きさ | デシベル比較表 – 身近な音の大きさ | Approximate everyday table | meter, calibration, dB-vs-dBA, accuracy | Comparison intent only |
+| `/ja/db-vs-dba/` | ja | dB dBA 違い | A特性 C特性 Z特性, Fast Slow | Choose weighting/response | dBとdBAの違い – 周波数重み付けを解説 | dBとdBAの違い – 周波数重み付けを解説 | Weighting and response guide | chart, calibration, methodology | Weighting intent only |
+| `/ja/microphone-not-working/` | ja | ブラウザ マイク 使えない | マイク許可, 入力端末, HTTPS | Restore microphone capture | ブラウザでマイクが使えないときの対処法 | ブラウザでマイクが使えないときの対処法 | Error recovery checklist | meter, privacy | Troubleshooting only |
+| `/ja/privacy/` | ja | マイク プライバシー | 音声 ローカル処理, ブラウザ保存 | Verify data handling | マイク音声のプライバシー | マイク音声のプライバシー | Local processing and storage disclosure | methodology, meter | Privacy intent only |
 | `/es/` | es | medidor de decibelios online | medir decibelios, sonómetro online, medir ruido | Medir decibelios en el navegador | Medidor de Decibelios Online – Medir Ruido en el Navegador | Medidor de Decibelios Online | Localized tool page | calibration, accuracy, decibel-chart | Only Spanish meter page |
 | `/fr/` | fr | sonomètre en ligne | mesurer les décibels en ligne, mesurer le bruit | Mesurer les décibels en ligne | Sonomètre en Ligne – Mesurer les Décibels en Ligne | Sonomètre en Ligne | Localized tool page | calibration, accuracy, decibel-chart | Only French meter page |
 | `/pt/` | pt | medidor de decibéis online | medir decibéis, medir som | Medir decibéis no navegador | Medidor de Decibéis Online – Medir Som no Navegador | Medidor de Decibéis Online | Localized tool page (serves PT + BR) | calibration, accuracy, decibel-chart | Only Portuguese meter page |
@@ -28,8 +37,8 @@ never stuffed. No spelling-variant doorway pages.
 
 Notes:
 
-- `/tools/` from the old property has no equivalent here; its 1 click / 16 impressions map to `/` + `/guides/`.
-  No redirect work is in scope (no hosting/DNS tasks); the sitemap lists current canonical URLs only.
+- The independent `.bond` property's `/tools/` result (1 click / 16 impressions) is market-research evidence only.
+  It does not map or redirect to this new site. The `.com` sitemap lists `.com` canonical URLs only.
 - English queries `noise decibel monitor`, `db monitor`, `noise level meter` are covered as synonyms on `/`
   and `/methodology/` without dedicated pages.
 

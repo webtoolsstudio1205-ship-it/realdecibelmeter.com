@@ -22,7 +22,7 @@ client-side Web Audio measurement engine. No simulated data: idle reads `--` unt
   not-found page by Cloudflare Pages static hosting).
 - **i18n**: typed `Dict` in `src/i18n/dictionaries.ts` (8 locales); no mixed-language pages; no
   auto-redirect; switcher opens the equivalent path when known, else the locale homepage.
-- **Brand**: original meter-bar `public/logo.svg`, `favicon.svg`, `og-image.svg` (no Vercel marks).
+- **Brand**: original meter-bar `public/logo.svg` and `favicon.svg`, plus the production 1200×630 `public/og-image.png` (no Vercel marks).
 - **Theme**: dark default, `localStorage` persist, inline head script prevents flash, honours
   `prefers-reduced-motion`, tabular numerals, focus-visible rings both themes.
 
@@ -68,20 +68,18 @@ client-side Web Audio measurement engine. No simulated data: idle reads `--` unt
 - No addresses, registrations, emails, user counts, reviews, ratings, logos, lab tests,
   certifications, or accuracy percentages anywhere (verified by content grep; matches are
   disclaimers like “not certified” or code identifiers).
-- `/contact/` states no support email is published yet.
+- `/contact/` publishes the owner-provided address `hello@realdecibelmeter.com`.
 - Non-English FAQ answers reuse the English source text (dictionaries map `enFaq`) pending
   professional translation — surfaced as **blocker 2** below.
 
 ## Unresolved blockers
 1. **FAQ localization incomplete** — non-English locales show English FAQ Q&A (structure and all
    other strings translated). Needs translator pass.
-2. **Owner contact channel missing** — see `/contact/` + note below (private): configure a real
-   support email/form endpoint before advertising support. **Do not publish invented details.**
+2. **Resolved:** the owner-provided contact address is published on `/contact/`.
 
 ## Next prompt to execute
-Prompt 2 (per plan): professional FAQ translation pass, real-device microphone QA
-(permission flows on Chrome/Safari/Firefox + Android/iOS), ` OG PNG` render from
-`public/og-image.svg` if the platform needs raster, then Cloudflare Pages deploy config
+Prompt 2 (per plan): professional FAQ translation pass and real-device microphone QA
+(permission flows on Chrome/Safari/Firefox + Android/iOS), then Cloudflare Pages deploy config
 (`dist/` static, `404.html` as not-found). Re-run `npx tsc --noEmit` + `npm run build` after
 any change.
 
@@ -199,6 +197,7 @@ silently never worked. Full account: `docs/POST-PROMPT-2-FIXES.md`.
   sitemap, robots), localhost:4321 QA all-pass (200s, 404, banned-string scan).
 
 ## 2026-09-16 — dead-attribute removal, dict cleanup, 404+500 pages
+
 - Removed 10 never-consumed `data-s-*` attributes from `#measure`: they rendered
   `Digital energy average` / `Digital peak` into the public homepage HTML. Verified the only
   remaining `dBFS`/digital labels in `dist/index.html` sit inside Digital Diagnostics.
@@ -210,3 +209,33 @@ silently never worked. Full account: `docs/POST-PROMPT-2-FIXES.md`.
   Both build to `dist/404.html` / `dist/500.html`; sitemap filter now excludes `/404` and `/500`.
 - Results: `npm test` 91/91, `tsc --noEmit` pass, `astro build` 22 pages pass, localhost QA
   all-pass, error-page markup script all-pass, no dev-server errors.
+
+## Prompt 6 changes (2026-09-16, defensive security audit + hardening)
+
+- **Architecture verdict:** fully static Astro 7 site, no middleware/API/Actions/forms/
+  cookies/analytics/third-party scripts/service worker. Cloudflare Pages static hosting
+  → headers via `public/_headers` (correct mechanism for Pages, not Workers).
+  Classified static: SQLi/CSRF/auth/CORS findings not applicable (documented, tested).
+- **Headers:** new `public/_headers` — nosniff, strict-origin-when-cross-origin,
+  DENY + `frame-ancestors 'none'`, COOP same-origin-allow-popups,
+  Permissions-Policy (microphone=self only), enforced CSP derived from the real
+  inventory (self + scoped unsafe-inline + blob: for the AudioWorklet; no `*`,
+  no unsafe-eval, no data:, no external origins). COEP/CORP omitted (would break
+  blob: worklet); HSTS left to dashboard (subdomain readiness unknown).
+- **Hardening:** new `src/lib/security.ts` guards; CSV quote-after-prefix fix;
+  filename sanitization in `downloadBlob`; history size cap + entry validation;
+  calibration loader range checks; error-detail first-line cap; `innerHTML=''`
+  → `replaceChildren()`; `.gitignore` += `.env*.local`, `.dev.vars`, `.wrangler/`.
+- **Contact:** `public/.well-known/security.txt` template, marked INCOMPLETE —
+  owner must supply a real security email (none invented).
+- **Docs:** new `SECURITY-AUDIT.md`, `SECURITY-HARDENING.md`,
+  `CLOUDFLARE-SECURITY-CHECKLIST.md`, `INCIDENT-RESPONSE.md`.
+- **Tests:** new `src/lib/security.test.ts` (37 tests, spec §21 items 1–20);
+  `export-format.test.ts` expectations updated for stricter quoting.
+- **Verification:** `tsc --noEmit` pass; `npm test` 219/219 pass (17 files);
+  `npm run build` pass (22 pages, `dist/_headers` present);
+  `npm audit --omit=dev` 0 vulns (2 moderate dev-only via vitest chain, accepted);
+  tracked-files + 50-commit secret scan clean; `dist/` has zero `*.map` files.
+- **Still pending (owner):** all Cloudflare dashboard items (2FA, tokens, DNSSEC,
+  registrar lock, TLS/HSTS, WAF/rate limits), real security contact, redeploy so
+  `_headers`/`security.txt` go live. No auto-deploy performed.

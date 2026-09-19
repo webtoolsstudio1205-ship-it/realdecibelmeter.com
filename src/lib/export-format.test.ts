@@ -62,10 +62,12 @@ describe('exports', () => {
   });
 
   it('CSV cells starting with = + - @ are neutralized (no formula execution)', () => {
-    expect(csvCell('=CMD|test')).toBe("'=CMD|test");
-    expect(csvCell('+123abc')).toBe("'+123abc");
-    expect(csvCell('-x')).toBe("'-x");
-    expect(csvCell('@x')).toBe("'@x");
+    // Single-quote prefix neutralizes the formula; outer double quotes keep
+    // the CSV structure intact even when the payload contains quotes/commas.
+    expect(csvCell('=CMD|test')).toBe(`"'=CMD|test"`);
+    expect(csvCell('+123abc')).toBe(`"'+123abc"`);
+    expect(csvCell('-x')).toBe(`"'-x"`);
+    expect(csvCell('@x')).toBe(`"'@x"`);
     // Pure numbers (including negatives) survive untouched for round-trips.
     expect(csvCell('-25.5')).toBe('-25.5');
     expect(csvCell('48000')).toBe('48000');

@@ -1,0 +1,11 @@
+# SECURITY CONTACT — INCOMPLETE TEMPLATE (do not treat as published contact info).
+# The site owner has not yet supplied a dedicated security email or policy URL.
+# Replace the PLACEHOLDER values with real ones; until then this file only
+# signals that reports are welcome via the existing public contact page.
+# Canonical: https://realdecibelmeter.com/.well-known/security.txt
+Contact: https://realdecibelmeter.com/contact/
+# Contact: mailto:PLACEHOLDER-security@example.com
+Canonical: https://realdecibelmeter.com/.well-known/security.txt
+Preferred-Languages: en
+Expires: 2027-09-16T00:00:00.000Z
+# Policy: https://realdecibelmeter.com/PLACEHOLDER-security-policy/

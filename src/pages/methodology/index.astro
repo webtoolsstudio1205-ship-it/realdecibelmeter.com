@@ -2,13 +2,13 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
 const title = 'How Browser Sound Measurement Works';
 const description = 'Microphone access, local Web Audio processing, RMS and dBFS, weighting, response and Leq — from the real pipeline.';
 const url = `${SITE}/methodology/`;
 const jsonLd = [
-  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-16' }),
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-19' }),
   breadcrumbJsonLd([
     { name: 'Home', url: `${SITE}/` },
     { name: 'Methodology', url },
@@ -16,20 +16,22 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/methodology/" jsonLd={jsonLd}>
-  <Article title={title} intro="Every displayed number comes from one typed engine — no component computes levels on its own." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'How it works', href: '/methodology/' }]}>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/methodology/" hreflang={guideHreflang('methodology')} jsonLd={jsonLd}>
+  <Article title={title} intro="Every displayed number comes from one typed engine — no component computes levels on its own." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'How it works', href: '/methodology/' }]}>
     <h2 class="text-white font-semibold">Browser microphone access</h2>
     <p class="mt-2">Pressing Start calls <a class="underline underline-offset-4" href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">getUserMedia</a> with explicit <a class="underline underline-offset-4" href="https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints">media constraints</a> requesting echo cancellation, noise suppression and automatic gain control off, plus mono input. The browser may refuse any of these; when processing stays enabled the meter says so instead of hiding it. Input is never connected to speakers. Capture runs over HTTPS in a secure context, per the <a class="underline underline-offset-4" href="https://www.w3.org/TR/webaudio/">W3C Web Audio API</a>.</p>
     <h2 class="text-white font-semibold mt-6">Local audio processing</h2>
     <p class="mt-2">Samples flow from the microphone stream into an AudioContext worklet that accumulates contiguous PCM blocks (sums of squares, peak, clipping flags). A display-only spectrum tap feeds the analyzer bars; measurement never uses FFT bars. Nothing is uploaded — the pipeline, session stats and history all live on your device (see <a class="underline underline-offset-4" href="/privacy/">microphone privacy</a>).</p>
-    <h2 class="text-white font-semibold mt-6">RMS, dBFS and input-strength mode</h2>
-    <p class="mt-2">Each block is reduced to an RMS value and converted to digital decibels relative to full scale (dBFS). dBFS is negative by definition: 0 is the loudest representable signal, silence sits near −100. Because negative numbers confuse casual checks, the uncalibrated panel maps −100…0 dBFS to a 0…100% input-strength display. Percentages are visual only and never exported as sound levels.</p>
+    <h2 class="text-white font-semibold mt-6">RMS, dBFS and the immediate estimate</h2>
+    <p class="mt-2">Each block is reduced to an RMS value and converted to digital decibels relative to full scale (dBFS). dBFS is negative by definition: 0 is the loudest representable signal and silence sits near −100. Before calibration, the public meter adds a nominal +100 dB offset to the weighted digital level, so −34.1 dBFS appears as an explicitly uncalibrated 65.9 dBA estimate. Raw dBFS remains available in Digital Diagnostics.</p>
     <h2 class="text-white font-semibold mt-6">Calibrated mode</h2>
-    <p class="mt-2">With a compatible saved profile, the engine adds your offset to the raw reading (estimated SPL = raw + offset) and displays it in the selected dBA, dBC or dBZ unit, clamped to a 20–120 dB display range. Without a compatible profile there is no numeric dB — the gauge shows “--” plus input strength. Follow the <a class="underline underline-offset-4" href="/calibration/">calibration guide</a>.</p>
+    <p class="mt-2">With a compatible saved profile, the engine replaces the nominal offset with your reference-derived offset (estimated SPL = raw + offset) and displays it in the selected dBA, dBC or dBZ unit on a 20–120 dB visual scale. Follow the <a class="underline underline-offset-4" href="/calibration/">calibration guide</a>.</p>
     <h2 class="text-white font-semibold mt-6">Weighting and response</h2>
     <p class="mt-2">A, C and Z corrections approximate standard frequency weightings from the dominant band; Fast (125 ms) and Slow (1 s) apply exponential time weighting. Neither changes the underlying estimate — only how quickly the display follows it. Details: <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a>.</p>
     <h2 class="text-white font-semibold mt-6">Session statistics</h2>
     <p class="mt-2">Each run accumulates current, minimum, energy-average Leq and maximum plus duration; the graph keeps the last 240 points. Environmental estimates export to CSV/JSON only when compatible calibration is active; uncalibrated sessions export no dB values.</p>
+    <h2 class="text-white font-semibold mt-6">Sources and technical references</h2>
+    <p class="mt-2">Browser capture behavior follows <a class="underline underline-offset-4" href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">MDN getUserMedia()</a> and the <a class="underline underline-offset-4" href="https://www.w3.org/TR/webaudio/">W3C Web Audio API</a>. See <a class="underline underline-offset-4" href="https://www.cdc.gov/niosh/noise/about/app.html">CDC/NIOSH app guidance</a> for why phone-based readings need careful validation.</p>
     <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/accuracy/">Accuracy →</a></p>
   </Article>
 </Layout>

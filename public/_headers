@@ -1,0 +1,29 @@
+# Cloudflare Pages headers.
+# This project is a fully static Astro site (output: 'static', no SSR, no API
+# routes, no middleware) deployed to Cloudflare Pages static hosting, so
+# public/_headers is the correct mechanism. Do NOT assume these apply to a
+# Workers deployment — Workers need headers set in the Worker response path.
+#
+# CSP derivation (docs/SECURITY-AUDIT.md):
+# - JS: one same-origin bundled module, small static inline head scripts, and
+#   the Google Analytics loader from www.googletagmanager.com.
+#   (theme anti-flash must run before first paint; static hosting cannot mint
+#   per-response nonces, so 'unsafe-inline' is scoped and documented).
+#   blob: is required ONLY for the AudioWorklet module loaded from a Blob URL
+#   (src/lib/microphone.ts -> ctx.audioWorklet.addModule).
+# - CSS: same-origin stylesheet + inline style attributes used throughout.
+# - Google Analytics may send collection requests and image beacons only to
+#   the documented Google tag and Analytics endpoints.
+# - No other external fetches, fonts, images, Turnstile, or manifests.
+# - No data: or * sources: none are required by any feature.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  Permissions-Policy: microphone=(self), camera=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), accelerometer=(), gyroscope=(), magnetometer=()
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' blob: https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://www.googletagmanager.com https://*.google-analytics.com; font-src 'self'; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; media-src 'self' blob:; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests
+
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

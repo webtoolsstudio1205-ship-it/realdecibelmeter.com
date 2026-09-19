@@ -1,0 +1,22 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+const dict = getDict('en');
+const title = 'dBFS vs dB SPL: Why Browser Readings Differ';
+const description = 'Learn what dBFS and dB SPL mean, why 0 dBFS is not silence, and why browser microphone readings need calibration for sound-level estimates.';
+const url = `${SITE}/dbfs-vs-db-spl/`;
+const jsonLd = [articleJsonLd({ headline:title, description, url, inLanguage:'en', dateModified:'2026-09-19' }), breadcrumbJsonLd([{name:'Home',url:`${SITE}/`},{name:'dBFS vs dB SPL',url}])];
+const rows = [['Reference','Digital full scale','20 µPa sound pressure'],['Typical sign','Usually negative','Usually positive in everyday examples'],['Zero means','Maximum representable digital level','The acoustic reference level'],['Depends on','ADC gain and signal path','Physical pressure and calibrated instrument'],['Browser can measure directly','Yes','No—not universally']];
+---
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/dbfs-vs-db-spl/" jsonLd={jsonLd} ogType="article">
+  <Article title={title} intro="dBFS describes a digital signal. dB SPL describes physical sound pressure. They share a logarithmic unit but do not share the same zero point." reviewed="2026-09-19" breadcrumb={[{name:'Home',href:'/'},{name:'dBFS vs dB SPL',href:'/dbfs-vs-db-spl/'}]}>
+    <table><caption class="sr-only">Comparison of dBFS and dB SPL</caption><thead><tr><th>Property</th><th>dBFS</th><th>dB SPL</th></tr></thead><tbody>{rows.map((row)=><tr>{row.map((cell)=><td>{cell}</td>)}</tr>)}</tbody></table>
+    <h2>What dBFS means</h2><p>Decibels relative to full scale measure a digital waveform against the largest value its signal path can represent. 0 dBFS is the ceiling; ordinary microphone samples sit below it, so their values are negative. Silence is not 0 dBFS. In practice it approaches the system’s noise floor.</p>
+    <h2>What sound pressure level means</h2><p>dB SPL compares physical sound pressure with the standard reference pressure of 20 micropascals. A calibrated sound level meter knows how its microphone voltage corresponds to that pressure.</p>
+    <h2>Why there is no universal conversion</h2><p>The browser receives samples after the microphone capsule, preamplifier, analog-to-digital converter and possible automatic processing. Manufacturers use different sensitivity and gain, and browsers may not expose those values. The same acoustic sound can therefore produce different dBFS readings on two phones.</p>
+    <h2>What calibration can do</h2><p>A comparison against a trustworthy reference can establish a device-specific offset for the same microphone and settings. That creates an environmental estimate, not a certified measurement, and does not correct frequency response or changing gain. Follow the <a href="/calibration/">calibration guide</a> and read the <a href="/accuracy/">accuracy limits</a>.</p>
+    <p><a href="/microphone-noise-floor-test/">Measure raw dBFS noise floor →</a> · <a href="/background-noise-test/">Test background noise →</a> · <a href="/#measure">Open the meter →</a></p>
+  </Article>
+</Layout>

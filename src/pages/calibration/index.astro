@@ -2,13 +2,13 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
 const title = 'How to Calibrate a Browser Decibel Meter';
 const description = 'Add a reference offset to browser sound-level estimates: placement, stable references, weighting, profiles and common mistakes.';
 const url = `${SITE}/calibration/`;
 const jsonLd = [
-  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-16' }),
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-19' }),
   breadcrumbJsonLd([
     { name: 'Home', url: `${SITE}/` },
     { name: 'Calibration', url },
@@ -16,8 +16,8 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/calibration/" jsonLd={jsonLd}>
-  <Article title={title} intro="Calibration here means one thing: adding a fixed dB offset measured against a reference you trust." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Calibration', href: '/calibration/' }]}>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/calibration/" hreflang={guideHreflang('calibration')} jsonLd={jsonLd}>
+  <Article title={title} intro="Calibration here means one thing: adding a fixed dB offset measured against a reference you trust." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Calibration', href: '/calibration/' }]}>
     <h2 class="text-white font-semibold">Why calibration matters</h2>
     <p class="mt-2">Every consumer microphone has different gain, so the same sound produces different raw readings on different devices. Until you measure that difference against a known reference, the meter can only show microphone input strength — never an environmental sound level in dBA.</p>
     <h2 class="text-white font-semibold mt-6">What you need</h2>
@@ -50,6 +50,8 @@ const jsonLd = [
       <li>Assuming one phone's offset transfers to another device.</li>
       <li>Treating a calibrated browser as a certified meter — it remains an estimate (see <a class="underline underline-offset-4" href="/accuracy/">browser measurement accuracy</a>).</li>
     </ul>
+    <h2 class="text-white font-semibold mt-6">Sources and technical references</h2>
+    <p class="mt-2">For context on validating phone measurements against reference instruments, see the <a class="underline underline-offset-4" href="https://www.cdc.gov/niosh/noise/about/app.html">CDC/NIOSH Sound Level Meter app guidance</a>. Browser input constraints are documented by <a class="underline underline-offset-4" href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia">MDN</a>.</p>
     <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the meter →</a> · <a class="underline underline-offset-4" href="/methodology/">How the meter works →</a> · <a class="underline underline-offset-4" href="/decibel-chart/">Decibel chart →</a></p>
   </Article>
 </Layout>

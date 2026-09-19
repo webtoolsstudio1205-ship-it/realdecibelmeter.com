@@ -2,7 +2,7 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
 const title = 'Sound-Measurement Guide Hub';
 const description = 'Learn to measure, calibrate and interpret browser sound levels: how the meter works, accuracy, calibration, decibel chart and privacy.';
@@ -17,10 +17,13 @@ const items = [
   { href: '/db-vs-dba/', t: 'dB vs dBA: weighting explained', d: 'A, C and Z weighting plus Fast and Slow response.' },
   { href: '/microphone-not-working/', t: 'Microphone troubleshooting', d: 'Denied, missing, busy or disconnected inputs.' },
   { href: '/privacy/', t: 'Microphone and audio-processing privacy', d: 'Local processing, permissions, storage and hosting.' },
+  { href: '/microphone-noise-floor-test/', t: 'Microphone noise floor test', d: 'A 30-second raw dBFS diagnostic with no simulated readings.' },
+  { href: '/background-noise-test/', t: 'Background noise test', d: 'A focused room-noise workflow that respects calibration state.' },
+  { href: '/dbfs-vs-db-spl/', t: 'dBFS vs dB SPL', d: 'Why digital level and physical sound pressure have different reference points.' },
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/guides/" jsonLd={jsonLd}>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/guides/" hreflang={guideHreflang('guides')} jsonLd={jsonLd}>
   <Article title={title} intro="One hub for every sound-measurement guide: start with the working meter, then go deeper where you need it." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }]}>
     <div class="grid gap-3 sm:grid-cols-2">
       {items.map((g) => (

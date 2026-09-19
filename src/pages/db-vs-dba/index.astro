@@ -2,7 +2,7 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
 const title = 'dB vs dBA: Weighting Explained';
 const description = 'What dB, dBA, dBC and dBZ mean, how A/C/Z weighting works, and which setting to pick on the online decibel meter.';
@@ -16,7 +16,7 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/db-vs-dba/" jsonLd={jsonLd}>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/db-vs-dba/" hreflang={guideHreflang('db-vs-dba')} jsonLd={jsonLd}>
   <Article title={title} intro="dB is the unit; the trailing letter says which frequency weighting was applied." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'dB vs dBA', href: '/db-vs-dba/' }]}>
     <ul class="space-y-3 mt-2">
       <li><strong class="text-white">dBZ (Z-weighted).</strong> Flat: all frequencies count equally. Best for comparing spectra and for calibration math.</li>

@@ -204,12 +204,18 @@ function readStore(storage: Pick<Storage, 'getItem'> | undefined): ProfileStore 
 function isValidProfile(p: unknown): p is CalibrationProfileFull {
   if (typeof p !== 'object' || p == null) return false;
   const o = p as Record<string, unknown>;
-  return (
-    typeof o.id === 'string' && typeof o.offsetDb === 'number' && Number.isFinite(o.offsetDb) &&
-    typeof o.referenceReadingDb === 'number' && typeof o.measuredDigitalLeqDb === 'number' &&
-    typeof o.config === 'object' && o.config !== null &&
-    typeof (o.config as Record<string, unknown>).sampleRate === 'number'
-  );
+  // LocalStorage is user-controlled: re-validate the offset range, label
+  // length and reference bounds so a hand-edited store cannot smuggle a
+  // fantasy offset into the measurement path.
+  if (typeof o.id !== 'string' || o.id.length === 0 || o.id.length > 64) return false;
+  if (typeof o.label !== 'string' || o.label.length > 80) return false;
+  if (typeof o.offsetDb !== 'number' || !Number.isFinite(o.offsetDb)) return false;
+  if (Math.abs(o.offsetDb) > 120) return false;
+  if (typeof o.referenceReadingDb !== 'number' || o.referenceReadingDb < -20 || o.referenceReadingDb > 160) return false;
+  if (typeof o.measuredDigitalLeqDb !== 'number' || !Number.isFinite(o.measuredDigitalLeqDb)) return false;
+  if (typeof o.config !== 'object' || o.config == null) return false;
+  if (typeof (o.config as Record<string, unknown>).sampleRate !== 'number') return false;
+  return true;
 }
 
 export function loadProfiles(storage: Pick<Storage, 'getItem'> | undefined = ambientStorage()): CalibrationProfileFull[] {

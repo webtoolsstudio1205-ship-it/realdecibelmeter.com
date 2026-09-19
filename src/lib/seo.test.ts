@@ -66,9 +66,9 @@ describe('seo foundations', () => {
     expect(dicts.de.heroH1).toContain('Dezibelmesser');
     expect(dicts.it.heroH1).toContain('Fonometro');
     expect(dicts.ja.heroH1).not.toBe('Online Decibel Meter');
-    expect(dicts.es.heroH1).toContain('Decibelios');
+    expect(dicts.es.heroH1.toLocaleLowerCase('es')).toContain('decibelios');
     expect(dicts.fr.heroH1).toContain('Sonomètre');
-    expect(dicts.pt.heroH1).toContain('Decibéis');
+    expect(dicts.pt.heroH1.toLocaleLowerCase('pt')).toContain('decibéis');
     expect(dicts.ko.heroH1).not.toBe('Online Decibel Meter');
   });
 
@@ -235,9 +235,38 @@ describe('seo foundations', () => {
 
   it('footer exposes crawlable language links and key guides', () => {
     const layout = read('src/components/Layout.astro');
+    const seo = read('src/lib/seo.ts');
     expect(layout).toContain('hreflang={l.code}');
-    expect(layout).toContain('href="/accuracy/"');
-    expect(layout).toContain('href="/calibration/"');
-    expect(layout).toContain('href="/methodology/"');
+    expect(layout).toContain("accuracy: guidePath('accuracy'");
+    expect(layout).toContain("calibration: guidePath('calibration'");
+    expect(layout).toContain("methodology: guidePath('methodology'");
+    expect(seo).toContain("accuracy: { en: '/accuracy/'");
+    expect(seo).toContain("calibration: { en: '/calibration/'");
+    expect(seo).toContain("methodology: { en: '/methodology/'");
+  });
+
+  it('Japanese users get a localized, internally linked guide cluster', () => {
+    const localizedHome = read('src/pages/[locale]/index.astro');
+    const guides = read('src/pages/ja/[slug].astro');
+    const layout = read('src/components/Layout.astro');
+    for (const slug of [
+      'guides',
+      'how-to-use',
+      'methodology',
+      'calibration',
+      'accuracy',
+      'decibel-chart',
+      'db-vs-dba',
+      'microphone-not-working',
+      'privacy',
+    ]) {
+      expect(guides).toContain(`'${slug}'`);
+    }
+    expect(localizedHome).toContain("href: '/ja/calibration/'");
+    expect(localizedHome).toContain("href: '/ja/accuracy/'");
+    expect(localizedHome).toContain("href: '/ja/decibel-chart/'");
+    expect(layout).toContain("const guidesHref = guidePath('guides')");
+    expect(guides).toContain('inLanguage: \'ja\'');
+    expect(guides).not.toMatch(/decibelmeter\.bond|localhost:\d/);
   });
 });

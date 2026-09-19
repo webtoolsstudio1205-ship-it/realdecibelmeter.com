@@ -2,7 +2,7 @@
 import Layout from '../../components/Layout.astro';
 import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
 const title = 'Microphone Not Working? Fix It';
 const description = 'Fix denied permissions, missing devices, busy or disconnected microphones in the browser decibel meter.';
@@ -17,7 +17,7 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/microphone-not-working/" jsonLd={jsonLd}>
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/microphone-not-working/" hreflang={guideHreflang('microphone-not-working')} jsonLd={jsonLd}>
   <Article title={title} intro="Each failure on this site has its own message. Match yours below and follow the recovery." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Microphone help', href: '/microphone-not-working/' }]}>
     <ul class="space-y-4 mt-2">
       <li><strong class="text-white">Permission denied.</strong> Open the lock/tune icon in the address bar → allow the microphone → press Start again. Also check the OS privacy switch for microphone access.</li>

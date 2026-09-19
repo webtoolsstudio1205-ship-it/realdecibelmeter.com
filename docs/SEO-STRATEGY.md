@@ -1,8 +1,12 @@
 # SEO Strategy — Real Decibel Meter
 
-Last materially reviewed: 2026-09-16.
+Last materially reviewed: 2026-09-18.
 
-## 1. Data baseline (decibelmeter.bond Search Console, 18 Aug – 12 Sep 2026)
+## 1. Market benchmark (independent decibelmeter.bond Search Console data, 18 Aug – 12 Sep 2026)
+
+`realdecibelmeter.com` is a new site, not a migration from `decibelmeter.bond`. The figures below are used only
+to identify likely countries, devices and search intents. They are not a baseline for `.com`, and no redirects or
+Search Console Change of Address should connect the two properties.
 
 - 21 clicks, 1,361 impressions, ~1.54% overall CTR.
 - Strongest pages: `/de/` (8 clicks, 530 impressions, pos. 19.44), `/` (8 clicks, 199 impressions, pos. 53.03),
@@ -15,6 +19,25 @@ Last materially reviewed: 2026-09-16.
   France (0/61), Japan (3/36), Austria (0/40), Brazil (0/19), South Korea (0/11).
 - Competitor keyword estimates supplied for prioritization only (treated as unverified, never published).
 
+### Newer country snapshot supplied 17 Sep 2026
+
+The supplied three-month Search Console screenshot shows: Germany 5 clicks / 329 impressions, Japan 5 / 54,
+Italy 2 / 289, Switzerland 2 / 62, Denmark 1 / 1, Spain 0 / 130, United States 0 / 94, France 0 / 64,
+and Austria 0 / 40. The screenshot contains rows 1–10 of 71 and does not show totals, so no new global CTR or
+position was inferred from it. This reinforces the existing priority order: German and Italian opportunity,
+Japanese traction, then US relevance and CTR work.
+
+### Competitor snapshot supplied 17 Sep 2026
+
+Third-party estimates in the supplied screenshots are directional, not verified Search Console data:
+
+- `realtimesoundmeter.org`: US keyword estimates place “decibel meter” and “noise level meter” at position 2,
+  “sound level meter” at position 1, and its homepage at about 90% of reported US organic traffic.
+- `sounddecibelmeter.com`: Japan is the largest reported country (22%); `/ja/` is shown as about 97% of its
+  reported Japanese traffic, with デシベル計測 / デシベル 計測 / デシベル測定 / 音量測定 around positions 1–2.
+
+These numbers are used to choose intent and market coverage only. They are not copied into public page claims.
+
 ## 2. Target markets
 
 Primary: United States + international English. Opportunity markets in priority order: Germany, Italy, Japan,
@@ -26,7 +49,8 @@ Spain, France, Switzerland/Austria (via `/de/`), Portugal/Brazil (via `/pt/`), S
 2. Sitemap, robots, hreflang, language signals (done).
 3. `/it/` — near page one (pos. 12.72), 271 impressions, 0.37% CTR: title/description/intro rewritten, intent kept.
 4. `/de/` — largest impression base (530): title/H1/description rewritten, ohne-App + kostenlos addressed naturally.
-5. `/ja/` — preserve intent match (CTR 7.14%), deepen supporting content + internal links.
+5. `/ja/` — preserve intent match and connect it to a nine-page Japanese guide cluster covering use,
+   methodology, calibration, accuracy, dB/dBA, a level chart, troubleshooting and privacy (implemented 2026-09-18).
 6. English homepage + US coverage: topical depth (weighting, calibration, accuracy, privacy), internal links, crawlability.
 7. `/es/`, `/fr/` relevance; 8. `/pt/`, `/ko/` pages.
 8. Methodology / calibration / accuracy / decibel-chart cluster + `/guides/` hub.
@@ -50,8 +74,8 @@ Spain, France, Switzerland/Austria (via `/de/`), Portugal/Brazil (via `/pt/`), S
 - Single origin `https://realdecibelmeter.com`; `site` set in `astro.config.mjs`; `trailingSlash: 'always'`.
 - Absolute self-referencing canonicals from one Layout component; no localhost/preview/decibelmeter.bond URLs.
 - Reciprocal 9-tag hreflang cluster (en/de/it/ja/es/fr/pt/ko + x-default → `/`) on all 8 homepages;
-  guide pages (English-only) carry a self hreflang tag only.
-- `robots.txt` allows all + points at `sitemap-index.xml`; `@astrojs/sitemap` emits 20 canonical URLs
+  guide pages carry a self hreflang tag only because there is not yet a complete reciprocal translated set.
+- `robots.txt` allows all + points at `sitemap-index.xml`; `@astrojs/sitemap` emits 29 canonical URLs
   (404 excluded by filter).
 - 404 page is `noindex, follow` with no self-canonical and links to meter/guides.
 - JSON-LD only where it matches visible content: WebSite + WebApplication (homepage cluster),
@@ -80,7 +104,8 @@ Spain, France, Switzerland/Austria (via `/de/`), Portugal/Brazil (via `/pt/`), S
 - Competitor volumes/positions are third-party estimates, not facts; no traffic or ranking is guaranteed.
 - Browser readings can never be certified; content says so everywhere, which caps conversion of
   compliance-seeking queries by design.
-- Guide pages exist in English only; hreflang covers homepages until professional guide translation exists.
+- German, Italian, Spanish, French, Portuguese and Korean guides remain English-only. Japanese now has a
+  complete first-party guide cluster; the other locales should only receive guides after native-language review.
 - Interactive meter chrome (calibration modal, diagnostics, error recovery) remains English-first at runtime;
   landing content, metadata, H1s and FAQs are fully localized.
 
@@ -93,3 +118,13 @@ Spain, France, Switzerland/Austria (via `/de/`), Portugal/Brazil (via `/pt/`), S
 ## 2026-09-16 pass (this session)
 - Error pages (404/500) are noindex with non-self canonicals and are excluded from the sitemap;
   `seo.test.ts` now 18/18. No deployment/hosting/DNS work done.
+
+## 2026-09-18 Japanese expansion
+
+- Added `/ja/guides/` plus eight Japanese supporting guides; Japanese navigation and homepage cards now link to
+  localized destinations rather than English pages.
+- Every new URL has a unique Japanese title, description, H1, self-canonical, breadcrumb schema and (where
+  applicable) Article schema. The sitemap now contains 29 indexable URLs.
+- Added `theme-color` and Twitter image metadata to the shared layout.
+- Rankings are not guaranteed. The domain keyword and `.com` TLD are not treated as substitutes for usefulness,
+  links, crawl/indexing health or demonstrated user satisfaction.
