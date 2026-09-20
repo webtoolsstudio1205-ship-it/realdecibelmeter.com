@@ -193,14 +193,14 @@ const ranges = [
     </div>
     <div role="rowgroup">
       {copy.bands.map((band, index) => (
-        <article class="sound-row" role="row" data-sound-band data-min={ranges[index].min} data-max={ranges[index].max} style={`--band:${ranges[index].color}`}>
+        <div class="sound-row" role="row" data-sound-band data-min={ranges[index].min} data-max={ranges[index].max} style={`--band:${ranges[index].color}`}>
           <div class="sound-level" role="cell">
             <span class="sound-dot" aria-hidden="true"></span>
             <h3>{band.level}</h3>
           </div>
           <p role="cell"><span class="md:hidden eyebrow">{copy.time}</span>{band.time}</p>
           <p role="cell" style="color:var(--muted)"><span class="md:hidden eyebrow">{copy.meaning}</span>{band.meaning}</p>
-        </article>
+        </div>
       ))}
     </div>
   </div>

@@ -34,6 +34,9 @@ import { SessionAccumulator } from './session.js';
 const panelSource = () =>
   readFileSync(fileURLToPath(new URL('../components/MeterPanel.astro', import.meta.url)), 'utf8');
 
+const soundGuideSource = () =>
+  readFileSync(fileURLToPath(new URL('../components/SoundLevelGuide.astro', import.meta.url)), 'utf8');
+
 function snapshot(overrides: Partial<EngineSnapshot> = {}): EngineSnapshot {
   return {
     state: 'running', error: 'none', errorDetail: '', weighting: 'A', response: 'fast',
@@ -295,5 +298,11 @@ describe('spec fixtures', () => {
     expect(src).toContain("window.addEventListener('pagehide', cleanup");
     const css = readFileSync(fileURLToPath(new URL('../styles/global.css', import.meta.url)), 'utf8');
     expect(css).toContain('@media (prefers-reduced-motion: reduce)');
+  });
+
+  it('23. sound guide table rows use an element that permits the ARIA row role', () => {
+    const src = soundGuideSource();
+    expect(src).toContain('<div class="sound-row" role="row"');
+    expect(src).not.toMatch(/<article[^>]+role="row"/);
   });
 });
