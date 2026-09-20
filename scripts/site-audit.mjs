@@ -3,6 +3,13 @@ import { join, relative, sep } from 'node:path';
 
 const ROOT = new URL('../dist/', import.meta.url);
 const SITE = 'https://realdecibelmeter.com';
+const HOMEPAGE_LOCALES = {
+  en: '/', de: '/de/', it: '/it/', ja: '/ja/', es: '/es/', fr: '/fr/', pt: '/pt/', ko: '/ko/',
+};
+const OG_LOCALES = {
+  en: 'en_US', de: 'de_DE', it: 'it_IT', ja: 'ja_JP', es: 'es_ES', fr: 'fr_FR', pt: 'pt_BR', ko: 'ko_KR',
+};
+const SOCIAL_IMAGE = `${SITE}/og-image.png`;
 const expected = [
   '/', '/about/', '/accuracy/', '/background-noise-test/', '/calibration/', '/contact/', '/db-vs-dba/', '/dbfs-vs-db-spl/',
   '/de/', '/de/anleitungen/', '/de/kalibrierung/', '/de/genauigkeit/', '/de/dezibel-tabelle/', '/de/db-vs-dba/', '/de/mikrofon-funktioniert-nicht/',
@@ -57,6 +64,14 @@ for (const [route, html] of pages) {
   if (lang !== expectedLang) fail(`${route}: html lang ${lang || 'missing'} should be ${expectedLang}`);
   if (!/^index,\s*follow$/i.test(robots)) fail(`${route}: indexable page robots is ${robots || 'missing'}`);
   if (h1Count !== 1) fail(`${route}: expected one H1, found ${h1Count}`);
+  if (meta(html, 'og:title') !== title) fail(`${route}: og:title does not match the page title`);
+  if (meta(html, 'og:description') !== description) fail(`${route}: og:description does not match the meta description`);
+  if (meta(html, 'og:url') !== canonical) fail(`${route}: og:url does not match the canonical URL`);
+  if (meta(html, 'og:image') !== SOCIAL_IMAGE) fail(`${route}: missing or incorrect og:image`);
+  if (meta(html, 'twitter:card') !== 'summary_large_image') fail(`${route}: twitter:card must be summary_large_image`);
+  if (meta(html, 'twitter:title') !== title) fail(`${route}: twitter:title does not match the page title`);
+  if (meta(html, 'twitter:description') !== description) fail(`${route}: twitter:description does not match the meta description`);
+  if (meta(html, 'twitter:image') !== SOCIAL_IMAGE) fail(`${route}: missing or incorrect twitter:image`);
   for (const script of html.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
     try { JSON.parse(script[1]); } catch (error) { fail(`${route}: invalid JSON-LD (${error.message})`); }
   }
@@ -75,6 +90,26 @@ for (const [route, html] of pages) {
     const normalized = pathname === '/' ? '/' : `${pathname.replace(/\/+$/, '')}/`;
     if (!pages.has(normalized) && !['/404/', '/500/'].includes(normalized)) fail(`${route}: broken internal link ${raw}`);
   }
+}
+
+const expectedHomepageAlternates = {
+  ...Object.fromEntries(Object.entries(HOMEPAGE_LOCALES).map(([language, path]) => [language, `${SITE}${path}`])),
+  'x-default': `${SITE}/`,
+};
+for (const [locale, route] of Object.entries(HOMEPAGE_LOCALES)) {
+  const html = pages.get(route);
+  const alternates = linkValues(html, 'alternate');
+  const byLanguage = new Map();
+  for (const alternate of alternates) {
+    if (!alternate.hreflang) continue;
+    if (byLanguage.has(alternate.hreflang)) fail(`${route}: duplicate hreflang ${alternate.hreflang}`);
+    byLanguage.set(alternate.hreflang, alternate.href);
+  }
+  for (const [language, href] of Object.entries(expectedHomepageAlternates)) {
+    if (byLanguage.get(language) !== href) fail(`${route}: hreflang ${language} should point to ${href}`);
+  }
+  if (byLanguage.size !== Object.keys(expectedHomepageAlternates).length) fail(`${route}: homepage hreflang cluster contains unexpected entries`);
+  if (meta(html, 'og:locale') !== OG_LOCALES[locale]) fail(`${route}: og:locale is incorrect for ${locale}`);
 }
 
 for (const [route, html] of pages) {
