@@ -1,0 +1,41 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'What Is a Sound Level Meter?';
+const description = 'Sound level meter, noise meter and dB meter explained: hardware classes, what browser meters can do, and when certified gear is required.';
+const url = `${SITE}/sound-level-meter/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Sound level meter', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/sound-level-meter/" jsonLd={jsonLd}>
+  <Article title={title} intro="Sound level meter, noise meter and dB meter name the same job: reporting sound intensity in decibels. The difference is what does the measuring." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Sound level meter', href: '/sound-level-meter/' }]}>
+    <h2 class="text-white font-semibold">One job, three common names</h2>
+    <p class="mt-2">A decibel meter reports how intense the sound in the air is, in decibels. Engineers tend to say sound level meter, the public often says noise meter or dB meter, and an online sound meter is the same function running in a browser. For everyday checks the terms are interchangeable: place the microphone where you want to measure, allow access, and read the live dB value. The scale behind the number is covered in the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a>, and the weightings in <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">Hardware meters and their classes</h2>
+    <p class="mt-2">Dedicated hardware meters are built around calibrated capsules with documented frequency response, and certified models meet tight tolerances as Class 1 or Class 2 instruments with periodic laboratory calibration. They log defensible Leq values for assessments, pair with acoustic calibrators that emit a known tone, and produce reports a regulator or court accepts. That chain of traceability is the entire point of the hardware — and the part no consumer microphone can reproduce.</p>
+
+    <h2 class="text-white font-semibold mt-6">What a browser meter does instead</h2>
+    <p class="mt-2">A browser meter reuses the microphone you already own: the page captures audio through the Web Audio API, reduces each block to RMS, converts to a level in dB, applies the selected A, C or Z weighting with Fast or Slow response, and accumulates Leq — all locally on your device. Before calibration it shows a clearly labelled nominal estimate from a default offset; a saved profile replaces that default with your reference-derived offset. The exact pipeline is documented in <a class="underline underline-offset-4" href="/methodology/">how measurement works</a>, and its boundaries in <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">When each one fits</h2>
+    <ul class="list-disc pl-5 mt-2">
+      <li>Browser meter: room checks, speaker tests, before-and-after comparisons, classroom curiosity, finding the loudest appliance — see <a class="underline underline-offset-4" href="/how-to-use/">how to use</a> and <a class="underline underline-offset-4" href="/phone-decibel-meter/">phone measurement</a>.</li>
+      <li>Certified hardware: workplace compliance, legal evidence, planning applications, hearing-safety certification — with the repeatability discipline in the <a class="underline underline-offset-4" href="/validation/">validation protocol</a>.</li>
+      <li>Either way, exposure thinking needs duration plus Leq, not a single peak — see <a class="underline underline-offset-4" href="/noise-exposure/">noise exposure</a>.</li>
+    </ul>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/frequency-analyzer/">Frequency analyzer →</a> · <a class="underline underline-offset-4" href="/faq/">Common questions →</a></p>
+  </Article>
+</Layout>

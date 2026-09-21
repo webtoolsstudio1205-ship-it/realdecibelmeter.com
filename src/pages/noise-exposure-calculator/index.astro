@@ -1,0 +1,166 @@
+---
+import Layout from '../../components/Layout.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Noise Exposure Calculator';
+const description = 'Estimate daily noise dose from any average level and duration with the NIOSH 3 dB rule. Free, instant, no microphone needed.';
+const url = `${SITE}/noise-exposure-calculator/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Exposure calculator', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/noise-exposure-calculator/" jsonLd={jsonLd}>
+  <div class="container-x py-10" style="max-width:1040px">
+    <header class="mb-6">
+      <p class="eyebrow">Working screening tool</p>
+      <h1 class="hero-title mt-2">Noise Exposure Calculator</h1>
+      <p class="hero-sub">Enter an average level and a duration to estimate the daily noise dose. Uses the same tested NIOSH 3 dB math as the live meter — screening only, never compliance.</p>
+    </header>
+
+    <section class="panel p-6" aria-labelledby="ec-heading">
+      <h2 id="ec-heading" class="text-xl font-semibold tracking-tight">Calculator</h2>
+      <div class="mt-4 grid gap-4 md:grid-cols-3">
+        <div>
+          <label for="ec-level" class="text-sm font-medium">Average level (dBA)</label>
+          <input id="ec-level" type="number" min="40" max="130" step="1" value="85" class="w-full panel-raised p-2 mt-1 tabular" style="border-radius:8px;min-height:44px" />
+        </div>
+        <div>
+          <label for="ec-hours" class="text-sm font-medium">Hours</label>
+          <input id="ec-hours" type="number" min="0" max="24" step="1" value="8" class="w-full panel-raised p-2 mt-1 tabular" style="border-radius:8px;min-height:44px" />
+        </div>
+        <div>
+          <label for="ec-mins" class="text-sm font-medium">Minutes</label>
+          <input id="ec-mins" type="number" min="0" max="59" step="1" value="0" class="w-full panel-raised p-2 mt-1 tabular" style="border-radius:8px;min-height:44px" />
+        </div>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button id="ec-go" type="button" class="btn-primary focus-ring">Calculate dose</button>
+        <button id="ec-fill" type="button" class="btn-secondary focus-ring">Use my last session average</button>
+      </div>
+      <p id="ec-error" class="mt-2 text-sm" style="color:#f87171" role="alert" hidden></p>
+      <dl id="ec-out" class="mt-4 text-sm grid gap-x-4 gap-y-1 sm:grid-cols-2" hidden>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Allowable at this level</dt><dd id="ec-allow" class="tabular text-right font-medium">--</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Your duration</dt><dd id="ec-dur" class="tabular text-right">--</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Consumed daily dose</dt><dd id="ec-dose" class="tabular text-right font-medium">--</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Projected full-8 h dose</dt><dd id="ec-proj" class="tabular text-right">--</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Band</dt><dd id="ec-status" class="text-right font-medium">--</dd></div>
+        <div class="flex justify-between gap-2"><dt style="color:var(--muted)">Suggested next step</dt><dd id="ec-action" class="text-right">--</dd></div>
+      </dl>
+      <p class="mt-3 text-xs leading-5 rounded-lg p-3" style="border:1px solid var(--border);background:var(--raised);color:var(--muted)">Screening estimate from the 85 dBA = 8 h rule with 3 dB halving. Always enter the energy average (Leq), never a peak. Not for occupational, legal or medical decisions.</p>
+    </section>
+
+    <div class="article-rich panel p-6 mt-6">
+      <h2>How the math works</h2>
+      <p>Allowable time at level L is 8 hours times 2 to the power of (85 − L) over 3, so every 3 dB halves it: 85 dBA allows 8 hours, 88 dBA four, 91 dBA two, 94 dBA one, 97 dBA thirty minutes and 100 dBA fifteen. Dose is your duration divided by the allowable time. The full reasoning lives in the <a href="/noise-exposure/">noise exposure guide</a>.</p>
+      <h2>Measure a real average first</h2>
+      <p>Guessing the level defeats the purpose: run <a href="/#measure">the meter</a> for the full noisy period following <a href="/how-to-use/">how to use</a>, or check a phone reading with the <a href="/phone-decibel-meter/">phone guide</a>, then paste the Leq here. Compare the result with the <a href="/decibel-chart/">decibel chart</a> and the <a href="/faq/">common questions</a>.</p>
+      <p><a href="/noise-exposure/">Noise exposure guide →</a> · <a href="/sound-level-meter/">What a sound level meter is →</a></p>
+    </div>
+  </div>
+
+  <script>
+    import { allowableHours, dosePercent, projected8hDosePercent, exposureStatusFor } from '../../lib/exposure.js';
+
+    var levelEl = document.getElementById('ec-level');
+    var hEl = document.getElementById('ec-hours');
+    var mEl = document.getElementById('ec-mins');
+    var goBtn = document.getElementById('ec-go');
+    var fillBtn = document.getElementById('ec-fill');
+    var errEl = document.getElementById('ec-error');
+    var outEl = document.getElementById('ec-out');
+
+    function fmtDur(sec) {
+      if (!Number.isFinite(sec)) return '--';
+      if (sec >= 24 * 3600) return '>24 h';
+      if (sec >= 3600) return (sec / 3600).toFixed(1) + ' h';
+      if (sec >= 60) return Math.round(sec / 60) + ' min';
+      return Math.round(sec) + ' s';
+    }
+
+    function bandText(s) {
+      if (s === 'low') return 'Low — below the screening zone';
+      if (s === 'moderate') return 'Moderate — worth watching on long days';
+      if (s === 'elevated') return 'Elevated — shorten time or protect hearing';
+      if (s === 'over') return 'Over — daily allowance consumed';
+      return '--';
+    }
+
+    function actionText(s) {
+      if (s === 'low') return 'No action indicated';
+      if (s === 'moderate') return 'Track repetition across the week';
+      if (s === 'elevated') return 'Halve the time or wear protection';
+      if (s === 'over') return 'Leave the noise or protect hearing now';
+      return '--';
+    }
+
+    function compute() {
+      var L = Number(levelEl ? levelEl.value : NaN);
+      var durSec = Number(hEl ? hEl.value : 0) * 3600 + Number(mEl ? mEl.value : 0) * 60;
+      if (errEl) errEl.hidden = true;
+      if (!Number.isFinite(L) || L < 40 || L > 130) {
+        if (errEl) { errEl.textContent = 'Enter an average level between 40 and 130 dBA.'; errEl.hidden = false; }
+        if (outEl) outEl.hidden = true;
+        return;
+      }
+      if (!Number.isFinite(durSec) || durSec <= 0 || durSec > 24 * 3600) {
+        if (errEl) { errEl.textContent = 'Enter a duration between 1 minute and 24 hours.'; errEl.hidden = false; }
+        if (outEl) outEl.hidden = true;
+        return;
+      }
+      var allowH = allowableHours(L);
+      var dose = dosePercent(L, durSec);
+      var proj = projected8hDosePercent(L);
+      var status = exposureStatusFor(L, dose);
+      var set = function (id, t) { var el = document.getElementById(id); if (el) el.textContent = t; };
+      set('ec-allow', fmtDur(allowH * 3600));
+      set('ec-dur', fmtDur(durSec));
+      set('ec-dose', dose < 0.1 ? '<0.1 %' : dose.toFixed(1) + ' %');
+      set('ec-proj', proj.toFixed(0) + ' %');
+      set('ec-status', bandText(status));
+      set('ec-action', actionText(status));
+      if (outEl) outEl.hidden = false;
+    }
+
+    if (goBtn) goBtn.addEventListener('click', compute);
+    [levelEl, hEl, mEl].forEach(function (el) {
+      if (el) el.addEventListener('keydown', function (e) { if (e.key === 'Enter') compute(); });
+    });
+    if (fillBtn) fillBtn.addEventListener('click', function () {
+      try {
+        // Real store shape (see src/lib/history.ts): { schema, entries: [{ session: { leqDb } }] }.
+        var leq = null;
+        var keys = ['rdm.session-history.v2', 'rdm.session-history.v1'];
+        for (var ki = 0; ki < keys.length && leq == null; ki++) {
+          var raw = localStorage.getItem(keys[ki]);
+          if (!raw) continue;
+          var parsed = JSON.parse(raw);
+          var entries = Array.isArray(parsed) ? parsed : parsed.entries;
+          if (Array.isArray(entries) && entries.length) {
+            var last = entries[entries.length - 1];
+            var s = last.session || last;
+            if (Number.isFinite(Number(s.leqDb))) leq = Number(s.leqDb);
+            else if (Number.isFinite(Number(s.leq))) leq = Number(s.leq);
+            else if (Number.isFinite(Number(s.avg))) leq = Number(s.avg);
+          }
+        }
+        if (leq != null) {
+          if (levelEl) levelEl.value = String(Math.round(leq));
+          compute();
+        } else if (errEl) {
+          errEl.textContent = 'No saved session average found in this browser yet — measure first, then retry.';
+          errEl.hidden = false;
+        }
+      } catch (e) {
+        if (errEl) { errEl.textContent = 'Could not read saved sessions in this browser.'; errEl.hidden = false; }
+      }
+    });
+  </script>
+</Layout>

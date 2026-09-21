@@ -1,0 +1,170 @@
+---
+import Layout from '../../components/Layout.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Hearing Age Test';
+const description = 'Screening check for the highest frequency you can hear, in your browser with headphones. Educational only — not a medical test.';
+const url = `${SITE}/hearing-age-test/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Hearing age test', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/hearing-age-test/" jsonLd={jsonLd}>
+  <div class="container-x py-10" style="max-width:1040px">
+    <header class="mb-6">
+      <p class="eyebrow">Screening tool, not a diagnosis</p>
+      <h1 class="hero-title mt-2">Hearing Age Test</h1>
+      <p class="hero-sub">Find the highest pitch you can still hear. Use headphones in a quiet room at a comfortable volume — this estimates high-frequency hearing, it never diagnoses anything.</p>
+    </header>
+
+    <section class="panel p-6" aria-labelledby="ha-heading">
+      <h2 id="ha-heading" class="text-xl font-semibold tracking-tight">Test</h2>
+      <p id="ha-status" class="mt-2 text-sm" style="color:var(--muted)" role="status">Press Start. Each tone plays for 2 seconds at a fixed moderate level.</p>
+      <div class="mt-3 rounded-lg p-4 text-center" style="border:1px solid var(--border);background:var(--raised)">
+        <p class="text-xs" style="color:var(--muted)">Now playing</p>
+        <p id="ha-freq" class="font-semibold" style="font-size:clamp(28px,5vw,40px)">—</p>
+        <p id="ha-step" class="text-sm" style="color:var(--muted)">Tone 0 of 6</p>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2 justify-center">
+        <button id="ha-start" type="button" class="btn-primary focus-ring">Start test</button>
+        <button id="ha-hear" type="button" class="btn-secondary focus-ring" disabled>I hear it</button>
+        <button id="ha-miss" type="button" class="btn-secondary focus-ring" disabled>I don’t hear it</button>
+        <button id="ha-reset" type="button" class="btn-secondary focus-ring" disabled>Restart</button>
+      </div>
+      <div id="ha-result" class="mt-4 rounded-lg p-4" style="border:1px solid var(--border);background:var(--raised)" hidden>
+        <p class="font-semibold" id="ha-result-title">Result</p>
+        <p class="text-sm mt-1" style="color:var(--muted)" id="ha-result-body"></p>
+      </div>
+    </section>
+
+    <div class="article-rich panel p-6 mt-6">
+      <h2>How to interpret the result</h2>
+      <p>Higher audible ceilings generally track younger ears: hearing 16 kHz or above is typical of young ears, 14 kHz the thirties, 12 kHz the forties, 10 kHz the fifties, and 8 kHz older — but headphones, background noise and volume shift every result, so treat yours as a rough screening band, not an age stamp. If you notice persistent ringing, muffled hearing or a big gap between ears, see a hearing professional for real audiometry.</p>
+      <h2>Why it is not a hearing test</h2>
+      <p>Clinical testing measures the softest level you hear at each frequency per ear in a booth with calibrated gear. This page plays fixed-level tones through unknown headphones in an unknown room — it cannot measure thresholds, diagnose loss, or fit protection. Read the <a href="/disclaimer/">measurement disclaimer</a> and keep volumes moderate; never raise the volume to chase a tone you cannot hear.</p>
+      <p><a href="/tone-generator/">Tone generator →</a> · <a href="/speaker-test/">Speaker test →</a> · <a href="/noise-exposure/">Noise exposure →</a></p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var FREQS = [8000, 10000, 12000, 14000, 16000, 18000];
+      var BANDS = [
+        'around 8 kHz — typical of older ears; quiet high sounds may already be fading',
+        'around 10 kHz — typical of the fifties; everyday speech remains clear',
+        'around 12 kHz — typical of the forties; only very high sounds fade',
+        'around 14 kHz — typical of the thirties; high-frequency hearing largely intact',
+        'around 16 kHz — typical of young ears; very high pitches still audible',
+        'around 18 kHz — exceptional high-frequency hearing',
+      ];
+      var idx = -1, ctx = null, osc = null, gain = null, heardMax = null;
+      var startBtn = document.getElementById('ha-start');
+      var hearBtn = document.getElementById('ha-hear');
+      var missBtn = document.getElementById('ha-miss');
+      var resetBtn = document.getElementById('ha-reset');
+      var statusEl = document.getElementById('ha-status');
+      var freqEl = document.getElementById('ha-freq');
+      var stepEl = document.getElementById('ha-step');
+      var resultEl = document.getElementById('ha-result');
+      var resultBody = document.getElementById('ha-result-body');
+
+      function setStatus(t) { if (statusEl) statusEl.textContent = t; }
+      function setButtons(running) {
+        if (startBtn) startBtn.disabled = running;
+        if (hearBtn) hearBtn.disabled = !running;
+        if (missBtn) missBtn.disabled = !running;
+        if (resetBtn) resetBtn.disabled = false;
+      }
+
+      function teardownAudio() {
+        try { if (osc) { try { osc.stop(); } catch (e) {} try { osc.disconnect(); } catch (e) {} } } catch (e) {}
+        try { if (gain) { try { gain.disconnect(); } catch (e) {} } } catch (e) {}
+        osc = gain = null;
+      }
+
+      function playCurrent() {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) { setStatus('Web Audio is not supported in this browser.'); return; }
+        if (!ctx) ctx = new AC({ latencyHint: 'interactive' });
+        if (ctx.state === 'suspended') { ctx.resume(); }
+        teardownAudio();
+        var f = FREQS[idx];
+        var t = ctx.currentTime;
+        osc = ctx.createOscillator();
+        gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(f, t);
+        // Fixed moderate level with click-free envelope; 2-second tone.
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.14, t + 0.08);
+        gain.gain.setValueAtTime(0.14, t + 1.8);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.0);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t); osc.stop(t + 2.1);
+        if (freqEl) freqEl.textContent = (f / 1000) + ' kHz';
+        if (stepEl) stepEl.textContent = 'Tone ' + (idx + 1) + ' of ' + FREQS.length;
+        setStatus('Playing ' + (f / 1000) + ' kHz. Do you hear a clear tone?');
+      }
+
+      function finish() {
+        teardownAudio();
+        setButtons(false);
+        if (startBtn) startBtn.disabled = true;
+        if (freqEl) freqEl.textContent = 'Done';
+        if (resultEl) resultEl.hidden = false;
+        if (heardMax == null) {
+          setStatus('Finished. You did not confirm any tone — try a quieter room or check your headphones.');
+          if (resultBody) resultBody.textContent = 'No confirmed tone. Make sure the room is quiet, headphones sit properly, and system volume is at a normal comfortable level, then restart. If 8 kHz stays inaudible, consider professional testing rather than raising the volume.';
+        } else {
+          var band = BANDS[FREQS.indexOf(heardMax)];
+          setStatus('Finished. Highest confirmed tone: ' + (heardMax / 1000) + ' kHz.');
+          if (resultBody) resultBody.textContent = 'Your highest confirmed tone is ' + band + '. This is a rough screening band only — headphones, background noise and volume all shift it. For anything that worries you, book real audiometry instead of retesting loudly.';
+        }
+      }
+
+      function answer(heard) {
+        if (idx < 0 || idx >= FREQS.length) return;
+        if (heard) heardMax = FREQS[idx];
+        idx += 1;
+        if (idx >= FREQS.length) { finish(); return; }
+        playCurrent();
+      }
+
+      function reset(silent) {
+        idx = -1; heardMax = null;
+        teardownAudio();
+        if (resultEl) resultEl.hidden = true;
+        if (freqEl) freqEl.textContent = '—';
+        if (stepEl) stepEl.textContent = 'Tone 0 of ' + FREQS.length;
+        if (startBtn) startBtn.disabled = false;
+        if (hearBtn) hearBtn.disabled = true;
+        if (missBtn) missBtn.disabled = true;
+        if (resetBtn) resetBtn.disabled = true;
+        if (!silent) setStatus('Press Start. Each tone plays for 2 seconds at a fixed moderate level.');
+      }
+
+      if (startBtn) startBtn.addEventListener('click', function () {
+        if (resultEl) resultEl.hidden = true;
+        idx = 0; heardMax = null;
+        setButtons(true);
+        playCurrent();
+      });
+      if (hearBtn) hearBtn.addEventListener('click', function () { answer(true); });
+      if (missBtn) missBtn.addEventListener('click', function () { answer(false); });
+      if (resetBtn) resetBtn.addEventListener('click', function () { reset(); });
+      window.addEventListener('pagehide', function () {
+        teardownAudio();
+        if (ctx) { try { ctx.close(); } catch (e) {} }
+        ctx = null;
+      });
+    })();
+  </script>
+</Layout>

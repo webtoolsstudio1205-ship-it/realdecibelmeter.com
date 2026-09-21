@@ -1,0 +1,23 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Editorial Policy';
+const description = 'How Real Decibel Meter guides are written, reviewed and corrected: sources, update rhythm, and what we never claim.';
+const url = `${SITE}/editorial-policy/`;
+const jsonLd = [breadcrumbJsonLd([{ name: 'Home', url: `${SITE}/` }, { name: 'Editorial policy', url }])];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/editorial-policy/" jsonLd={jsonLd}>
+  <Article title={title} intro="What we publish, how we check it, and how to report a mistake." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Editorial policy', href: '/editorial-policy/' }]}>
+    <h2 class="text-white font-semibold">What we cover</h2>
+    <p class="mt-2">Guides explain what this browser meter measures, how the numbers are computed, and where the limits are: <a class="underline underline-offset-4" href="/methodology/">methodology</a>, <a class="underline underline-offset-4" href="/accuracy/">accuracy</a>, <a class="underline underline-offset-4" href="/calibration/">calibration</a>, <a class="underline underline-offset-4" href="/noise-exposure/">exposure</a> and the practical workflows in <a class="underline underline-offset-4" href="/how-to-use/">how to use</a> and <a class="underline underline-offset-4" href="/phone-decibel-meter/">phone measurement</a>. Every guide links back to the behaviour it describes so readers can verify claims against the tool itself.</p>
+    <h2 class="text-white font-semibold mt-6">Sources and review</h2>
+    <p class="mt-2">Browser behaviour is checked against platform documentation for microphone capture and the Web Audio API; exposure bands follow widely published hearing guidance rather than any single vendor. Each article carries a last-reviewed date and is re-checked when the meter pipeline, the <a class="underline underline-offset-4" href="/validation/">validation protocol</a> or the underlying platform behaviour changes. We publish no laboratory accuracy percentages and no certification claims, because none apply to consumer microphones.</p>
+    <h2 class="text-white font-semibold mt-6">Corrections</h2>
+    <p class="mt-2">Found an error? Email <a class="underline underline-offset-4" href="mailto:hello@realdecibelmeter.com">hello@realdecibelmeter.com</a> via <a class="underline underline-offset-4" href="/contact/">contact</a> with the page URL and the correct source. Material corrections update the reviewed date on the page. Background on the project is in <a class="underline underline-offset-4" href="/about/">about</a>.</p>
+  </Article>
+</Layout>

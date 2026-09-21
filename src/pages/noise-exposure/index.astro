@@ -1,0 +1,49 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Noise Exposure: Level, Duration and Hearing Safety';
+const description = 'Hearing risk depends on loudness and time. NIOSH 85 dBA limit, 3 dB exchange table, and how to check personal exposure with a browser meter.';
+const url = `${SITE}/noise-exposure/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Noise exposure', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/noise-exposure/" jsonLd={jsonLd}>
+  <Article title={title} intro="One loud number means little without duration. This guide connects sound level, exposure time and practical hearing protection." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Noise exposure', href: '/noise-exposure/' }]}>
+    <h2 class="text-white font-semibold">Why level and duration combine</h2>
+    <p class="mt-2">Hearing dose works like an energy budget: a brief very loud event and a long moderate sound can carry similar risk. A single peak reading such as 100 dBA says little on its own — three hours at that level is a different matter from three seconds. That is why this meter records duration alongside current, minimum, energy-average Leq and maximum values, and why exposure thinking always starts from the average over the full period, never from one instant. See <a class="underline underline-offset-4" href="/methodology/">how the meter works</a> for what each statistic means.</p>
+
+    <h2 class="text-white font-semibold mt-6">The 3 dB exchange rule</h2>
+    <p class="mt-2">A 3 dB increase doubles sound energy, so widely used hearing guidance halves the recommended daily time for every 3 dB above 85 dBA: 8 hours at 85 dBA, 4 hours at 88 dBA, 2 hours at 91 dBA, 1 hour at 94 dBA, 30 minutes at 97 dBA and about 15 minutes at 100 dBA. Below roughly 70 dBA, ordinary daily sounds such as conversation near 60 dBA are not an exposure concern. Compare your readings with the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a> to place them on a familiar scale.</p>
+
+    <h2 class="text-white font-semibold mt-6">Recommended exposure table</h2>
+    <table><caption class="sr-only">Recommended maximum daily durations at A-weighted levels</caption><thead><tr><th>Level (approx.)</th><th>Recommended maximum per day</th></tr></thead><tbody><tr><td>85 dBA</td><td>8 hours</td></tr><tr><td>88 dBA</td><td>4 hours</td></tr><tr><td>91 dBA</td><td>2 hours</td></tr><tr><td>94 dBA</td><td>1 hour</td></tr><tr><td>97 dBA</td><td>30 minutes</td></tr><tr><td>100 dBA</td><td>15 minutes</td></tr></tbody></table>
+    <p class="mt-2">These are widely published screening bands for personal awareness, not a medical assessment of any individual. Some workplace regimes use different exchange rates and legal thresholds, which is why personal checks and formal compliance measurements are different tasks.</p>
+
+    <h2 class="text-white font-semibold mt-6">Everyday awareness versus occupational compliance</h2>
+    <p class="mt-2">For home, leisure and personal choices, an approximate browser reading is enough to act on: sustained levels near or above 85 dBA mean shortening the time or using hearing protection. Workplace assessments are stricter by design — exposure monitoring, hearing conservation programmes and engineering controls with calibrated Class 1 or Class 2 instruments. A phone or laptop microphone cannot substitute for that process. Read <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a> before drawing any formal conclusion.</p>
+
+    <h2 class="text-white font-semibold mt-6">Checking your own exposure with this meter</h2>
+    <ol class="list-decimal pl-5 mt-2">
+      <li><a class="underline underline-offset-4" href="/calibration/">Calibrate once</a> against a known reference so the offset is device-specific.</li>
+      <li>Measure each noisy period in full — commute, gym, workshop — following <a class="underline underline-offset-4" href="/how-to-use/">how to use the meter</a>.</li>
+      <li>Note the Leq and duration of each period, then <a class="underline underline-offset-4" href="/validation/">record repeats</a> or export CSV or JSON for your records.</li>
+      <li>Reduce the loudest period first: every 3 dB saved doubles the safe time.</li>
+    </ol>
+
+    <h2 class="text-white font-semibold mt-6">Protecting your hearing</h2>
+    <p class="mt-2">Double the distance from a source to cut roughly 6 dB, wear earplugs or earmuffs at concerts and around machinery, keep headphone sessions moderate with regular breaks, and rest your ears after loud events — persistent ringing means the dose was too high. If you notice lasting ringing, muffled hearing or pain, consult a hearing professional rather than relying on any app reading. Our <a class="underline underline-offset-4" href="/disclaimer/">measurement disclaimer</a> explains these limits.</p>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/phone-decibel-meter/">Phone measurement guide →</a> · <a class="underline underline-offset-4" href="/faq/">Common questions →</a></p>
+  </Article>
+</Layout>

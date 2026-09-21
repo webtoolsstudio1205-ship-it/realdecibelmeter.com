@@ -1,0 +1,49 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Using Your Phone as a Decibel Meter';
+const description = 'Turn a smartphone browser into a practical sound checker: mic placement, iOS and Android differences, best practices and honest limits.';
+const url = `${SITE}/phone-decibel-meter/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Phone meter', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/phone-decibel-meter/" jsonLd={jsonLd}>
+  <Article title={title} intro="Every smartphone already carries a microphone. Here is how to get useful browser readings from yours — and where to stop trusting them." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Phone meter', href: '/phone-decibel-meter/' }]}>
+    <h2 class="text-white font-semibold">Can a phone measure decibels?</h2>
+    <p class="mt-2">Yes, for everyday questions. Open this site in a current mobile browser, press Start and grant microphone permission — the page becomes a phone decibel meter with live estimated dBA, dBC or dBZ plus Leq, minimum and maximum. It answers practical questions well: how loud is this room, is the street noisy tonight, how strong is the speaker at one metre, how quiet is the bedroom. These are relative and reference checks, exactly what a phone microphone suits. Learn the three-step flow in <a class="underline underline-offset-4" href="/how-to-use/">how to use the meter</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">What accuracy to expect</h2>
+    <p class="mt-2">Treat phone readings as rounded estimates, not exact figures. Two different models on the same sound commonly disagree by 5 to 10 dB because capsules, preamps, cases and positions differ. Below about 30 dBA most phone microphones hit their own noise floor and read too high; above roughly 95 to 100 dBA they clip and read too low; deep bass is under-reported because phone capsules favour the speech range. Ignore decimal places and compare averages over 30 to 60 seconds instead of instants. The full picture is in <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">iPhone and Android differences</h2>
+    <p class="mt-2">Both platforms work, but their audio processing differs. Safari on iPhone tends to keep automatic gain and noise processing active even when a site asks to disable it, so a given iPhone reads consistently yet offset against other devices. Chrome on Android usually honours the request to switch echo cancellation, noise suppression and automatic gain off — this meter requests exactly that and shows which processing stayed enabled in its device panel. Whichever platform you use, one <a class="underline underline-offset-4" href="/calibration/">calibration against a known reference</a> removes most of the device-specific offset.</p>
+
+    <h2 class="text-white font-semibold mt-6">Browser or app?</h2>
+    <p class="mt-2">A browser meter wins for quick checks: no install, no account, no store permissions beyond the microphone, always the current version, and audio that never leaves the device — see <a class="underline underline-offset-4" href="/privacy/">privacy</a>. A native app suits offline-first or background-logging workflows. For a one-off measurement on any phone, including somebody elses, the browser page is the faster honest option.</p>
+
+    <h2 class="text-white font-semibold mt-6">Best practices on a phone</h2>
+    <ul class="list-disc pl-5 mt-2">
+      <li>Find the microphone hole, usually on the bottom edge, and keep it uncovered; check that the case does not cover it.</li>
+      <li>Measure at ear height where people actually sit or stand, with the microphone pointed at the source.</li>
+      <li>Hold the phone still, stay silent while measuring, and note the distance with every reading.</li>
+      <li>Run at least 30 to 60 seconds and use the Leq or average, following <a class="underline underline-offset-4" href="/methodology/">how measurement works</a>.</li>
+      <li>Calibrate once per phone and keep the same position and settings for comparisons.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">When a phone is not enough</h2>
+    <p class="mt-2">A phone is never evidence. Noise complaints, workplace assessments, legal disputes and regulatory checks need a calibrated Class 1 or Class 2 instrument operated by a qualified person — see the <a class="underline underline-offset-4" href="/validation/">validation protocol</a> and <a class="underline underline-offset-4" href="/disclaimer/">measurement disclaimer</a>. For exposure context, continue with <a class="underline underline-offset-4" href="/noise-exposure/">noise exposure</a> and the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a>.</p>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/microphone-not-working/">Microphone troubleshooting →</a></p>
+  </Article>
+</Layout>

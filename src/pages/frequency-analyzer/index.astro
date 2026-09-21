@@ -1,0 +1,47 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Frequency Analyzer: Reading the Live Spectrum';
+const description = 'What the live spectrum shows, when frequency analysis beats a single dB number, and how to read bass, speech and hiss in your browser.';
+const url = `${SITE}/frequency-analyzer/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Frequency analyzer', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/frequency-analyzer/" jsonLd={jsonLd}>
+  <Article title={title} intro="A single dB number says how loud. The spectrum shows what kind of sound — bass rumble, speech or high hiss — live as you measure." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Frequency analyzer', href: '/frequency-analyzer/' }]}>
+    <h2 class="text-white font-semibold">What the spectrum shows</h2>
+    <p class="mt-2">The spectrum panel breaks live microphone input into frequency bands and draws their energy as bars: low bass on the left, speech mids in the centre, treble hiss on the right. Taller bars mean more energy at that pitch. Switch the meter visualisation between Level for the instant dB value, Waveform for the raw signal shape, and Spectrum for this frequency view — all three update live while measuring. Measurement itself never uses these display bars; levels come from the time-domain engine described in <a class="underline underline-offset-4" href="/methodology/">how measurement works</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">When analysis beats a single number</h2>
+    <ul class="list-disc pl-5 mt-2">
+      <li>Music and speakers: see bass, mids and highs at a glance instead of guessing from one dB value.</li>
+      <li>Voice recording: spot mains hum, room resonance or harsh hiss before recording.</li>
+      <li>Neighbour and traffic noise: tell low rumble that vibrates walls apart from mid-range speech and high brake hiss.</li>
+      <li>Weighting checks: compare A-weighting against C-weighting on bass-heavy sound — <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a> explains why the two diverge.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">How to run it</h2>
+    <ol class="list-decimal pl-5 mt-2">
+      <li>Open <a class="underline underline-offset-4" href="/#measure">the meter</a> and allow microphone access, as in <a class="underline underline-offset-4" href="/how-to-use/">how to use</a>.</li>
+      <li>Select the Spectrum tab in the visualisation card.</li>
+      <li>Play or await the sound — music, voice or room noise — and watch the bars react in real time.</li>
+      <li>Flip to Waveform to inspect clipping or dropouts, or back to Level for the dB readout and Leq.</li>
+    </ol>
+
+    <h2 class="text-white font-semibold mt-6">Reading the picture honestly</h2>
+    <p class="mt-2">Phone and laptop microphones favour the speech range, so very low bass reads lower than it sounds and the spectrum is a visual reference, not lab analysis. A dominant left edge means rumble from traffic or ventilation; a strong centre means speech or TV; a raised right edge means hiss from electronics or escaping steam. For certified acoustic work you still need lab-grade hardware — see <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>. For level context, continue with the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a> and <a class="underline underline-offset-4" href="/noise-exposure/">noise exposure</a>.</p>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/sound-level-meter/">What a sound level meter is →</a></p>
+  </Article>
+</Layout>

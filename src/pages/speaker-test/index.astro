@@ -1,0 +1,174 @@
+---
+import Layout from '../../components/Layout.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Speaker Test: Channels, Polarity and Sweep';
+const description = 'Check speakers and headphones in your browser: left/right channels, polarity, and a rattle-finding frequency sweep. Free and local.';
+const url = `${SITE}/speaker-test/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Speaker test', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/speaker-test/" jsonLd={jsonLd}>
+  <div class="container-x py-10" style="max-width:1040px">
+    <header class="mb-6">
+      <p class="eyebrow">Working audio tool</p>
+      <h1 class="hero-title mt-2">Speaker Test</h1>
+      <p class="hero-sub">Verify wiring and hunt rattles with browser-generated signals. Start quiet, raise slowly, and stop if anything sounds distressed.</p>
+    </header>
+
+    <section class="panel p-6" aria-labelledby="st-heading">
+      <h2 id="st-heading" class="text-xl font-semibold tracking-tight">Channel checks</h2>
+      <p id="st-status" class="mt-2 text-sm" style="color:var(--muted)" role="status">Idle. Press a check to play a short tone.</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button type="button" class="btn-primary focus-ring" data-st="left">Play left channel</button>
+        <button type="button" class="btn-primary focus-ring" data-st="right">Play right channel</button>
+        <button type="button" class="btn-secondary focus-ring" data-st="center">Play center (both)</button>
+        <button type="button" class="btn-secondary focus-ring" data-st="polarity">Polarity: in-phase vs out-of-phase</button>
+        <button type="button" class="btn-secondary focus-ring" data-st="sweep">Frequency sweep 20 Hz – 20 kHz</button>
+        <button type="button" class="btn-secondary focus-ring" data-st="stop">Stop</button>
+      </div>
+      <p id="st-detail" class="mt-3 text-sm" style="color:var(--muted)"></p>
+    </section>
+
+    <div class="article-rich panel p-6 mt-6">
+      <h2>How to read each check</h2>
+      <p>Left-only sound must come from the left speaker or earcup and right-only from the right — if they are swapped, swap the plugs or the balance setting. During the polarity check the in-phase burst sounds full and centred while the out-of-phase burst sounds thin and wide on correctly wired stereo; on a mono device the out-of-phase burst nearly cancels out, which also confirms correct wiring. During the sweep, note the frequencies where you hear buzzing, rattling or dropouts — those mark cabinet, mounting or driver issues, not microphone problems.</p>
+      <h2>Keep it safe</h2>
+      <p>Short bursts at moderate volume are enough. Deep bass at high level can damage small speakers, and long high-frequency tones tire ears fast. For hearing screening instead of hardware checks, use the <a href="/hearing-age-test/">hearing age test</a>; for steady reference tones, use the <a href="/tone-generator/">tone generator</a>.</p>
+      <p><a href="/tone-generator/">Tone generator →</a> · <a href="/hearing-age-test/">Hearing age test →</a> · <a href="/microphone-not-working/">Microphone troubleshooting →</a></p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ctx = null, nodes = [], timer = null;
+      var statusEl = document.getElementById('st-status');
+      var detailEl = document.getElementById('st-detail');
+      function setStatus(t) { if (statusEl) statusEl.textContent = t; }
+      function setDetail(t) { if (detailEl) detailEl.textContent = t; }
+
+      function ensureCtx() {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) { setStatus('Web Audio is not supported in this browser.'); return null; }
+        if (!ctx) ctx = new AC({ latencyHint: 'interactive' });
+        if (ctx.state === 'suspended') { ctx.resume(); }
+        return ctx;
+      }
+
+      function stop(silent) {
+        if (timer) { clearTimeout(timer); timer = null; }
+        nodes.forEach(function (n) {
+          try { if (n.stop) n.stop(); } catch (e) {}
+          try { n.disconnect(); } catch (e) {}
+        });
+        nodes = [];
+        if (!silent) setStatus('Idle. Press a check to play a short tone.');
+      }
+
+      // Short enveloped tone on one pan position; gain capped for safety.
+      function blip(freq, panVal, dur, when) {
+        var c = ensureCtx();
+        if (!c) return;
+        var t0 = c.currentTime + (when || 0);
+        var osc = c.createOscillator();
+        var g = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t0);
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.2, t0 + 0.03);
+        g.gain.setValueAtTime(0.2, t0 + Math.max(0.04, dur - 0.08));
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+        if (typeof c.createStereoPanner === 'function') {
+          var p = c.createStereoPanner();
+          p.pan.setValueAtTime(panVal, t0);
+          osc.connect(g); g.connect(p); p.connect(c.destination);
+          nodes.push(p);
+        } else {
+          osc.connect(g); g.connect(c.destination);
+        }
+        nodes.push(osc, g);
+        osc.start(t0);
+        osc.stop(t0 + dur + 0.05);
+      }
+
+      function run(kind) {
+        stop(true);
+        if (kind === 'stop') { setStatus('Idle. Press a check to play a short tone.'); setDetail(''); return; }
+        if (kind === 'left') {
+          blip(440, -1, 1.2, 0);
+          setStatus('Playing: left channel, 440 Hz.');
+          setDetail('You should hear this only on the left. If it comes from the right, the channels are swapped.');
+        } else if (kind === 'right') {
+          blip(440, 1, 1.2, 0);
+          setStatus('Playing: right channel, 440 Hz.');
+          setDetail('You should hear this only on the right. If it comes from the left, the channels are swapped.');
+        } else if (kind === 'center') {
+          blip(440, 0, 1.2, 0);
+          setStatus('Playing: center, 440 Hz on both channels.');
+          setDetail('On headphones this sounds inside the head; on speakers it images between them.');
+        } else if (kind === 'polarity') {
+          // In-phase burst, pause, then right channel inverted: correct stereo
+          // wiring sounds thin and wide (or cancels on mono summing).
+          blip(440, 0, 0.8, 0);
+          var c = ensureCtx();
+          if (c) {
+            var t0 = c.currentTime + 1.2;
+            var osc = c.createOscillator();
+            var gL = c.createGain(), gR = c.createGain(), inv = c.createGain();
+            var merger = c.createChannelMerger(2);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, t0);
+            inv.gain.setValueAtTime(-1, t0);
+            [gL, gR].forEach(function (g) {
+              g.gain.setValueAtTime(0.0001, t0);
+              g.gain.exponentialRampToValueAtTime(0.18, t0 + 0.03);
+              g.gain.setValueAtTime(0.18, t0 + 0.72);
+              g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.8);
+            });
+            osc.connect(gL); gL.connect(merger, 0, 0);
+            osc.connect(gR); gR.connect(inv); inv.connect(merger, 0, 1);
+            merger.connect(c.destination);
+            nodes.push(osc, gL, gR, inv, merger);
+            osc.start(t0); osc.stop(t0 + 0.9);
+          }
+          setStatus('Playing: in-phase burst, then out-of-phase burst.');
+          setDetail('First burst sounds full and centred. The second sounds thin and wide on correct stereo, or nearly silent on a mono device — both confirm correct wiring.');
+        } else if (kind === 'sweep') {
+          var cc = ensureCtx();
+          if (!cc) return;
+          var dur = 12, t1 = cc.currentTime + 0.1;
+          var o = cc.createOscillator();
+          var gg = cc.createGain();
+          o.type = 'sine';
+          // Logarithmic sweep 20 Hz -> 20 kHz across the duration.
+          o.frequency.setValueAtTime(20, t1);
+          o.frequency.exponentialRampToValueAtTime(20000, t1 + dur);
+          gg.gain.setValueAtTime(0.0001, t1);
+          gg.gain.exponentialRampToValueAtTime(0.16, t1 + 0.2);
+          gg.gain.setValueAtTime(0.16, t1 + dur - 0.3);
+          gg.gain.exponentialRampToValueAtTime(0.0001, t1 + dur);
+          o.connect(gg); gg.connect(cc.destination);
+          nodes.push(o, gg);
+          o.start(t1); o.stop(t1 + dur + 0.1);
+          setStatus('Playing: 12-second sweep from 20 Hz to 20 kHz.');
+          setDetail('Listen for buzzing, rattling or silent gaps and note the pitch where each happens. Keep volume moderate — stop if it hurts.');
+          timer = setTimeout(function () { setStatus('Sweep finished.'); }, (dur + 0.5) * 1000);
+        }
+      }
+
+      document.querySelectorAll('[data-st]').forEach(function (b) {
+        b.addEventListener('click', function () { run(b.getAttribute('data-st')); });
+      });
+      window.addEventListener('pagehide', function () { stop(true); });
+    })();
+  </script>
+</Layout>

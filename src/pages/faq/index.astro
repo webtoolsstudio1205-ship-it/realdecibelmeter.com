@@ -1,0 +1,75 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, faqJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Frequently Asked Questions';
+const description = 'Answers on browser sound measurement: accuracy, calibration, Leq, microphone privacy, phone differences, exports and safe noise levels.';
+const url = `${SITE}/faq/`;
+const faq = [
+  { q: 'Is this a calibrated sound level meter?', a: 'No. Phone and laptop microphones vary per device, so every reading is an estimate. Calibrate against a known reference for better device-specific agreement, and use a calibrated Class 1 or Class 2 meter for safety, workplace or legal decisions.' },
+  { q: 'How does the browser meter work?', a: 'Press Start, grant microphone permission, and the page processes audio locally via the Web Audio API: RMS per block, conversion to dB, A, C or Z weighting, Fast or Slow smoothing, and Leq accumulation. Nothing is uploaded. The full pipeline is documented in the methodology guide.' },
+  { q: 'Why does the meter show --?', a: 'The idle display shows -- until you grant microphone permission and press Start. No simulated values are ever shown.' },
+  { q: 'What do dB, dBA, Fast and Slow mean?', a: 'dB is the sound level unit. A-weighting (dBA) approximates human hearing, C is flatter and keeps more bass, Z is unweighted. Fast (125 ms) follows peaks while Slow (1 s) smooths them. The dB vs dBA guide compares all three.' },
+  { q: 'What is Leq?', a: 'Leq is the energy-average level over the whole session. Unlike a simple arithmetic mean it accounts for sound energy correctly, which makes it the metric professionals use for exposure. This meter accumulates Leq for every run.' },
+  { q: 'Is my audio uploaded or recorded?', a: 'No. All processing runs locally in your browser. Audio never leaves your device through this site, session history stays in this browser, and exports are created locally as files you save yourself.' },
+  { q: 'How do I calibrate?', a: 'Compare against a stable known reference at the same position, enter the difference as an offset, and keep the same microphone, position and settings. The calibration guide walks through the four steps.' },
+  { q: 'Why do two phones disagree?', a: 'Capsules, preamps, cases, positions and OS audio processing differ. Two models on the same sound commonly differ by 5 to 10 dB. Calibration removes most of the offset. The phone measurement guide explains iPhone and Android differences.' },
+  { q: 'Can I check noise exposure with it?', a: 'For personal awareness, yes: measure full periods, note each Leq and duration, and compare against the 85 dBA 8-hour screening bands with the 3 dB exchange rule. For formal compliance you need certified gear. See the noise exposure guide.' },
+  { q: 'Can I save a session?', a: 'Yes. Export the current session as CSV or JSON, or keep a local history of up to 20 sessions in this browser. Uncalibrated sessions export no dB values by design. Nothing is sent to a server.' },
+  { q: 'What levels are safe?', a: 'Below about 70 dBA ordinary durations are not a concern. Sustained levels at or above 85 dBA deserve shorter time or hearing protection, with safe time halving every 3 dB. The decibel chart maps everyday sounds to the scale.' },
+  { q: 'Can this replace a professional meter?', a: 'No. It suits awareness, comparison and education. Regulatory, legal, medical and occupational decisions need a calibrated instrument meeting the applicable standard, operated by a qualified person.' },
+  { q: 'What is a normal noise level in dB?', a: 'A quiet room sits around 30 to 40 dB, normal conversation measures roughly 60 dB, and busy street traffic lands near 70 to 80 dB. Typical everyday environments stay below 85 dB.' },
+  { q: 'What does 30 dB sound like?', a: 'Very quiet: a soft whisper, a quiet library, or a bedroom at night. It is safe for unlimited exposure and sits near the noise floor where phone microphones start reading too high.' },
+  { q: 'What does 60 dB sound like?', a: 'Normal conversation at arm’s length, background music, or a running dishwasher. It is the everyday level of a typical home during the day and is safe for any duration.' },
+  { q: 'What does 70 dB sound like?', a: 'A busy street, a vacuum cleaner, or a loud television. It is noticeably louder than conversation, yet levels below 70 dB are generally considered safe regardless of duration.' },
+  { q: 'What does 80 dB sound like?', a: 'Heavy traffic, a noisy restaurant, or an alarm clock. It is loud enough to make conversation effortful, but brief exposure is not a concern for most people.' },
+  { q: 'What does 100 dB sound like?', a: 'A motorcycle, chainsaw, or headphones at maximum volume. The recommended screening band is roughly 15 minutes. It is common at live events and a frequent cause of ringing ears afterwards.' },
+  { q: 'What decibel level is dangerous?', a: 'Sustained exposure at or above 85 dB can damage hearing over time, levels above 90 dB are increasingly risky, and sounds above 120 dB can cause immediate harm. Protect your ears at concerts and workshops, and read the noise exposure guide for safe durations.' },
+  { q: 'What is the difference between dB and dBA?', a: 'dB states the raw sound pressure level while dBA applies A-weighting, a filter shaped like human hearing, so dBA reflects how loud a sound feels to people. dBA is the standard measure for noise exposure.' },
+  { q: 'What is A-weighting?', a: 'A-weighting is a frequency filter that mimics ear sensitivity: it turns down very low and very high frequencies and passes the speech range unchanged. A-weighted readings approximate perceived loudness and anchor environmental and occupational guidance.' },
+  { q: 'What are C-weighting and Z-weighting?', a: 'C-weighting is a much flatter curve that preserves low-frequency content, suiting loud bass-heavy sound such as concerts and machinery. Z-weighting is flat with no correction at all, used for raw acoustic checks.' },
+  { q: 'What is RMS in sound measurement?', a: 'RMS, the root mean square, is the effective continuous level of a signal over a short window. It tracks perceived loudness better than instantaneous peaks and forms the basis of the current dB reading.' },
+  { q: 'What do the minimum, average and maximum readings mean?', a: 'Minimum shows the quietest moment captured, maximum the loudest peak, and average the typical level over time. Leq is the energy-equivalent level for the whole session and the metric exposure thinking is built on.' },
+  { q: 'Can I measure background noise?', a: 'Yes. The meter captures whatever sound is present, so measure during a quiet moment, keep the device still, and use the minimum or average reading rather than single instants. The background noise test walks through the workflow.' },
+  { q: 'How do I measure noise at home?', a: 'Place the device where people sit or stand, keep the microphone uncovered, and measure for at least a minute without talking. Use the average or Leq and compare it with the decibel chart. The how-to-use guide covers the full routine.' },
+  { q: 'How do I measure neighbour noise?', a: 'Measure at the wall or floor where the sound enters, at ear height, for at least 10 to 15 minutes. Note the maximum for short bass hits and the Leq for the overall pattern. Phone readings are estimates for your own awareness, never evidence.' },
+  { q: 'How do I measure classroom noise?', a: 'Place the device at desk height in the centre of the room, away from projectors and vents, and measure across a full lesson. The average and Leq show the typical level students experience while spikes above 80 dB flag disruptive events.' },
+  { q: 'How do I measure workplace noise?', a: 'Measure at ear height in the actual work position for the full task period, then check the Leq against screening limits such as 85 dBA over 8 hours. Formal compliance assessments must use a certified meter — see the noise exposure guide.' },
+  { q: 'Can I test speaker volume with it?', a: 'Yes. Place the device about one metre from the speaker pointing at it and measure during playback. The average gives the typical level and the peak shows the loudest transients. Consumer microphones under-report deep bass, so subwoofer content reads lower than it sounds.' },
+  { q: 'How do I reduce noise at home?', a: 'Find the loudest sources with the meter and address them first, add soft furnishings to absorb reflections, seal gaps around doors and windows, mask steady background with a fan, and consider acoustic panels or a professional assessment for serious neighbour noise.' },
+  { q: 'What is a frequency analyzer?', a: 'A frequency analyzer shows how sound energy spreads across pitches instead of one dB value — for example bass near 60 Hz versus speech near 2 kHz. This site includes a live spectrum view: open the Spectrum tab while measuring to see your sound broken into bands.' },
+  { q: 'What is an audio spectrum analyzer?', a: 'A visual display of the full spectrum, usually bars with low frequencies left and high frequencies right. It reveals whether noise is low rumble, mid-range speech, or high hiss. The frequency analyzer guide explains how to read it.' },
+  { q: 'Noise meter or sound level meter — which one is this?', a: 'Both names describe the same function here: measuring sound intensity in decibels. For everyday checks the terms are interchangeable; professionals use distinct certified hardware, but the measurement principle is identical.' },
+  { q: 'How does noise damage hearing?', a: 'Loud sound can damage the tiny hair cells of the inner ear, which convert vibration into signals for the brain. Those cells do not regenerate, so the damage is permanent — which is why both intensity and duration matter.' },
+  { q: 'Does noise affect sleep, stress and health?', a: 'Yes. Night-time noise above about 40 dB can disturb sleep, chronic noise raises stress, and long-term high exposure is linked with cardiovascular and concentration effects. Keep daily levels low where possible and use hearing protection at loud events.' },
+  { q: 'Which browsers work?', a: 'Current Chrome, Edge, Firefox and Safari on desktop and mobile all work over HTTPS. Use a recent version, grant microphone permission when asked, and follow the microphone troubleshooting guide if nothing happens.' },
+  { q: 'Can I use an external microphone?', a: 'Yes. Connect it, pick it in the input selector, and reload the page if it does not appear. The same rules apply: fixed position, same settings, and a fresh calibration against a known reference.' },
+  { q: 'How often does the reading update?', a: 'Multiple times per second with near-live feedback. Fast response follows peaks while Slow smooths them, so wait a few seconds for the display to settle and read the average or Leq rather than any single instant.' },
+  { q: 'What is the measurement range?', a: 'The visual scale spans roughly 20 to 120 dB. Readings near the bottom sit close to the microphone noise floor and read high, while very loud input near the top can clip and read low — both are disclosed limits, not certified thresholds.' },
+];
+const jsonLd = [
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'FAQ', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/faq/" jsonLd={jsonLd}>
+  <Article title={title} intro="Short answers to the questions every new user asks, with links to the full guides behind each one." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'FAQ', href: '/faq/' }]}>
+    <div class="grid gap-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+    <p class="mt-4"><a class="underline underline-offset-4" href="/guides/">Browse the full guide hub →</a> · <a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/contact/">Contact →</a></p>
+  </Article>
+</Layout>

@@ -6,11 +6,15 @@ const dict = getDict('en');
 ---
 
 <Layout locale="en" dict={dict} title="Terms — Real Decibel Meter" description="Estimates only; not for safety, workplace or legal decisions. Terms for the online decibel meter." path="/terms/">
-  <Article title="Terms" intro="By using the meter you accept that its readings are uncalibrated browser estimates." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Terms', href: '/terms/' }]}>
+  <Article title="Terms" intro="By using the meter you accept that its readings are uncalibrated browser estimates." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Terms', href: '/terms/' }]}>
     <ul class="list-disc pl-5 mt-2 space-y-1">
       <li>Readings are estimates from consumer microphones, not certified measurements (see <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>).</li>
       <li>Do not rely on them for hearing-safety, workplace-compliance, legal or medical decisions.</li>
       <li>The app runs as-is, without warranty. Audio processing stays on your device; you are responsible for permissions and local laws on recording.</li>
     </ul>
+    <h2 class="text-white font-semibold mt-6">Acceptable use</h2>
+    <p class="mt-2">Use the meter for personal comparison, learning and screening checks. Do not use exported CSV or JSON values as evidence of compliance with noise regulations or product specifications. Calibration improves device-specific agreement with a reference but does not make the browser a certified instrument — see <a class="underline underline-offset-4" href="/calibration/">calibration</a> and the <a class="underline underline-offset-4" href="/validation/">validation protocol</a>.</p>
+    <h2 class="text-white font-semibold mt-6">Privacy and contact</h2>
+    <p class="mt-2">Microphone audio is processed locally and never uploaded by this site — see <a class="underline underline-offset-4" href="/privacy/">privacy</a>. Questions about these terms: <a class="underline underline-offset-4" href="/contact/">contact</a>.</p>
   </Article>
 </Layout>

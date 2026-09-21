@@ -13,9 +13,9 @@ const SOCIAL_IMAGE = `${SITE}/og-image.png`;
 const expected = [
   '/', '/about/', '/accuracy/', '/background-noise-test/', '/calibration/', '/contact/', '/db-vs-dba/', '/dbfs-vs-db-spl/',
   '/de/', '/de/anleitungen/', '/de/kalibrierung/', '/de/genauigkeit/', '/de/dezibel-tabelle/', '/de/db-vs-dba/', '/de/mikrofon-funktioniert-nicht/',
-  '/decibel-chart/', '/es/', '/fr/', '/guides/', '/how-to-use/', '/it/', '/ja/', '/ja/accuracy/', '/ja/calibration/', '/ja/db-vs-dba/',
+  '/decibel-chart/', '/disclaimer/', '/editorial-policy/', '/es/', '/faq/', '/fr/', '/frequency-analyzer/', '/guides/', '/how-to-use/', '/it/', '/ja/', '/ja/accuracy/', '/ja/calibration/', '/ja/db-vs-dba/',
   '/ja/decibel-chart/', '/ja/guides/', '/ja/how-to-use/', '/ja/methodology/', '/ja/microphone-not-working/', '/ja/privacy/', '/ko/',
-  '/methodology/', '/microphone-noise-floor-test/', '/microphone-not-working/', '/privacy/', '/pt/', '/terms/', '/validation/',
+  '/methodology/', '/microphone-noise-floor-test/', '/microphone-not-working/', '/noise-exposure/', '/noise-exposure-calculator/', '/phone-decibel-meter/', '/privacy/', '/pt/', '/sound-level-meter/', '/speaker-test/', '/terms/', '/tone-generator/', '/hearing-age-test/', '/validation/',
 ];
 
 const failures = [];

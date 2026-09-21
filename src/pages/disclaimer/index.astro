@@ -1,0 +1,23 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Measurement Disclaimer';
+const description = 'Browser readings are screening estimates only — not for medical, legal, occupational or regulatory decisions. Read the limits here.';
+const url = `${SITE}/disclaimer/`;
+const jsonLd = [breadcrumbJsonLd([{ name: 'Home', url: `${SITE}/` }, { name: 'Disclaimer', url }])];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/disclaimer/" jsonLd={jsonLd}>
+  <Article title={title} intro="The short version: this site gives honest estimates for learning and comparison — never verdicts about safety, compliance or health." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Disclaimer', href: '/disclaimer/' }]}>
+    <h2 class="text-white font-semibold">Estimates, not measurements of record</h2>
+    <p class="mt-2">Every number on this site comes from a consumer microphone with unknown gain and frequency shaping, processed in a browser that may apply its own gain control. Readings are therefore screening estimates as documented in <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a> — useful for awareness and before-and-after comparison, never a certified result.</p>
+    <h2 class="text-white font-semibold mt-6">No safety, medical, legal or workplace decisions</h2>
+    <p class="mt-2">Do not base hearing-safety, workplace-compliance, legal-evidence or medical decisions on these estimates. Use a calibrated Class 1 or Class 2 instrument operated by a qualified person for anything that will be challenged or regulated. Exposure bands in <a class="underline underline-offset-4" href="/noise-exposure/">noise exposure</a> are educational screening bands, not personal medical advice.</p>
+    <h2 class="text-white font-semibold mt-6">Your responsibility</h2>
+    <p class="mt-2">You are responsible for microphone permissions, local recording laws and how you interpret exported CSV or JSON values — see <a class="underline underline-offset-4" href="/terms/">terms</a> and <a class="underline underline-offset-4" href="/privacy/">privacy</a>. If you notice lasting ringing, muffled hearing or pain, consult a hearing professional. Questions: <a class="underline underline-offset-4" href="/contact/">contact</a>.</p>
+  </Article>
+</Layout>

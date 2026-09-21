@@ -11,8 +11,12 @@ const jsonLd = [breadcrumbJsonLd([{ name: 'Home', url: `${SITE}/` }, { name: 'Co
 ---
 
 <Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/contact/" jsonLd={jsonLd}>
-  <Article title={title} intro="Get in touch by email for support, feedback or general questions." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact/' }]}>
+  <Article title={title} intro="Get in touch by email for support, feedback or general questions." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact/' }]}>
     <p class="mt-2">Email: <a class="underline underline-offset-4" href="mailto:hello@realdecibelmeter.com">hello@realdecibelmeter.com</a></p>
     <p class="mt-2">For microphone problems, the fastest help is the <a class="underline underline-offset-4" href="/microphone-not-working/">troubleshooting guide</a>. For accuracy questions, read <a class="underline underline-offset-4" href="/accuracy/">how accuracy works</a>. For background on the project, see <a class="underline underline-offset-4" href="/about/">about</a>.</p>
+    <h2 class="text-white font-semibold mt-6">What to include</h2>
+    <p class="mt-2">Device model, operating system and browser version, microphone used, and what you saw on screen (for example, the idle “--” display, a permission prompt, or an estimated dBA value). If you calibrated, include the reference level and offset. Screenshots of the live panel help, but never send audio recordings — this tool does not create them.</p>
+    <h2 class="text-white font-semibold mt-6">Response time</h2>
+    <p class="mt-2">Email is monitored on weekdays. Most questions are already answered in the <a class="underline underline-offset-4" href="/guides/">guide hub</a>: <a class="underline underline-offset-4" href="/how-to-use/">how to use</a>, <a class="underline underline-offset-4" href="/calibration/">calibration</a>, <a class="underline underline-offset-4" href="/methodology/">methodology</a>, and <a class="underline underline-offset-4" href="/privacy/">privacy</a>.</p>
   </Article>
 </Layout>

@@ -17,12 +17,16 @@ const jsonLd = [
 ---
 
 <Layout locale="en" dict={dict} title={`${title}`} description={description} path="/about/" jsonLd={jsonLd}>
-  <Article title={title} intro="Real Decibel Meter is a static web app that estimates sound input with your microphone, entirely inside your browser." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'About', href: '/about/' }]}>
+  <Article title={title} intro="Real Decibel Meter is a static web app that estimates sound input with your microphone, entirely inside your browser." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'About', href: '/about/' }]}>
     <h2 class="text-white font-semibold">What the tool measures</h2>
     <p class="mt-2">Without calibration it converts weighted digital dBFS into a clearly labelled nominal dBA, dBC or dBZ estimate using a +100 dB default offset. A device-specific calibration profile replaces that default for better accuracy. How results are calculated is documented in the <a class="underline underline-offset-4" href="/methodology/">methodology</a>; limits in <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>.</p>
     <h2 class="text-white font-semibold mt-6">What it does not claim</h2>
     <p class="mt-2">There are no accounts, no servers receiving audio, and no claims of lab testing, formal approval or measured accuracy percentages — because none apply to browser microphones. The idle reading is “--”, estimates are labelled as estimates, and safety verdicts are never shown.</p>
+    <h2 class="text-white font-semibold mt-6">How to use it well</h2>
+    <p class="mt-2">Start with <a class="underline underline-offset-4" href="/how-to-use/">how to use the meter</a>: grant microphone permission once, keep the device still, read current, minimum, energy-average and maximum values, then export CSV or JSON. For everyday comparisons use A-weighting; for loud peaks compare C-weighting; see <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a> and the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a>.</p>
+    <h2 class="text-white font-semibold mt-6">Calibration and verification</h2>
+    <p class="mt-2">Every microphone has different gain, so compare against a known reference and store the difference as an offset — see <a class="underline underline-offset-4" href="/calibration/">calibration</a>. Repeatability checks are documented in the <a class="underline underline-offset-4" href="/validation/">validation protocol</a>. For focused diagnostics use the <a class="underline underline-offset-4" href="/background-noise-test/">background noise test</a>, the <a class="underline underline-offset-4" href="/microphone-noise-floor-test/">microphone noise floor test</a>, and the <a class="underline underline-offset-4" href="/dbfs-vs-db-spl/">dBFS vs dB SPL explainer</a>.</p>
     <h2 class="text-white font-semibold mt-6">Publisher</h2>
-    <p class="mt-2">Published by the Real Decibel Meter project at realdecibelmeter.com. Questions about using the tool: start with <a class="underline underline-offset-4" href="/how-to-use/">how to use</a> or <a class="underline underline-offset-4" href="/contact/">contact</a>.</p>
+    <p class="mt-2">Published by the Real Decibel Meter project at realdecibelmeter.com. Questions about using the tool: start with <a class="underline underline-offset-4" href="/how-to-use/">how to use</a> or <a class="underline underline-offset-4" href="/contact/">contact</a>. Microphone audio is processed locally — see <a class="underline underline-offset-4" href="/privacy/">privacy</a>.</p>
   </Article>
 </Layout>

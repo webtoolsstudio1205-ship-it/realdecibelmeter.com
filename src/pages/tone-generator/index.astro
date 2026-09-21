@@ -1,0 +1,200 @@
+---
+import Layout from '../../components/Layout.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Browser Tone Generator';
+const description = 'Generate pure test tones in your browser: adjustable frequency, waveform, channel and volume cap. Free, local, no install.';
+const url = `${SITE}/tone-generator/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Tone generator', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/tone-generator/" jsonLd={jsonLd}>
+  <div class="container-x py-10" style="max-width:1040px">
+    <header class="mb-6">
+      <p class="eyebrow">Working audio tool</p>
+      <h1 class="hero-title mt-2">Tone Generator</h1>
+      <p class="hero-sub">Pure test tones generated live with the Web Audio API. Start at low volume and raise gradually — high frequencies can feel loud without sounding loud.</p>
+    </header>
+
+    <section class="panel p-6" aria-labelledby="tg-heading">
+      <h2 id="tg-heading" class="text-xl font-semibold tracking-tight">Generator</h2>
+      <p id="tg-status" class="mt-2 text-sm" style="color:var(--muted)" role="status">Stopped.</p>
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        <div>
+          <label for="tg-freq" class="text-sm font-medium">Frequency: <span id="tg-freq-val" class="tabular">440</span> Hz</label>
+          <input id="tg-freq" type="range" min="20" max="20000" step="1" value="440" class="w-full" style="min-height:44px" />
+          <div class="mt-2 flex flex-wrap gap-2">
+            <button type="button" class="btn-secondary focus-ring" data-tg-preset="220">220</button>
+            <button type="button" class="btn-secondary focus-ring" data-tg-preset="440">440</button>
+            <button type="button" class="btn-secondary focus-ring" data-tg-preset="1000">1 kHz</button>
+            <button type="button" class="btn-secondary focus-ring" data-tg-preset="4000">4 kHz</button>
+            <button type="button" class="btn-secondary focus-ring" data-tg-preset="8000">8 kHz</button>
+          </div>
+        </div>
+        <div class="grid gap-3">
+          <div>
+            <label for="tg-wave" class="text-sm font-medium">Waveform</label>
+            <select id="tg-wave" class="w-full panel-raised p-2 mt-1" style="border-radius:8px;min-height:44px">
+              <option value="sine">Sine (pure tone)</option>
+              <option value="triangle">Triangle (soft)</option>
+              <option value="square">Square (harsh)</option>
+              <option value="sawtooth">Sawtooth (buzzy)</option>
+            </select>
+          </div>
+          <div>
+            <label for="tg-channel" class="text-sm font-medium">Channel</label>
+            <select id="tg-channel" class="w-full panel-raised p-2 mt-1" style="border-radius:8px;min-height:44px">
+              <option value="both">Both speakers</option>
+              <option value="left">Left only</option>
+              <option value="right">Right only</option>
+            </select>
+          </div>
+          <div>
+            <label for="tg-vol" class="text-sm font-medium">Volume (capped for safety): <span id="tg-vol-val" class="tabular">20</span>%</label>
+            <input id="tg-vol" type="range" min="1" max="25" step="1" value="20" class="w-full" style="min-height:44px" />
+          </div>
+          <div>
+            <label for="tg-timer" class="text-sm font-medium">Auto stop</label>
+            <select id="tg-timer" class="w-full panel-raised p-2 mt-1" style="border-radius:8px;min-height:44px">
+              <option value="0">Off</option>
+              <option value="5">After 5 s</option>
+              <option value="30">After 30 s</option>
+              <option value="60">After 60 s</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button id="tg-play" type="button" class="btn-primary focus-ring">Play tone</button>
+        <button id="tg-stop" type="button" class="btn-secondary focus-ring" disabled>Stop</button>
+      </div>
+    </section>
+
+    <div class="article-rich panel p-6 mt-6">
+      <h2>Safe use</h2>
+      <p>Start at the lowest volume that works, keep tones short at high frequencies, and stop immediately if playback feels uncomfortable. Never test hearing at high volume — the <a href="/hearing-age-test/">hearing age test</a> runs at a fixed moderate level for exactly this reason.</p>
+      <h2>What it is good for</h2>
+      <p>Checking a speaker still plays a given pitch, comparing left and right channels with the <a href="/speaker-test/">speaker test</a>, producing a steady 1 kHz reference for <a href="/calibration/">calibration</a> comparisons, and demonstrating the <a href="/frequency-analyzer/">frequency spectrum</a> live: play a tone here and watch the meter spectrum react in another tab.</p>
+      <p><a href="/hearing-age-test/">Hearing age test →</a> · <a href="/speaker-test/">Speaker test →</a> · <a href="/#measure">Open the decibel meter →</a></p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var ctx = null, osc = null, gain = null, pan = null, timer = null;
+      var freqEl = document.getElementById('tg-freq');
+      var freqVal = document.getElementById('tg-freq-val');
+      var waveEl = document.getElementById('tg-wave');
+      var chEl = document.getElementById('tg-channel');
+      var volEl = document.getElementById('tg-vol');
+      var volVal = document.getElementById('tg-vol-val');
+      var timerEl = document.getElementById('tg-timer');
+      var playBtn = document.getElementById('tg-play');
+      var stopBtn = document.getElementById('tg-stop');
+      var statusEl = document.getElementById('tg-status');
+
+      function setStatus(t) { if (statusEl) statusEl.textContent = t; }
+
+      function syncLabels() {
+        if (freqVal && freqEl) freqVal.textContent = freqEl.value;
+        if (volVal && volEl) volVal.textContent = volEl.value;
+      }
+
+      function panValue() {
+        if (!chEl) return 0;
+        if (chEl.value === 'left') return -1;
+        if (chEl.value === 'right') return 1;
+        return 0;
+      }
+
+      function stop(clearMsg) {
+        if (timer) { clearTimeout(timer); timer = null; }
+        try {
+          if (osc) { try { osc.stop(); } catch (e) {} try { osc.disconnect(); } catch (e) {} }
+          if (gain) { try { gain.disconnect(); } catch (e) {} }
+          if (pan) { try { pan.disconnect(); } catch (e) {} }
+        } catch (e) {}
+        if (ctx) { try { ctx.close(); } catch (e) {} }
+        ctx = osc = gain = pan = null;
+        if (playBtn) playBtn.disabled = false;
+        if (stopBtn) stopBtn.disabled = true;
+        if (!clearMsg) setStatus('Stopped.');
+      }
+
+      function play() {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) { setStatus('Web Audio is not supported in this browser.'); return; }
+        stop(true);
+        try {
+          ctx = new AC({ latencyHint: 'interactive' });
+          osc = ctx.createOscillator();
+          gain = ctx.createGain();
+          var t = ctx.currentTime;
+          var vol = Math.min(25, Math.max(1, Number(volEl ? volEl.value : 20))) / 100;
+          // Hard cap at quarter scale so a slip cannot blast full-scale audio.
+          var peak = Math.min(0.25, vol * 0.9);
+          gain.gain.setValueAtTime(0.0001, t);
+          gain.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), t + 0.05);
+          osc.type = waveEl ? waveEl.value : 'sine';
+          osc.frequency.setValueAtTime(Number(freqEl ? freqEl.value : 440), t);
+          if (typeof ctx.createStereoPanner === 'function') {
+            pan = ctx.createStereoPanner();
+            pan.pan.setValueAtTime(panValue(), t);
+            osc.connect(gain); gain.connect(pan); pan.connect(ctx.destination);
+          } else {
+            osc.connect(gain); gain.connect(ctx.destination);
+          }
+          if (ctx.state === 'suspended') { ctx.resume(); }
+          osc.start();
+          // Live-update while playing.
+          osc.onended = function () {};
+          setStatus('Playing ' + (freqEl ? freqEl.value : 440) + ' Hz (' + (waveEl ? waveEl.value : 'sine') + ').');
+          if (playBtn) playBtn.disabled = true;
+          if (stopBtn) stopBtn.disabled = false;
+          var secs = Number(timerEl ? timerEl.value : 0);
+          if (secs > 0) timer = setTimeout(function () { stop(); setStatus('Auto-stopped after ' + secs + ' s.'); }, secs * 1000);
+        } catch (e) {
+          setStatus('Could not start audio. Check autoplay permissions and try again.');
+          stop(true);
+        }
+      }
+
+      if (freqEl) freqEl.addEventListener('input', function () {
+        syncLabels();
+        if (osc && ctx) { try { osc.frequency.setTargetAtTime(Number(freqEl.value), ctx.currentTime, 0.02); } catch (e) {} }
+      });
+      if (volEl) volEl.addEventListener('input', function () {
+        syncLabels();
+        if (gain && ctx) {
+          var vol = Math.min(25, Math.max(1, Number(volEl.value))) / 100;
+          try { gain.gain.setTargetAtTime(Math.min(0.25, vol * 0.9), ctx.currentTime, 0.03); } catch (e) {}
+        }
+      });
+      if (waveEl) waveEl.addEventListener('change', function () {
+        if (osc) { try { osc.type = waveEl.value; } catch (e) {} }
+      });
+      if (chEl) chEl.addEventListener('change', function () {
+        if (pan && ctx) { try { pan.pan.setTargetAtTime(panValue(), ctx.currentTime, 0.02); } catch (e) {} }
+      });
+      document.querySelectorAll('[data-tg-preset]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (freqEl) { freqEl.value = b.getAttribute('data-tg-preset'); syncLabels(); }
+          if (osc && ctx) { try { osc.frequency.setTargetAtTime(Number(freqEl.value), ctx.currentTime, 0.02); } catch (e) {} }
+        });
+      });
+      if (playBtn) playBtn.addEventListener('click', play);
+      if (stopBtn) stopBtn.addEventListener('click', function () { stop(); });
+      window.addEventListener('pagehide', function () { stop(true); });
+      syncLabels();
+    })();
+  </script>
+</Layout>
