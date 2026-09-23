@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "audit:site": "node scripts/site-audit.mjs"
+    "audit:site": "node scripts/site-audit.mjs",
+    "deploy": "astro build && wrangler pages deploy ./dist"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
