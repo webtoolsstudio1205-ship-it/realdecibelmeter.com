@@ -38,7 +38,7 @@ import { SessionAccumulator } from './session.js';
 import { GraphData } from './graph.js';
 import { describeError, errorFromDomException } from './errors.js';
 import { MicCapture, type CaptureController, type QuantumMessage } from './microphone.js';
-import { designWeightingSos, digitalToInputStrength, EnergyAverager, tauFor } from './dsp.js';
+import { designWeightingSos, digitalToInputStrength, EnergyAverager, tauFor, classifySoundLevel } from './dsp.js';
 
 export type { MeasurementState, ErrorCode };
 export { APP_VERSION };
@@ -290,7 +290,17 @@ export class DecibelEngine {
       result: this.buildResult(s.current),
       inputStrengthPct: digitalToInputStrength(s.current),
       calibrationValid: this.mode === 'calibrated' && this.calibrationCompatible(),
-      display: { current: disp(s.current), min: disp(s.min), leq: disp(s.leq), max: disp(s.max), peakDb: peakDisp },
+      display: {
+        current: disp(s.current),
+        min: disp(s.min),
+        leq: disp(s.leq),
+        max: disp(s.max),
+        peakDb: peakDisp,
+        l10: disp(s.l10 ?? null),
+        l50: disp(s.l50 ?? null),
+        l90: disp(s.l90 ?? null),
+        category: classifySoundLevel(disp(s.current)),
+      },
       calibration: cal,
       activeProfile: this.activeProfile ? { ...this.activeProfile } : null,
       baseline: this.baseline ? { ...this.baseline } : null,

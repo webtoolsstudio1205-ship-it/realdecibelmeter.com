@@ -28,12 +28,12 @@ export interface HreflangEntry {
 export type GuideKey = 'guides' | 'calibration' | 'accuracy' | 'decibel-chart' | 'db-vs-dba' | 'microphone-not-working' | 'how-to-use' | 'methodology' | 'privacy';
 
 const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
-  guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/' },
-  calibration: { en: '/calibration/', de: '/de/kalibrierung/', ja: '/ja/calibration/' },
-  accuracy: { en: '/accuracy/', de: '/de/genauigkeit/', ja: '/ja/accuracy/' },
-  'decibel-chart': { en: '/decibel-chart/', de: '/de/dezibel-tabelle/', ja: '/ja/decibel-chart/' },
-  'db-vs-dba': { en: '/db-vs-dba/', de: '/de/db-vs-dba/', ja: '/ja/db-vs-dba/' },
-  'microphone-not-working': { en: '/microphone-not-working/', de: '/de/mikrofon-funktioniert-nicht/', ja: '/ja/microphone-not-working/' },
+  guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/', it: '/it/guide/' },
+  calibration: { en: '/calibration/', de: '/de/kalibrierung/', ja: '/ja/calibration/', it: '/it/calibrazione/' },
+  accuracy: { en: '/accuracy/', de: '/de/genauigkeit/', ja: '/ja/accuracy/', it: '/it/accuratezza/' },
+  'decibel-chart': { en: '/decibel-chart/', de: '/de/dezibel-tabelle/', ja: '/ja/decibel-chart/', it: '/it/tabella-decibel/' },
+  'db-vs-dba': { en: '/db-vs-dba/', de: '/de/db-vs-dba/', ja: '/ja/db-vs-dba/', it: '/it/db-vs-dba/' },
+  'microphone-not-working': { en: '/microphone-not-working/', de: '/de/mikrofon-funktioniert-nicht/', ja: '/ja/microphone-not-working/', it: '/it/microfono-non-funziona/' },
   'how-to-use': { en: '/how-to-use/', ja: '/ja/how-to-use/' },
   methodology: { en: '/methodology/', ja: '/ja/methodology/' },
   privacy: { en: '/privacy/', ja: '/ja/privacy/' },

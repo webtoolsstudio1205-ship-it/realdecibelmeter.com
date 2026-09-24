@@ -88,6 +88,9 @@ export function buildReportRows(s: ExportSession, fields: ReportUserFields): Rep
     { key: 'Minimum', value: fmtDb(s.minDb, s.unit) },
     { key: 'Energy average (LAeq from energy)', value: fmtDb(s.leqDb, s.unit) },
     { key: 'Maximum', value: fmtDb(s.maxDb, s.unit) },
+    { key: 'L10 (peak 10% level)', value: fmtDb(s.l10Db ?? null, s.unit) },
+    { key: 'L50 (median level)', value: fmtDb(s.l50Db ?? null, s.unit) },
+    { key: 'L90 (ambient noise floor)', value: fmtDb(s.l90Db ?? null, s.unit) },
     { key: 'Weighting / response', value: `${s.weighting} / ${s.response}` },
     {
       key: 'Reading class',

@@ -37,6 +37,9 @@ export interface ExportSession {
   leqDb: number | null;
   maxDb: number | null;
   peakDb: number | null;
+  l10Db?: number | null;
+  l50Db?: number | null;
+  l90Db?: number | null;
   invalidSamples: number;
   segments: SegmentSummary[];
   softwareVersion: string;
@@ -50,7 +53,7 @@ export const MEASUREMENT_LIMITATIONS =
 
 /** Build one metadata object; CSV, JSON and PDF all render from THE SAME values. */
 export function buildExportSession(args: {
-  stats: { current: number | null; min: number | null; leq: number | null; max: number | null; peakDb: number; gapMs: number; recordedSec: number; durationSec: number };
+  stats: { current: number | null; min: number | null; leq: number | null; max: number | null; peakDb: number; gapMs: number; recordedSec: number; durationSec: number; l10?: number | null; l50?: number | null; l90?: number | null };
   gaps: GapRecord[];
   segments: SegmentSummary[];
   unit: DisplayUnit;
@@ -97,6 +100,9 @@ export function buildExportSession(args: {
     leqDb: args.stats.leq,
     maxDb: args.stats.max,
     peakDb: Number.isFinite(args.stats.peakDb) ? args.stats.peakDb : null,
+    l10Db: args.stats.l10 ?? null,
+    l50Db: args.stats.l50 ?? null,
+    l90Db: args.stats.l90 ?? null,
     invalidSamples: args.invalidSamples,
     segments: args.segments,
     softwareVersion: APP_VERSION,
@@ -151,6 +157,9 @@ export function sessionToCsv(s: ExportSession): string {
     ['min_db', F(s.minDb)],
     ['leq_db', F(s.leqDb)],
     ['max_db', F(s.maxDb)],
+    ['l10_db', F(s.l10Db ?? null)],
+    ['l50_db', F(s.l50Db ?? null)],
+    ['l90_db', F(s.l90Db ?? null)],
     ['sampled_peak_dbfs', F(s.peakDb)],
     ['invalid_samples', String(s.invalidSamples)],
     ['segments', String(s.segments.length)],

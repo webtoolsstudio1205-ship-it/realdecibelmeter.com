@@ -344,17 +344,19 @@ const featureCopy = getFeatures(locale);
   import { loadHistory, saveSession, clearHistory } from '../lib/history.js';
   import { MicCapture } from '../lib/microphone.js';
 
-  const $ = (id) => document.getElementById(id);
+  import type { EngineSnapshot } from '../lib/types.js';
+
+  const $ = (id: string): HTMLElement | null => document.getElementById(id);
   const engine = new DecibelEngine();
   const section = document.getElementById('measure');
   const uiNode = document.getElementById('rdm-ui-strings');
   const calNode = document.getElementById('rdm-cal-strings');
   const featureNode = document.getElementById('rdm-feature-strings');
-  const UI = JSON.parse(uiNode?.textContent || '{}');
-  const CAL = JSON.parse(calNode?.textContent || '{}');
-  const FEATURE = JSON.parse(featureNode?.textContent || '{}');
-  const fill = (value, vars = {}) => Object.entries(vars).reduce((text, [key, replacement]) => text.replaceAll(`{${key}}`, String(replacement)), value || '');
-  const T = (k, fb) => section?.getAttribute(k) ?? fb;
+  const UI: Record<string, string> = JSON.parse(uiNode?.textContent || '{}');
+  const CAL: Record<string, string> = JSON.parse(calNode?.textContent || '{}');
+  const FEATURE: Record<string, string> = JSON.parse(featureNode?.textContent || '{}');
+  const fill = (value: string, vars: Record<string, unknown> = {}): string => Object.entries(vars).reduce((text, [key, replacement]) => text.replaceAll(`{${key}}`, String(replacement)), value || '');
+  const T = (k: string, fb: string): string => section?.getAttribute(k) ?? fb;
   const PRESENTATION = {
     current: UI.current, minimum: UI.minimum, digitalAverage: UI.digitalAverage, maximum: UI.maximum, digitalPeak: UI.digitalPeak,
     currentEstimated: UI.estimatedSound, inputStrength: T('data-input-strength', UI.inputStrengthGraph),
@@ -363,7 +365,7 @@ const featureCopy = getFeatures(locale);
     currentStrength: UI.currentStrength, averageStrength: UI.averageStrength, peakStrength: UI.peakStrength,
     estimatedSound: UI.estimatedSound, inputStrengthGraph: UI.inputStrengthGraph,
   };
-  const STATUS = () => ({
+  const STATUS = (): Record<string, string> => ({
     idle: T('data-st-idle', 'Idle'),
     'requesting-permission': T('data-st-req', 'Requesting permission…'),
     stabilizing: UI.stabilizing,
@@ -372,14 +374,14 @@ const featureCopy = getFeatures(locale);
     stopped: T('data-st-stop', 'Stopped'),
     error: T('data-st-err', 'Attention needed'),
   });
-  const PERM = () => ({
+  const PERM = (): Record<string, string> => ({
     unknown: T('data-p-unknown', 'Not requested'),
     granted: T('data-p-granted', 'Granted'),
     denied: T('data-p-denied', 'Denied'),
     prompt: T('data-p-prompt', 'Prompt'),
   });
-  const methodName = (method) => method === 'reference-meter' ? UI.referenceMeter : method === 'acoustic-calibrator' ? UI.acousticCalibrator : method === 'other-documented' ? UI.otherDocumented : method;
-  const els = {
+  const methodName = (method: string): string => method === 'reference-meter' ? UI.referenceMeter : method === 'acoustic-calibrator' ? UI.acousticCalibrator : method === 'other-documented' ? UI.otherDocumented : method;
+  const els: Record<string, HTMLElement | null> = {
     announcer: $('rdm-announcer'), panel: $('rdm-panel'),
     stateText: $('rdm-state-text'), stateDot: $('rdm-state-dot'),
     calBadge: $('rdm-cal-badge'), permText: $('rdm-perm-text'),
@@ -420,15 +422,15 @@ const featureCopy = getFeatures(locale);
 
   const specFills = Array.from(document.querySelectorAll('#rdm-spec .spec-fill'));
   const ARC_LEN = 428;
-  const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const REDUCED = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  let latest = null;
+  let latest: EngineSnapshot | null = null;
   let prevState = 'idle';
   let prevCalibrated = false;
-  let historyEntries = [];
+  let historyEntries: any[] = [];
   let lastAnnounced = '';
-  let graphView = { series: [], lo: 20, hi: 120, label: `${UI.estimatedSound} (dBA)`, unit: 'dBA' };
-  let pauseMarkers = [];
+  let graphView = { series: [] as number[], lo: 20, hi: 120, label: `${UI.estimatedSound} (dBA)`, unit: 'dBA' };
+  let pauseMarkers: number[] = [];
   const DATE_TIME = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' });
   const DATE_ONLY = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' });
 
@@ -437,41 +439,41 @@ const featureCopy = getFeatures(locale);
   // Stored/exported measurements are NEVER smoothed — only these display vars.
   let rafId = 0;
   let lastFrame = 0;
-  let shownMain = null;
+  let shownMain: number | null = null;
   let shownFrac = 0;
 
-  function mainTarget(s) {
+  function mainTarget(s: EngineSnapshot) {
     return publicGauge(s, PRESENTATION);
   }
 
-  function fracFor(value, lo, hi) {
+  function fracFor(value: number | null, lo: number, hi: number): number {
     if (value == null || !Number.isFinite(value)) return 0;
     const t = (value - lo) / (hi - lo);
     return Math.min(1, Math.max(0, t));
   }
 
-  function paintMain(target, immediate) {
+  function paintMain(target: { value: number | null; unit: string; lo: number; hi: number }, immediate?: boolean) {
     const txt = target.value == null || !Number.isFinite(target.value) ? '--' : formatDb(target.value);
-    if (els.big.textContent !== txt) els.big.textContent = txt;
-    if (els.unit.textContent !== target.unit) els.unit.textContent = target.unit;
+    if (els.big && els.big.textContent !== txt) els.big.textContent = txt;
+    if (els.unit && els.unit.textContent !== target.unit) els.unit.textContent = target.unit;
     const frac = fracFor(target.value, target.lo, target.hi);
     if (immediate || REDUCED) {
       shownMain = target.value;
       shownFrac = frac;
-      els.arc.style.strokeDashoffset = String(ARC_LEN * (1 - frac));
+      if (els.arc) els.arc.style.strokeDashoffset = String(ARC_LEN * (1 - frac));
     }
   }
 
   function tickLabels() {
     if (!latest) return;
     const gauge = publicGauge(latest, PRESENTATION);
-    els.tickLo.textContent = String(gauge.lo);
-    els.tickMid.textContent = String((gauge.lo + gauge.hi) / 2);
-    els.tickHi.textContent = String(gauge.hi);
-    els.viewLabel.textContent = gauge.label;
+    if (els.tickLo) els.tickLo.textContent = String(gauge.lo);
+    if (els.tickMid) els.tickMid.textContent = String((gauge.lo + gauge.hi) / 2);
+    if (els.tickHi) els.tickHi.textContent = String(gauge.hi);
+    if (els.viewLabel) els.viewLabel.textContent = gauge.label;
   }
 
-  function rafTick(now) {
+  function rafTick(now: number) {
     rafId = 0;
     if (!latest) return;
     if (now - lastFrame < 33 && !REDUCED) {
@@ -491,11 +493,11 @@ const featureCopy = getFeatures(locale);
       shownMain = gap < 0.02 ? t.value : next;
       shownFrac = shownFrac + (frac - shownFrac) * 0.35;
       const txt = formatDb(shownMain);
-      if (els.big.textContent !== txt) els.big.textContent = txt;
-      if (els.unit.textContent !== t.unit) els.unit.textContent = t.unit;
-      els.arc.style.strokeDashoffset = String(ARC_LEN * (1 - shownFrac));
+      if (els.big && els.big.textContent !== txt) els.big.textContent = txt;
+      if (els.unit && els.unit.textContent !== t.unit) els.unit.textContent = t.unit;
+      if (els.arc) els.arc.style.strokeDashoffset = String(ARC_LEN * (1 - shownFrac));
     }
-    els.gaugeGlow.style.opacity = (0.15 + shownFrac * 0.55).toFixed(2);
+    if (els.gaugeGlow) els.gaugeGlow.style.opacity = (0.15 + shownFrac * 0.55).toFixed(2);
     const st = latest.state;
     if (st === 'running' || st === 'paused' || st === 'stabilizing' || st === 'requesting-permission') {
       rafId = requestAnimationFrame(rafTick);
@@ -516,11 +518,12 @@ const featureCopy = getFeatures(locale);
     rafId = 0;
   }
 
-  function buildExport(s) {
+  function buildExport(s: EngineSnapshot) {
     return buildExportSession({
       stats: {
         current: s.display.current, min: s.display.min, leq: s.display.leq, max: s.display.max,
         peakDb: s.display.peakDb, gapMs: s.gapMs, recordedSec: s.stats.recordedSec, durationSec: s.stats.durationSec,
+        l10: s.stats.l10, l50: s.stats.l50, l90: s.stats.l90,
       },
       gaps: s.gaps,
       segments: s.segments,

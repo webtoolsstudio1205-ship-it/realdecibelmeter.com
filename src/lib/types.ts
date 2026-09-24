@@ -54,6 +54,9 @@ export interface SessionStats {
   gapMs: number;
   gapCount: number;
   recordedSec: number;
+  l10?: number | null;
+  l50?: number | null;
+  l90?: number | null;
 }
 
 export interface EngineSnapshot {
@@ -84,6 +87,10 @@ export interface EngineSnapshot {
     leq: number | null;
     max: number | null;
     peakDb: number;
+    l10?: number | null;
+    l50?: number | null;
+    l90?: number | null;
+    category?: { zone: string; label: string; colorClass: string };
   };
   calibration: CalibrationProfile;
   activeProfile: CalibrationProfileFull | null;

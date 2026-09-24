@@ -1,0 +1,71 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang, type GuideKey } from '../../lib/seo';
+
+interface ItalianGuide {
+  slug: string; key: GuideKey; title: string; description: string; intro: string; label: string; body: string; article?: boolean;
+}
+
+const pages: ItalianGuide[] = [
+  {
+    slug: 'guide', key: 'guides', title: 'Guide al Fonometro Online',
+    description: 'Guide in italiano per misurazione del suono online, calibrazione, accuratezza, tabella dei decibel, dB vs dBA e risoluzione problemi microfono.',
+    intro: 'Scegli la guida più adatta alla tua esigenza. Senza calibrazione, il browser mostra un valore stimato nominale; la calibrazione di riferimento migliora l\'accuratezza specifica del dispositivo.', label: 'Guide',
+    body: `<h2>Misura e orientamento</h2><ul><li><a href="/it/calibrazione/">Calibrare il fonometro</a> — definisci un offset del dispositivo con una sorgente di riferimento affidabile.</li><li><a href="/it/accuratezza/">Accuratezza del fonometro online</a> — comprendi hardware, controllo automatico del guadagno e limiti.</li><li><a href="/it/tabella-decibel/">Tabella dei decibel</a> — livelli di rumore tipici della vita quotidiana.</li></ul><h2>Concetti e risoluzione problemi</h2><ul><li><a href="/it/db-vs-dba/">Differenza tra dB e dBA</a> — spiegazione chiara delle ponderazioni A, C e Z.</li><li><a href="/it/microfono-non-funziona/">Microfono non funziona</a> — verifica permessi, selezione dispositivo e browser.</li></ul><p><a href="/it/#measure">Misura il rumore online adesso →</a></p>`,
+  },
+  {
+    slug: 'calibrazione', key: 'calibration', title: 'Calibrare il Fonometro Online',
+    description: 'Come calibrare un fonometro online nel browser con un dispositivo di riferimento e un offset specifico.',
+    intro: 'La calibrazione confronta il browser con un fonometro di riferimento nella stessa posizione e salva la differenza come offset. Migliora la stima del livello ma non sostituisce un dispositivo certificato.', label: 'Calibrazione', article: true,
+    body: `<h2>Cosa occorre</h2><ul><li>Un fonometro calibrato o un calibratore acustico con livello noto.</li><li>Lo stesso microfono, browser e posizione che userai per le misurazioni.</li><li>Ponderazioni A, C o Z e costante di tempo Fast/Slow corrispondenti.</li></ul><h2>Calibrazione in quattro passaggi</h2><ol><li>Posiziona il dispositivo di riferimento e lo smartphone/PC vicini, lasciando liberi i microfoni.</li><li>Genera un suono di riferimento stabile finché le letture non si stabilizzano.</li><li>Registra la media digitale nella schermata di calibrazione e inserisci il valore del fonometro di riferimento.</li><li>Salva il profilo e verifica la lettura ottenuta.</li></ol><p><a href="/it/#measure">Apri il fonometro in italiano →</a> · <a href="/it/guide/">Tutte le guide →</a></p>`,
+  },
+  {
+    slug: 'accuratezza', key: 'accuracy', title: 'Quanto è Accurato un Fonometro Online?',
+    description: 'Accuratezza delle app fonometro nel browser: hardware del microfono, AGC, risposta in frequenza e limiti pratici.',
+    intro: 'I microfoni degli smartphone sono progettati per la voce, non per la metrologia acustica. Le letture nel browser sono utili per confronti relativi ma richiedono cautela.', label: 'Accuratezza', article: true,
+    body: `<h2>Fattori che influenzano la lettura</h2><ul><li><strong>Hardware:</strong> microfoni, capsule e preamplificatori variano da dispositivo a dispositivo.</li><li><strong>Controllo automatico guadagno (AGC):</strong> i sistemi operativi possono alterare la sensibilità in base al livello.</li><li><strong>Ponderazione e frequenza:</strong> un offset costante non corregge la risposta in frequenza non lineare.</li></ul><h2>Quando occorre uno strumento certificato</h2><p>Per conformità sul lavoro, pratiche legali o valutazioni mediche è necessario un fonometro di Classe 1 o Classe 2 omologato.</p><p><a href="/it/#measure">Avvia misurazione →</a> · <a href="/it/tabella-decibel/">Tabella dei decibel →</a> · <a href="/it/guide/">Tutte le guide →</a></p>`,
+  },
+  {
+    slug: 'tabella-decibel', key: 'decibel-chart', title: 'Tabella dei Decibel: Livelli di Rumore Comuni',
+    description: 'Tabella dei decibel indicativa in dBA: da camera da letto silenziosa, biblioteca, conversazione fino a traffico e concerti.',
+    intro: 'I valori riportati sono indicativi. Distanza, ambiente, durata e ponderazione influiscono sul livello sonoro reale.', label: 'Tabella decibel', article: true,
+    body: `<table><thead><tr><th>Livello (circa)</th><th>Esempio ambientale</th></tr></thead><tbody><tr><td>30 dBA</td><td>Camera da letto silenziosa di notte</td></tr><tr><td>40 dBA</td><td>Biblioteca silenziosa</td></tr><tr><td>50 dBA</td><td>Ufficio tranquillo, pioggia moderata</td></tr><tr><td>60 dBA</td><td>Conversazione normale</td></tr><tr><td>70 dBA</td><td>Traffico stradale intenso ravvicinato</td></tr><tr><td>80 dBA</td><td>Ristorante affollato</td></tr><tr><td>90 dBA</td><td>Tosaerba o motocicletta</td></tr><tr><td>100 dBA</td><td>Concerto dal vivo vicinanze palco</td></tr><tr><td>110 dBA</td><td>Utensili elettrici rumorosi</td></tr><tr><td>120 dBA</td><td>Sirena d'emergenza ravvicinata</td></tr></tbody></table><p><a href="/it/#measure">Misura rumore online →</a> · <a href="/it/db-vs-dba/">Capire dB e dBA →</a> · <a href="/it/guide/">Tutte le guide →</a></p>`,
+  },
+  {
+    slug: 'db-vs-dba', key: 'db-vs-dba', title: 'Differenza tra dB e dBA',
+    description: 'Guida alla differenza tra dB, dBA, dBC, dBZ e costanti di tempo Fast e Slow nelle misurazioni del suono.',
+    intro: 'dB misura un rapporto logaritmico. A, C e Z indicano le curve di ponderazione in frequenza applicate al segnale audio.', label: 'dB e dBA', article: true,
+    body: `<h2>dBFS vs dB SPL</h2><p>Nel browser i valori digitali sono in dBFS (dB Full Scale) e sono generalmente negativi. Un livello acustico ambientale espresso in dBA richiede la calibrazione con uno strumento di riferimento.</p><h2>Ponderazioni A, C e Z</h2><ul><li><strong>dBA:</strong> approssima la sensibilità dell'orecchio umano.</li><li><strong>dBC:</strong> include maggiormente le basse frequenze.</li><li><strong>dBZ:</strong> risposta piatta senza filtri in frequenza.</li></ul><p><a href="/it/#measure">Apri fonometro →</a> · <a href="/it/accuratezza/">Accuratezza →</a></p>`,
+  },
+  {
+    slug: 'microfono-non-funziona', key: 'microphone-not-working', title: 'Microfono Non Funziona: Guida alla Risoluzione',
+    description: 'Cosa fare se il browser non rileva il microfono: permessi, impostazioni HTTPS, selezione dispositivo e risoluzione problemi.',
+    intro: 'Se il fonometro rimane in stato "--", segui questi passaggi per ripristinare l\'accesso al microfono.', label: 'Aiuto microfono', article: true,
+    body: `<h2>1. Controlla i permessi del browser</h2><p>Clicca sull'icona del lucchetto nella barra degli indirizzi e assicurati che il microfono sia impostato su "Consenti".</p><h2>2. Seleziona il microfono corretto</h2><p>Verifica che il microfono predefinito del sistema sia quello desiderato (es. microfono interno o cuffie USB).</p><h2>3. Chiudi altre app in uso</h2><p>Applicazioni di chiamata o registrazione possono bloccare l'accesso al microfono.</p><p><a href="/it/#measure">Riprova misurazione →</a> · <a href="/it/guide/">Tutte le guide →</a></p>`,
+  },
+];
+
+export function getStaticPaths() {
+  return ['guide', 'calibrazione', 'accuratezza', 'tabella-decibel', 'db-vs-dba', 'microfono-non-funziona']
+    .map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const page = pages.find((candidate) => candidate.slug === slug);
+if (!page) throw new Error(`Unknown Italian guide route: ${slug}`);
+const dict = getDict('it');
+const path = `/it/${page.slug}/`;
+const url = `${SITE}${path}`;
+const jsonLd = [
+  ...(page.article ? [articleJsonLd({ headline: page.title, description: page.description, url, inLanguage: 'it', dateModified: '2026-09-24' })] : []),
+  breadcrumbJsonLd([{ name: 'Home', url: `${SITE}/it/` }, { name: page.label, url }]),
+];
+---
+
+<Layout locale="it" dict={dict} title={`${page.title} — Real Decibel Meter`} description={page.description} path={path} hreflang={guideHreflang(page.key)} jsonLd={jsonLd} ogType={page.article ? 'article' : 'website'}>
+  <Article title={page.title} intro={page.intro} reviewed="2026-09-24" breadcrumb={[{ name: 'Home', href: '/it/' }, { name: page.label, href: path }]}>
+    <div class="article-rich" set:html={page.body} />
+  </Article>
+</Layout>

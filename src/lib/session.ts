@@ -1,4 +1,5 @@
 import type { SessionStats } from './types.js';
+import { calculatePercentiles } from './dsp.js';
 
 /**
  * Session energy accumulator.
@@ -83,6 +84,7 @@ export class SessionAccumulator {
   private segMin: number | null = null;
   private segMax: number | null = null;
   private segBeganIso = '';
+  private levelBuffer: number[] = [];
   private config: SessionConfig = { weighting: 'Z', calibrationId: null, sampleRate: 0 };
 
   begin(nowMs: number, config: SessionConfig): void {
@@ -110,6 +112,7 @@ export class SessionAccumulator {
     this.segMin = null;
     this.segMax = null;
     this.segBeganIso = '';
+    this.levelBuffer = [];
   }
 
   pause(nowMs: number): void {
@@ -181,6 +184,8 @@ export class SessionAccumulator {
       this.max = this.max == null ? q.weightedDb : Math.max(this.max, q.weightedDb);
       this.segMin = this.segMin == null ? q.weightedDb : Math.min(this.segMin, q.weightedDb);
       this.segMax = this.segMax == null ? q.weightedDb : Math.max(this.segMax, q.weightedDb);
+      this.levelBuffer.push(q.weightedDb);
+      if (this.levelBuffer.length > 3600) this.levelBuffer.shift();
     }
   }
 
@@ -195,6 +200,8 @@ export class SessionAccumulator {
     this.segSamples += 1;
     this.min = this.min == null ? db : Math.min(this.min, db);
     this.max = this.max == null ? db : Math.max(this.max, db);
+    this.levelBuffer.push(db);
+    if (this.levelBuffer.length > 3600) this.levelBuffer.shift();
   }
 
   snapshot(nowMs: number): SessionSnapshot {
@@ -205,6 +212,7 @@ export class SessionAccumulator {
       durationSec = Math.max(0, (nowMs - this.startedAt - paused) / 1000);
     }
     const rate = this.config.sampleRate > 0 ? this.config.sampleRate : 48000;
+    const percentiles = calculatePercentiles(this.levelBuffer);
     return {
       current: this.current,
       min: this.min,
@@ -216,6 +224,9 @@ export class SessionAccumulator {
       gapMs: this.gaps.reduce((a, g) => a + g.durationMs, 0),
       gapCount: this.gaps.length,
       recordedSec: this.sampleCount / rate,
+      l10: percentiles.l10,
+      l50: percentiles.l50,
+      l90: percentiles.l90,
       segments: [...this.segments],
       gaps: [...this.gaps],
     };

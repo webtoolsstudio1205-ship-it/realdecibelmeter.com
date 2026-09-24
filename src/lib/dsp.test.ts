@@ -18,6 +18,8 @@ import {
   sampledPeakDbfs,
   silenceFixture,
   sineFixture,
+  calculatePercentiles,
+  classifySoundLevel,
   SosFilter,
   sosMagnitudeDb,
 } from './dsp.js';
@@ -171,5 +173,29 @@ describe('frequency weighting filters', () => {
     for (const f of [63, 125, 250, 500, 1000, 2000, 4000, 8000]) {
       expect(Math.abs(steadyStateGainDb('Z', f, fs))).toBeLessThanOrEqual(0.01);
     }
+  });
+
+  describe('percentile and sound category classification', () => {
+    it('calculates L10, L50, L90 accurately from a known series', () => {
+      // 100 levels from 1 to 100
+      const samples = Array.from({ length: 100 }, (_, i) => i + 1);
+      const res = calculatePercentiles(samples);
+      expect(res.l10).toBe(90); // Top 10%
+      expect(res.l50).toBe(50); // Median (50% exceeded)
+      expect(res.l90).toBe(10); // Ambient floor (90% exceeded)
+    });
+
+    it('handles empty or null arrays gracefully', () => {
+      expect(calculatePercentiles([])).toEqual({ l10: null, l50: null, l90: null });
+      expect(calculatePercentiles([null, null])).toEqual({ l10: null, l50: null, l90: null });
+    });
+
+    it('classifies sound levels correctly into risk zones', () => {
+      expect(classifySoundLevel(null).zone).toBe('safe');
+      expect(classifySoundLevel(50).zone).toBe('safe');
+      expect(classifySoundLevel(75).zone).toBe('moderate');
+      expect(classifySoundLevel(90).zone).toBe('elevated');
+      expect(classifySoundLevel(105).zone).toBe('hazardous');
+    });
   });
 });

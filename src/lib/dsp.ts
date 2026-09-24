@@ -483,6 +483,61 @@ export function formatDuration(totalSec: number): string {
   return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
 }
 
+export interface Percentiles {
+  l10: number | null;
+  l50: number | null;
+  l90: number | null;
+}
+
+/**
+ * Calculate statistical acoustic percentiles L10, L50, L90 from an array of level samples.
+ * L_N is the level EXCEEDED N% of the total measurement duration (sorted high to low).
+ */
+export function calculatePercentiles(samples: (number | null)[]): Percentiles {
+  const valid = samples.filter((v): v is number => v != null && Number.isFinite(v));
+  if (valid.length === 0) {
+    return { l10: null, l50: null, l90: null };
+  }
+  // Sort descending: highest sound levels first
+  valid.sort((a, b) => b - a);
+  const n = valid.length;
+
+  const idx10 = Math.min(n - 1, Math.floor(n * 0.10));
+  const idx50 = Math.min(n - 1, Math.floor(n * 0.50));
+  const idx90 = Math.min(n - 1, Math.floor(n * 0.90));
+
+  return {
+    l10: valid[idx10] ?? null,
+    l50: valid[idx50] ?? null,
+    l90: valid[idx90] ?? null,
+  };
+}
+
+export interface SoundCategory {
+  zone: 'safe' | 'moderate' | 'elevated' | 'hazardous';
+  label: string;
+  colorClass: string;
+}
+
+/**
+ * Classify sound level or environmental dBA into human risk categories.
+ */
+export function classifySoundLevel(splOrDb: number | null): SoundCategory {
+  if (splOrDb == null || !Number.isFinite(splOrDb)) {
+    return { zone: 'safe', label: 'Idle / Quiet', colorClass: 'text-muted' };
+  }
+  if (splOrDb < 70) {
+    return { zone: 'safe', label: 'Safe (< 70 dB)', colorClass: 'text-emerald-400' };
+  }
+  if (splOrDb < 85) {
+    return { zone: 'moderate', label: 'Moderate (70–85 dB)', colorClass: 'text-amber-400' };
+  }
+  if (splOrDb < 100) {
+    return { zone: 'elevated', label: 'Elevated (85–100 dB)', colorClass: 'text-orange-500' };
+  }
+  return { zone: 'hazardous', label: 'Hazardous (> 100 dB)', colorClass: 'text-rose-500' };
+}
+
 // ---------------------------------------------------------------------------
 // Deterministic offline PCM fixtures for tests.
 // ---------------------------------------------------------------------------
