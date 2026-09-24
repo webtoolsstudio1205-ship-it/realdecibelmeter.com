@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
 
+# Indexation policy (single source of truth: isNoindexPath() in src/lib/seo.ts):
+# - INDEX: /, locale homepages (/de/, /ja/, /it/, /es/, /fr/, /pt/, /ko/),
+#   tools, guides, methodology, FAQ — listed in sitemap-index.xml.
+# - NOINDEX via <meta name="robots" content="noindex, follow"> (NOT via
+#   Disallow here, so crawlers can see the noindex tag): /about/, /contact/,
+#   /privacy/ (+ /ja/privacy/ etc.), /terms/, /disclaimer/,
+#   /editorial-policy/, /404, /500 — excluded from the sitemap.
+
 Sitemap: https://realdecibelmeter.com/sitemap-index.xml

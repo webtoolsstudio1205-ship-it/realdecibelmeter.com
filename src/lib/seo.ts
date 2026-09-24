@@ -20,12 +20,52 @@ export function canonicalFor(path: string): string {
   return `${SITE}${p}`;
 }
 
+/**
+ * Thin / legal / utility pages that must NOT be indexed.
+ * Single source of truth — mirrored in `astro.config.mjs` sitemap filter
+ * (config cannot import TS) and consumed by `Layout.astro` for the
+ * `<meta name="robots">` default.
+ *
+ * INDEXED (high value, keep `index, follow` + in sitemap):
+ * `/`, locale homepages (`/de/`, `/ja/`…), tools
+ * (`/tone-generator/`, `/speaker-test/`, …), guides & explainers
+ * (`/guides/`, `/calibration/`, `/accuracy/`, `/methodology/`,
+ * `/how-to-use/`, `/decibel-chart/`, `/db-vs-dba/`, `/faq/`, …)
+ * including their `/de/`, `/ja/`, `/it/` equivalents.
+ *
+ * NOINDEX (`noindex, follow`, excluded from sitemap):
+ * legal & utility pages with no search intent — privacy, terms,
+ * disclaimer, editorial-policy, contact, about, error pages.
+ * Methodology is deliberately INDEXED: it is core guide content with
+ * real search demand. To noindex it, just add '/methodology/' below
+ * (and in astro.config.mjs).
+ */
+export const NOINDEX_PATHS: readonly string[] = [
+  '/about/',
+  '/contact/',
+  '/privacy/',
+  '/terms/',
+  '/disclaimer/',
+  '/editorial-policy/',
+];
+
+/** Returns true for paths that must render `noindex, follow`. */
+export function isNoindexPath(path: string): boolean {
+  const p = path.startsWith('/') ? path : `/${path}`;
+  const withSlash = p.endsWith('/') ? p : `${p}/`;
+  if (withSlash.includes('/404') || withSlash.includes('/500')) return true;
+  if ((NOINDEX_PATHS as readonly string[]).includes(withSlash)) return true;
+  // Localized legal pages, e.g. /ja/privacy/ (present + future locales).
+  if (/^\/[a-z]{2}\/privacy\/$/.test(withSlash)) return true;
+  return false;
+}
+
 export interface HreflangEntry {
   hreflang: string;
   href: string;
 }
 
-export type GuideKey = 'guides' | 'calibration' | 'accuracy' | 'decibel-chart' | 'db-vs-dba' | 'microphone-not-working' | 'how-to-use' | 'methodology' | 'privacy';
+export type GuideKey = 'guides' | 'calibration' | 'accuracy' | 'decibel-chart' | 'db-vs-dba' | 'microphone-not-working' | 'how-to-use' | 'methodology' | 'privacy' | 'handy-dezibel-messen' | 'noise-meter-app' | 'iphone-decibel-meter';
 
 const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/', it: '/it/guide/' },
@@ -37,6 +77,9 @@ const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   'how-to-use': { en: '/how-to-use/', ja: '/ja/how-to-use/' },
   methodology: { en: '/methodology/', ja: '/ja/methodology/' },
   privacy: { en: '/privacy/', ja: '/ja/privacy/' },
+  'handy-dezibel-messen': { de: '/de/handy-dezibel-messen/' },
+  'noise-meter-app': { ja: '/ja/noise-meter-app/' },
+  'iphone-decibel-meter': { en: '/iphone-decibel-meter/' },
 };
 
 export function guideHreflang(key: GuideKey): HreflangEntry[] {

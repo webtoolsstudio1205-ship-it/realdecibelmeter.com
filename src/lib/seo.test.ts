@@ -78,8 +78,12 @@ describe('seo foundations', () => {
       for (const f of dicts[loc].faq) {
         expect(enAnswers.has(f.a)).toBe(false);
       }
-      expect(dicts[loc].faq.length).toBe(dicts.en.faq.length);
+      // Language-specific keyword coverage: each locale keeps its own
+      // question set (EN/iPhone, DE/Handy, JA/騒音計アプリ, ...), so exact
+      // parity with EN is not required — only a healthy minimum.
+      expect(dicts[loc].faq.length).toBeGreaterThanOrEqual(5);
     }
+    expect(dicts.en.faq.length).toBeGreaterThanOrEqual(13);
   });
 
   it('no unsupported accuracy claims in metadata or UI strings', () => {

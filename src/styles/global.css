@@ -1322,3 +1322,45 @@ body,
 .refresh-btn:hover svg {
   transform: rotate(120deg);
 }
+
+/* ---------- Mobile overflow guards ----------
+ * Symptom fixed: the page fits the viewport at the top on mobile but breaks
+ * after scrolling down. Root cause: below-fold content wider than the
+ * viewport (wide tables, flex label/value rows that cannot shrink, long
+ * unbroken strings) forces the whole page wider. These rules keep every
+ * below-fold block inside the viewport. */
+html {
+  overflow-x: clip;
+}
+img, svg, video, canvas, progress {
+  max-width: 100%;
+}
+.panel, .panel-raised, .article-rich {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+/* Label/value rows (meter quality, exposure, spectrum, dose calculator,
+ * customize-modal device list): let the label shrink and wrap, and allow
+ * long values to break, instead of pushing the page wider. */
+dl > div.flex.justify-between {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+dl > div.flex.justify-between > dt,
+dl > div.flex.justify-between > dd {
+  min-width: 0;
+}
+dl > div.flex.justify-between > dd {
+  overflow-wrap: anywhere;
+}
+/* Wide article tables scroll inside the panel instead of breaking layout. */
+.article-rich table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+/* JS-rendered lists (session history, calibration profiles). */
+#rdm-history li, #rdm-profiles li, .profile-row {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

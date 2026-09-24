@@ -10,10 +10,33 @@ import sitemap from '@astrojs/sitemap';
 //
 // Sitemap priorities guide crawl budget toward unique, high-value pages first.
 // This helps the "Crawled - currently not indexed" state on new sites: Google
-// crawls the homepage and core guides before thin utility pages (about,
-// contact, terms). lastmod is set at build time so Google can spot fresh URLs.
+// crawls the homepage and core guides first. Legal/utility pages (about,
+// contact, terms, privacy, disclaimer, editorial-policy) are noindex and
+// excluded from the sitemap via sitemapInclude(). lastmod is set at build
+// time so Google can spot fresh URLs.
 const BUILD_DATE = new Date().toISOString().slice(0, 10);
 
+// Mirror of NOINDEX_PATHS in src/lib/seo.ts (config cannot import TS).
+// These pages render `noindex, follow` and must stay out of the sitemap so
+// crawl budget goes to homepages, locale pages, tools, guides and FAQ.
+const NOINDEX_PATHS = [
+  '/about/',
+  '/contact/',
+  '/privacy/',
+  '/terms/',
+  '/disclaimer/',
+  '/editorial-policy/',
+];
+
+/** @param {string} page @returns {boolean} false for noindex/error pages */
+function sitemapInclude(page) {
+  const path = new URL(page).pathname;
+  if (path.includes('/404') || path.includes('/500')) return false;
+  if (NOINDEX_PATHS.includes(path)) return false;
+  // Localized legal pages, e.g. /ja/privacy/.
+  if (/^\/[a-z]{2}\/privacy\/$/.test(path)) return false;
+  return true;
+}
 /** @param {string} url @returns {{ priority: number, changefreq: 'daily' | 'weekly' | 'monthly' }} */
 function sitemapPriority(url) {
   const path = new URL(url).pathname;
@@ -37,6 +60,7 @@ function sitemapPriority(url) {
       '/microphone-noise-floor-test/',
       '/sound-level-meter/',
       '/phone-decibel-meter/',
+      '/iphone-decibel-meter/',
     ].includes(path)
   ) {
     return { priority: 0.8, changefreq: 'weekly' };
@@ -49,16 +73,18 @@ function sitemapPriority(url) {
       '/decibel-chart/', '/db-vs-dba/', '/microphone-not-working/', '/faq/',
       '/dbfs-vs-db-spl/', '/validation/',
       '/de/anleitungen/', '/de/kalibrierung/', '/de/genauigkeit/', '/de/dezibel-tabelle/',
-      '/de/db-vs-dba/', '/de/mikrofon-funktioniert-nicht/',
+      '/de/db-vs-dba/', '/de/mikrofon-funktioniert-nicht/', '/de/handy-dezibel-messen/',
       '/ja/guides/', '/ja/how-to-use/', '/ja/methodology/', '/ja/calibration/',
       '/ja/accuracy/', '/ja/decibel-chart/', '/ja/db-vs-dba/',
-      '/ja/microphone-not-working/',
+      '/ja/microphone-not-working/', '/ja/noise-meter-app/',
     ].includes(path)
   ) {
     return { priority: 0.7, changefreq: 'weekly' };
   }
 
-  // Priority 4: Trust, Legal & Administrative Pages
+  // Priority 4 (fallback): remaining indexed pages (e.g. /noise-exposure/,
+  // /it/ guides, locale pages). Legal/utility pages never reach here —
+  // they are excluded by sitemapInclude() above.
   return { priority: 0.4, changefreq: 'monthly' };
 }
 export default defineConfig({
@@ -67,7 +93,7 @@ export default defineConfig({
   trailingSlash: 'always',
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/404') && !page.includes('/500'),
+      filter: (page) => sitemapInclude(page),
       lastmod: new Date(),
       serialize(item) {
         const { priority, changefreq } = sitemapPriority(item.url);

@@ -1,7 +1,7 @@
 ---
 import type { Dict, Locale } from '../i18n/dictionaries';
 import { LOCALES } from '../i18n/dictionaries';
-import { SITE, homepageHreflang, localizedGuidePath, ogLocaleFor, type GuideKey } from '../lib/seo';
+import { SITE, homepageHreflang, localizedGuidePath, ogLocaleFor, isNoindexPath, type GuideKey } from '../lib/seo';
 import '../styles/global.css';
 
 interface Props {
@@ -17,7 +17,11 @@ interface Props {
 }
 
 const { locale, dict, title, description, path } = Astro.props;
-const robots = Astro.props.robots ?? 'index, follow';
+// Central indexation policy (see isNoindexPath in src/lib/seo.ts):
+// homepages, locale pages, tools, guides, FAQ stay `index, follow`;
+// legal/utility pages (privacy, terms, contact, about, …) default to `noindex, follow`.
+// Explicit `robots` prop still overrides (used by 404/500).
+const robots = Astro.props.robots ?? (isNoindexPath(path) ? 'noindex, follow' : 'index, follow');
 const ogType = Astro.props.ogType ?? 'website';
 const canonical = `${SITE}${path}`;
 const isHome = path === '/' || /^\/[a-z]{2}\/$/.test(path);
@@ -209,6 +213,7 @@ const guideLinks = {
         <nav aria-label={dict.navGuides}>
           <p class="eyebrow mb-3">{dict.navGuides}</p>
           <ul class="space-y-2 text-sm">
+            <li><a class="focus-ring underline-offset-4 hover:underline" href="/faq/">{dict.ui.faq}{locale !== 'en' && <span lang="en"> (English)</span>}</a></li>
             <li><a class="focus-ring underline-offset-4 hover:underline" href={guideLinks.howTo}>{dict.ui.howTo}</a></li>
             <li><a class="focus-ring underline-offset-4 hover:underline" href={guideLinks.chart}>{dict.ui.chart}</a></li>
             <li><a class="focus-ring underline-offset-4 hover:underline" href={guideLinks.weighting}>{dict.ui.weightingGuide}</a></li>

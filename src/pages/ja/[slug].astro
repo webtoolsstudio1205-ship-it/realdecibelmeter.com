@@ -225,6 +225,63 @@ const pages: JapaneseGuide[] = [
       <p><a href="/ja/methodology/">ローカル処理の仕組み →</a> · <a href="/ja/#measure">メーターを開く →</a></p>
     `,
   },
+  {
+    slug: 'noise-meter-app',
+    title: '騒音計アプリ・デシベル計測 – スマホで無料測定',
+    description: '無料の騒音計アプリとして使えるブラウザツール。デシベル計測・騒音計測をiPhone・Androidで、ダウンロード不要。精度・校正・使い方を解説。',
+    intro: 'このページ自体が無料の騒音計アプリです。ブラウザで開始を押し、マイクを許可するだけで推定dBAをライブ表示します。',
+    label: '騒音計アプリ',
+    article: true,
+    body: `
+      <div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:linear-gradient(135deg,rgba(59,130,246,.14),rgba(59,130,246,.03))">
+        <p><strong>今すぐ試す — 10秒・無料・アプリ不要:</strong></p>
+        <ol>
+          <li>スマホのブラウザでこのページを開く。</li>
+          <li><a href="/ja/#measure">測定を開始 →</a> してマイクを許可。</li>
+          <li>推定dBAをライブ表示 — 30～60秒の平均で読む。</li>
+        </ol>
+        <p>音声は端末内で処理され、外部送信されません。</p>
+      </div>
+      <h2>騒音計アプリとは？</h2>
+      <p><strong>騒音計アプリ・騒音計・デシベル計測アプリ</strong>は同じ機能です。音の大きさをデシベルで表示します。このサイトはインストール不要のオンライン騒音計として、dBA・dBC・dBZの推定値、最小・平均・最大・Leq、スペクトル、CSV・JSON出力を提供します。</p>
+      <h2>無料の騒音計アプリはありますか？</h2>
+      <p>はい、このサイトが無料です。<strong>騒音計アプリ 無料・騒音計 アプリ 無料</strong>を探している方は、そのままブラウザで使えます。登録・ダウンロード不要で何度でも測定できます。</p>
+      <h2>iPhone・Androidの無料騒音計アプリ</h2>
+      <ul>
+        <li><strong>騒音計アプリ iPhone 無料:</strong> Safariで開き、開始→許可だけ。iPhoneごとに一度<a href="/ja/calibration/">基準器で校正</a>すると精度が上がります。</li>
+        <li><strong>騒音計アプリ 無料 アンドロイド:</strong> Chromeで開けます。自動ゲイン等の状態は端末パネルに表示されます。</li>
+        <li><strong>デシベル計測 スマホ:</strong> マイク穴を塞がず、耳の高さで30～60秒測るのがコツです。</li>
+      </ul>
+      <h2>デシベル計測とは？</h2>
+      <p><strong>デシベル計測・デシベル 計測・騒音測定</strong>は同じ意味です。音の強さを対数スケールで数値化します。このサイトはブラウザでできるオンライン・デシベル計測ツールで、未校正では公称+100dBオフセットの推定値を表示します。</p>
+      <h2>デシベル計測アプリ・計測器は必要？</h2>
+      <p>簡易チェックならブラウザで十分です。<strong>デシベル計測 アプリ・デシベル 計測 アプリ・デシベル計測器</strong>という言葉で探している場合も、まずはここで試し、低音や大きなピークはC・Z特性で比較してください。正式評価には校正された騒音計を使ってください。</p>
+      <h2>騒音計アプリの精度は？</h2>
+      <p><strong>騒音計 アプリ 精度</strong>の目安は数dBです。同じ音でも機種で5～10dBずれることがあり、約30dBA以下では高め、約95～100dBA以上では低め、低音は弱めに出ます。小数点は無視し、30～60秒の平均で見てください。詳しくは<a href="/ja/accuracy/">測定精度</a>へ。</p>
+      <h2>使い方</h2>
+      <ol>
+        <li>マイクを許可する。</li>
+        <li>マイク穴を塞がず、耳の高さで音源に向ける。</li>
+        <li>静かにして数秒待ち、平均・Leqを30～60秒で読む。</li>
+        <li>比較時は重み付け・時定数・位置を固定する。</li>
+      </ol>
+      <p><a href="/ja/how-to-use/">使い方ガイド →</a> · <a href="/ja/calibration/">校正方法 →</a> · <a href="/ja/decibel-chart/">デシベル比較表 →</a></p>
+      <h2>よくある質問</h2>
+      <h3>騒音計アプリ 無料で使えますか？</h3>
+      <p>はい、無料です。<a href="/ja/#measure">測定パネル →</a>からすぐ使えます。</p>
+      <h3>デシベル 計測アプリ 無料は？</h3>
+      <p>このページが該当します。ダウンロード不要で、CSV・JSON保存もできます。</p>
+      <h3>スマホでデシベル計測できますか？</h3>
+      <p>はい。iPhone・Androidどちらもブラウザだけで測定できます。</p>
+      <p><a href="/ja/#measure">メーターを開く →</a> · <a href="/ja/guides/">ガイド一覧 →</a></p>
+      <h2>あなたの言語で使う — ダウンロード不要</h2>
+      <p>このウェブツールはどの言語でも<strong>ダウンロード・インストール不要</strong>です。各言語のトップページを開いて開始を押すだけです。</p>
+      <ul>
+        <li><a href="/iphone-decibel-meter/" hreflang="en">English: iPhone decibel meter – free online, no download →</a> · <a href="/#measure" hreflang="en">Open the English meter →</a></li>
+        <li><a href="/de/handy-dezibel-messen/" hreflang="de">Deutsch: Dezibel messen mit dem Handy – kostenlos online ohne App →</a> · <a href="/de/#measure" hreflang="de">Deutsches Messgerät öffnen →</a></li>
+      </ul>
+    `,
+  },
 ];
 
 export function getStaticPaths() {
@@ -238,6 +295,7 @@ export function getStaticPaths() {
     'db-vs-dba',
     'microphone-not-working',
     'privacy',
+    'noise-meter-app',
   ].map((slug) => ({ params: { slug } }));
 }
 

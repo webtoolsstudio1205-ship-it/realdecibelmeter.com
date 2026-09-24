@@ -1,0 +1,87 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, faqJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'iPhone Decibel Meter – Free Online, No Download, Use in Browser';
+const description = 'Free iPhone decibel meter that runs in the browser — no download, no app install. Open in Safari, tap Start, read live estimated dBA online.';
+const url = `${SITE}/iphone-decibel-meter/`;
+const faq = [
+  { q: 'Does iPhone have a decibel meter?', a: 'No built-in dB number, but Safari plus this page is a free iPhone decibel meter that runs entirely in the browser: no download, no install. Open in Safari, press Start, allow the microphone, and read live estimated dBA.' },
+  { q: 'Is there a decibel meter on iPhone?', a: 'Every iPhone browser can run one. This online meter needs no download and no install, keeps audio on-device, and works right on the web; native apps only add offline or background logging.' },
+  { q: 'Is there a free decibel meter app for iPhone?', a: 'You do not need an app at all: this site is a free web tool that behaves like one — dBA/dBC/dBZ, Leq, min/max, spectrum and CSV/JSON export, with no account, no download, no install.' },
+  { q: 'Are iPhone decibel meter apps accurate?', a: 'Useful estimates. Expect a consistent but device-specific offset, weak bass, a ~30 dBA floor and clipping near 95–100 dBA. One calibration against a known reference removes most offset.' },
+  { q: 'How to use a decibel meter on iPhone?', a: 'Open this page in Safari, tap Start, grant mic permission, uncover the bottom-edge mic hole, hold at ear height, stay silent 30–60 seconds, and read the average/Leq.' },
+  { q: 'How to calibrate an iPhone decibel meter?', a: 'Compare with a stable known reference at the same spot, enter reference minus meter as offset, save the profile, and keep the same position and settings.' },
+];
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-24' }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'iPhone decibel meter', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/iphone-decibel-meter/" jsonLd={jsonLd} ogType="article">
+  <Article title={title} intro="Your iPhone already carries the microphone — this page turns Safari into a free iPhone decibel meter that runs entirely on the web. No download, no install, no account: just open, tap Start, and read live estimated dBA in seconds." reviewed="2026-09-24" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'iPhone meter', href: '/iphone-decibel-meter/' }]}>
+    <div class="panel p-5 mt-2" style="border-color:#3B82F6;background:linear-gradient(135deg,rgba(59,130,246,.16),rgba(59,130,246,.04))">
+      <p class="font-semibold text-white text-lg">Try it now in your browser — 10 seconds, no download, no install</p>
+      <p class="text-[15px] mt-1" style="color:var(--muted)">This tool is a website, not an app download. It works on the web in Safari — nothing to install from the App Store.</p>
+      <ol class="list-decimal pl-5 mt-2 text-[15px] leading-7" style="color:var(--muted)">
+        <li>Open this page in <strong class="text-white">Safari on your iPhone</strong>.</li>
+        <li>Tap <a class="underline underline-offset-4" href="/#measure">Start Measuring →</a> and allow the microphone.</li>
+        <li>Read the live <strong class="text-white">estimated dBA</strong> — average 30–60 seconds.</li>
+      </ol>
+      <p class="mt-3"><a href="/#measure" class="btn-primary focus-ring" style="display:inline-block;text-decoration:none">Open the free iPhone decibel meter →</a></p>
+      <p class="text-xs mt-2" style="color:var(--muted)">Audio is processed locally. Nothing is uploaded.</p>
+    </div>
+
+    <h2 class="text-white font-semibold mt-6">Does iPhone have a decibel meter built in?</h2>
+    <p class="mt-2">Not as a number you can read. iOS has noise alerts on Apple Watch and hearing data in Health, but no system-wide live dB readout on iPhone. That gap is exactly what this <a class="underline underline-offset-4" href="/">free online decibel meter</a> fills: Safari grants microphone access to the page, the page computes RMS → dB → A/C/Z weighting → Fast/Slow → Leq locally, and you see current, minimum, average and maximum estimated decibels with a live graph.</p>
+
+    <h2 class="text-white font-semibold mt-6">No download: how the web tool works on iPhone</h2>
+    <p class="mt-2">There is <strong>nothing to download and nothing to install</strong>. This iPhone decibel meter is a web page: Safari asks for microphone permission, the page processes sound locally with the Web Audio API, and shows current, minimum, average and maximum estimated decibels with a live graph. Close the tab and it is gone — no storage used, no updates to manage. That is why it is the easiest option for a quick check on your own iPhone or someone else's.</p>
+
+    <h2 class="text-white font-semibold mt-6">Browser or decibel meter app on iPhone?</h2>
+    <p class="mt-2">For one-off checks the browser wins: no App Store install, no account, always current, microphone permission scoped to the site, and audio that never leaves the device — see <a class="underline underline-offset-4" href="/privacy/">privacy</a>. Install a native <strong>decibel meter app</strong> only if you need offline-first use or background logging. Accuracy is the same story either way: uncalibrated phone mics are estimates.</p>
+
+    <h2 class="text-white font-semibold mt-6">How accurate is an iPhone decibel meter?</h2>
+    <p class="mt-2">Treat it as rounded to a few dB. iPhones read consistently per model but offset against other devices because Safari tends to keep system gain processing active. Practical limits: below ~30 dBA the mic noise floor reads too high, above ~95–100 dBA it clips, and deep bass is under-reported. Ignore decimals, compare 30–60 second Leq values, and do one <a class="underline underline-offset-4" href="/calibration/">calibration against a known reference</a>. Full background in <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">How to get the best iPhone reading</h2>
+    <ul class="list-disc pl-5 mt-2">
+      <li>Find the bottom-edge mic hole; remove case coverage and avoid holding it shut.</li>
+      <li>Measure at ear height where people sit, mic pointed at the source.</li>
+      <li>Stay silent, hold still, note distance with every reading.</li>
+      <li>Use A-weighting + Slow for everyday comparison; C/Z for bass-heavy peaks — see <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a>.</li>
+      <li>Run 30–60 seconds and use Leq, per <a class="underline underline-offset-4" href="/methodology/">how measurement works</a>.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">When iPhone is not enough</h2>
+    <p class="mt-2">An iPhone is never evidence. Noise complaints, workplace assessments and legal disputes need a calibrated Class 1 or Class 2 meter — see <a class="underline underline-offset-4" href="/validation/">validation</a> and <a class="underline underline-offset-4" href="/disclaimer/">disclaimer</a>. For exposure context continue with <a class="underline underline-offset-4" href="/noise-exposure/">noise exposure</a>, the <a class="underline underline-offset-4" href="/decibel-chart/">decibel chart</a>, and the <a class="underline underline-offset-4" href="/phone-decibel-meter/">phone decibel meter guide</a> for Android differences.</p>
+
+    <h2 class="text-white font-semibold mt-6">iPhone decibel meter FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/faq/">All FAQs →</a> · <a class="underline underline-offset-4" href="/microphone-not-working/">iPhone mic troubleshooting →</a></p>
+
+    <h2 class="text-white font-semibold mt-6">Use it in your language</h2>
+    <p class="mt-2 text-[15px]" style="color:var(--muted)">This web tool needs no download in any language — open the matching homepage and tap Start. Each page links to its own language meter:</p>
+    <ul class="list-disc pl-5 mt-2 text-[15px]">
+      <li><a class="underline underline-offset-4" href="/de/handy-dezibel-messen/" hreflang="de">Deutsch: Dezibel messen mit dem Handy – kostenlos online ohne App →</a> · <a class="underline underline-offset-4" href="/de/#measure" hreflang="de">Deutsches Messgerät öffnen →</a></li>
+      <li><a class="underline underline-offset-4" href="/ja/noise-meter-app/" hreflang="ja">日本語: 騒音計アプリ・デシベル計測 – スマホで無料測定 →</a> · <a class="underline underline-offset-4" href="/ja/#measure" hreflang="ja">日本のメーターを開く →</a></li>
+    </ul>
+  </Article>
+</Layout>
