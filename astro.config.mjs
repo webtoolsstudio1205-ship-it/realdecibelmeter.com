@@ -26,6 +26,10 @@ const NOINDEX_PATHS = [
   '/terms/',
   '/disclaimer/',
   '/editorial-policy/',
+  '/es/privacidad/',
+  '/fr/confidentialite/',
+  '/pt/privacidade/',
+  '/ko/privacy/',
 ];
 
 /** @param {string} page @returns {boolean} false for noindex/error pages */
@@ -73,7 +77,8 @@ function sitemapPriority(url) {
     return { priority: 0.8, changefreq: 'weekly' };
   }
 
-  // Priority 4: Guides, Methodology & Calibration Content
+  // Priority 4: Guides, Methodology & Calibration Content (all locales —
+  // every translated guide carries the same weight as its English original)
   if (
     [
       '/methodology/', '/how-to-use/',
@@ -84,6 +89,20 @@ function sitemapPriority(url) {
       '/ja/guides/', '/ja/how-to-use/', '/ja/methodology/', '/ja/calibration/',
       '/ja/accuracy/', '/ja/decibel-chart/', '/ja/db-vs-dba/',
       '/ja/microphone-not-working/', '/ja/noise-meter-app/',
+      '/es/guias/', '/es/como-usar/', '/es/metodologia/', '/es/calibracion/',
+      '/es/precision/', '/es/tabla-decibelios/', '/es/db-vs-dba/',
+      '/es/microfono-no-funciona/', '/es/movil-decibelimetro/',
+      '/fr/guides/', '/fr/mode-emploi/', '/fr/methodologie/', '/fr/calibrage/',
+      '/fr/precision/', '/fr/tableau-decibels/', '/fr/db-vs-dba/',
+      '/fr/microphone-ne-fonctionne-pas/', '/fr/sonometre-telephone/',
+      '/pt/guias/', '/pt/como-usar/', '/pt/metodologia/', '/pt/calibracao/',
+      '/pt/precisao/', '/pt/tabela-decibeis/', '/pt/db-vs-dba/',
+      '/pt/microfone-nao-funciona/', '/pt/decibelimetro-celular/',
+      '/ko/guides/', '/ko/how-to-use/', '/ko/methodology/', '/ko/calibration/',
+      '/ko/accuracy/', '/ko/decibel-chart/', '/ko/db-vs-dba/',
+      '/ko/microphone-not-working/', '/ko/noise-meter-app/',
+      '/it/guide/', '/it/calibrazione/', '/it/accuratezza/', '/it/tabella-decibel/',
+      '/it/db-vs-dba/', '/it/microfono-non-funziona/',
     ].includes(path)
   ) {
     return { priority: 0.7, changefreq: 'weekly' };

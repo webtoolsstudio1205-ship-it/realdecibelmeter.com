@@ -47,6 +47,9 @@ export const NOINDEX_PATHS: readonly string[] = [
   '/terms/',
   '/disclaimer/',
   '/editorial-policy/',
+  '/es/privacidad/',
+  '/fr/confidentialite/',
+  '/pt/privacidade/',
 ];
 
 /** Returns true for paths that must render `noindex, follow`. */
@@ -65,21 +68,25 @@ export interface HreflangEntry {
   href: string;
 }
 
-export type GuideKey = 'guides' | 'calibration' | 'accuracy' | 'decibel-chart' | 'db-vs-dba' | 'microphone-not-working' | 'how-to-use' | 'methodology' | 'privacy' | 'handy-dezibel-messen' | 'noise-meter-app' | 'iphone-decibel-meter';
+export type GuideKey = 'guides' | 'calibration' | 'accuracy' | 'decibel-chart' | 'db-vs-dba' | 'microphone-not-working' | 'how-to-use' | 'methodology' | 'privacy' | 'handy-dezibel-messen' | 'noise-meter-app' | 'iphone-decibel-meter' | 'movil-decibelimetro' | 'sonometre-telephone' | 'decibelimetro-celular' | 'noise-meter-app-ko';
 
 const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
-  guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/', it: '/it/guide/' },
-  calibration: { en: '/calibration/', de: '/de/kalibrierung/', ja: '/ja/calibration/', it: '/it/calibrazione/' },
-  accuracy: { en: '/accuracy/', de: '/de/genauigkeit/', ja: '/ja/accuracy/', it: '/it/accuratezza/' },
-  'decibel-chart': { en: '/decibel-chart/', de: '/de/dezibel-tabelle/', ja: '/ja/decibel-chart/', it: '/it/tabella-decibel/' },
-  'db-vs-dba': { en: '/db-vs-dba/', de: '/de/db-vs-dba/', ja: '/ja/db-vs-dba/', it: '/it/db-vs-dba/' },
-  'microphone-not-working': { en: '/microphone-not-working/', de: '/de/mikrofon-funktioniert-nicht/', ja: '/ja/microphone-not-working/', it: '/it/microfono-non-funziona/' },
-  'how-to-use': { en: '/how-to-use/', ja: '/ja/how-to-use/' },
-  methodology: { en: '/methodology/', ja: '/ja/methodology/' },
-  privacy: { en: '/privacy/', ja: '/ja/privacy/' },
+  guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/', it: '/it/guide/', es: '/es/guias/', fr: '/fr/guides/', pt: '/pt/guias/', ko: '/ko/guides/' },
+  calibration: { en: '/calibration/', de: '/de/kalibrierung/', ja: '/ja/calibration/', it: '/it/calibrazione/', es: '/es/calibracion/', fr: '/fr/calibrage/', pt: '/pt/calibracao/', ko: '/ko/calibration/' },
+  accuracy: { en: '/accuracy/', de: '/de/genauigkeit/', ja: '/ja/accuracy/', it: '/it/accuratezza/', es: '/es/precision/', fr: '/fr/precision/', pt: '/pt/precisao/', ko: '/ko/accuracy/' },
+  'decibel-chart': { en: '/decibel-chart/', de: '/de/dezibel-tabelle/', ja: '/ja/decibel-chart/', it: '/it/tabella-decibel/', es: '/es/tabla-decibelios/', fr: '/fr/tableau-decibels/', pt: '/pt/tabela-decibeis/', ko: '/ko/decibel-chart/' },
+  'db-vs-dba': { en: '/db-vs-dba/', de: '/de/db-vs-dba/', ja: '/ja/db-vs-dba/', it: '/it/db-vs-dba/', es: '/es/db-vs-dba/', fr: '/fr/db-vs-dba/', pt: '/pt/db-vs-dba/', ko: '/ko/db-vs-dba/' },
+  'microphone-not-working': { en: '/microphone-not-working/', de: '/de/mikrofon-funktioniert-nicht/', ja: '/ja/microphone-not-working/', it: '/it/microfono-non-funziona/', es: '/es/microfono-no-funciona/', fr: '/fr/microphone-ne-fonctionne-pas/', pt: '/pt/microfone-nao-funciona/', ko: '/ko/microphone-not-working/' },
+  'how-to-use': { en: '/how-to-use/', ja: '/ja/how-to-use/', es: '/es/como-usar/', fr: '/fr/mode-emploi/', pt: '/pt/como-usar/', ko: '/ko/how-to-use/' },
+  methodology: { en: '/methodology/', ja: '/ja/methodology/', es: '/es/metodologia/', fr: '/fr/methodologie/', pt: '/pt/metodologia/', ko: '/ko/methodology/' },
+  privacy: { en: '/privacy/', ja: '/ja/privacy/', es: '/es/privacidad/', fr: '/fr/confidentialite/', pt: '/pt/privacidade/', ko: '/ko/privacy/' },
   'handy-dezibel-messen': { de: '/de/handy-dezibel-messen/' },
   'noise-meter-app': { ja: '/ja/noise-meter-app/' },
   'iphone-decibel-meter': { en: '/iphone-decibel-meter/' },
+  'movil-decibelimetro': { es: '/es/movil-decibelimetro/' },
+  'sonometre-telephone': { fr: '/fr/sonometre-telephone/' },
+  'decibelimetro-celular': { pt: '/pt/decibelimetro-celular/' },
+  'noise-meter-app-ko': { ko: '/ko/noise-meter-app/' },
 };
 
 export function guideHreflang(key: GuideKey): HreflangEntry[] {
@@ -181,7 +188,12 @@ export function articleJsonLd(opts: {
     description: opts.description,
     url: opts.url,
     inLanguage: opts.inLanguage,
-    author: { '@type': 'Organization', name: 'Real Decibel Meter', url: `${SITE}/` },
+    author: {
+      '@type': 'Person',
+      name: 'Bhagya Masalawala',
+      jobTitle: 'Full-Stack Developer',
+      url: `${SITE}/about/`,
+    },
     publisher: { '@type': 'Organization', name: 'Real Decibel Meter', url: `${SITE}/` },
     dateModified: opts.dateModified,
   };
