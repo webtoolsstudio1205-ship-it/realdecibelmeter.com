@@ -25,6 +25,23 @@ const jsonLd = [
     <p class="mt-2">Set the device on a stable surface at ear height, away from wind, vents and handling. The gauge immediately shows an estimated dBA value using a nominal device offset. Current is the smoothed live value; Leq is the energy average; min/max bracket the session. Wait a few seconds for Fast/Slow smoothing to settle, then <a class="underline underline-offset-4" href="/calibration/">calibrate your microphone</a> for better device-specific accuracy.</p>
     <h2 class="text-white font-semibold mt-6">3. Tune, compare and export</h2>
     <p class="mt-2">Choose A-weighting for everyday checks (see <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a>), compare against the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a>, then export CSV for spreadsheets or JSON for code. History stays in this browser only (<a class="underline underline-offset-4" href="/privacy/">privacy</a>).</p>
+    <h2 class="text-white font-semibold mt-6">Run a clean 30-to-60-second session</h2>
+    <ol class="list-decimal ml-5 space-y-2 mt-2">
+      <li>Set the device on a stable surface at ear height with the microphone uncovered, a metre from vents and keyboards.</li>
+      <li>Press Start, grant the once-per-origin permission over HTTPS, and let Fast or Slow smoothing settle for five seconds.</li>
+      <li>Stay still and silent while current, minimum, Leq, maximum and duration accumulate. The 240-point graph shows whether a passing truck or a tapped table spoiled the sample.</li>
+      <li>Stop a second pass the same way before comparing. Two matched 45-second Leq values beat ten glanced live numbers.</li>
+    </ol>
+    <p class="mt-2">Capture stays mono with echo cancellation, noise suppression and automatic gain requested off where the browser allows it, and input never plays through speakers. The headline figure is an estimate from weighted dBFS plus a nominal offset until you add a device-specific calibration against a known reference in the same spot.</p>
+    <h2 class="text-white font-semibold mt-6">Save, revisit and export without an account</h2>
+    <p class="mt-2">Up to 20 recent sessions stay in this browser only, so a bedroom-to-office comparison survives a reload but never uploads anywhere. Exports carry dB values only from calibrated sessions; uncalibrated history exports without dB figures to avoid dressing a rough estimate as a record. Pull CSV into a spreadsheet for a noise diary or JSON into code for charts, then consult <a class="underline underline-offset-4" href="/privacy/">privacy</a> for storage details. No accounts, no downloads, no install — a current Chrome, Edge, Firefox or Safari is enough.</p>
+    <h2 class="text-white font-semibold mt-6">If the reading looks stuck or too quiet</h2>
+    <ul class="space-y-3 mt-2">
+      <li><strong class="text-white">Idle dashes.</strong> Dashes mean no samples yet, never a simulated zero. Reselect the intended input, close calls or recorder tabs, and press Start again.</li>
+      <li><strong class="text-white">Suspiciously low line.</strong> Check for a covered microphone, a wrong input choice, or a case muffling the port. Retest uncovered on a table.</li>
+      <li><strong class="text-white">Wild jumps.</strong> Handling, wind and tapping dominate small capsules. Set the device down, step back, and average a full minute instead of trusting peaks.</li>
+    </ul>
+    <p class="mt-2">When faults persist, work through <a class="underline underline-offset-4" href="/microphone-not-working/">microphone troubleshooting</a>, then read <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a> and <a class="underline underline-offset-4" href="/methodology/">how the meter works</a> before drawing conclusions.</p>
     <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/methodology/">How the meter works →</a></p>
   </Article>
 </Layout>

@@ -48,6 +48,18 @@ const jsonLd = [
     <h2 class="text-white font-semibold mt-6">A separate verification level</h2>
     <p class="mt-2">Change the level by at least 10 dB (or halve the distance), then capture one more 60-second browser average plus the reference average. Apply the calibration offset from the first level and report the residual (browser estimate − reference). A residual within 2 dB is consistent at that point; 2–5 dB means use with caution; over 5 dB means the calibration did not track consistently. These bands are product guidance, not certification.</p>
 
+    <h2 class="text-white font-semibold mt-6">Example logbook entry with real numbers</h2>
+    <p class="mt-2">A usable entry fits in one paragraph. Test phone, mid-range handset on tripod, Chrome over HTTPS, mono input, processing flags reporting gain control off. Pink noise at 1 m, room 4 by 5 m, doors closed, background 34 dBA. Three 60-second runs on A weighting with Slow response give browser LAeq values of 73.8, 74.5 and 73.9 against a reference holding 74.2, 74.3 and 74.1. Spread is 0.7 dB, mean residual about −0.2 dB. Move the speaker to 0.5 m for the separate verification level: reference 84.1, browser 83.4 after applying the first-level offset, residual −0.7 dB. Sample rate, channel count and duration ride along on every line. Anyone reading that entry can rerun the geometry tomorrow and expect the same shape, which is the entire point of writing it down this way.</p>
+    <h2 class="text-white font-semibold mt-6">How to read spread against residual</h2>
+    <p class="mt-2">Spread answers whether the browser repeats itself: take max minus min across the three LAeq values at one level. Under about 1 dB is tight for consumer hardware; past 2 dB, look for gusts, handling or an unstable source before blaming the meter. Residual answers whether the calibrated estimate tracks the reference: browser estimate minus reference after the offset is applied. Within 2 dB at the verification level counts as consistent for casual use, 2–5 dB means proceed with caution and shorter claims, and over 5 dB means the offset did not transfer — often frequency shaping, compression that shifts with level, or clipping near 95–100 dBA. Report both figures side by side. A meter can repeat within 1 dB yet sit far from the reference when uncalibrated, and a single offset never repairs bass roll-off, distortion or processing that the browser refused to disable. Cross-check the chain in <a class="underline underline-offset-4" href="/methodology/">how the meter works</a> when the two disagree.</p>
+    <h2 class="text-white font-semibold mt-6">Runs that should never reach the logbook</h2>
+    <ul class="list-disc pl-5 mt-2">
+      <li>Music or speech as the source — syllables swing the average several decibels between runs; use steady noise or a tone.</li>
+      <li>A phone speaker at full volume as the source — distortion and limiting make the reference itself unstable.</li>
+      <li>Hand-held devices, moved tripods or a mic brushed mid-run — touch alone can outweigh the effect you hoped to validate.</li>
+      <li>Mixed settings across repeats — keep A weighting and Slow response fixed, and note EC/NS/AGC state every time.</li>
+      <li>Publishing only the closest run — log all three repeats plus the separate level, with duration and background level, even when one line looks untidy.</li>
+    </ul>
     <h2 class="text-white font-semibold mt-6">Required details to publish</h2>
     <ul class="list-disc pl-5 mt-2">
       <li>Device model, OS version, browser version, app version.</li>

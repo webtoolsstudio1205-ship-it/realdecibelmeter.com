@@ -1,6 +1,11 @@
 User-agent: *
 Allow: /
 
+# AdSense crawler (Mediapartners-Google) is covered by Allow: / above and
+# must be able to fetch every page including noindex legal pages.
+User-agent: Mediapartners-Google
+Allow: /
+
 # Indexation policy (single source of truth: isNoindexPath() in src/lib/seo.ts):
 # - INDEX: /, locale homepages (/de/, /ja/, /it/, /es/, /fr/, /pt/, /ko/),
 #   tools, guides, methodology, FAQ — listed in sitemap-index.xml.

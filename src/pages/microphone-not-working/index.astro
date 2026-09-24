@@ -27,6 +27,22 @@ const jsonLd = [
       <li><strong class="text-white">Browser not supported.</strong> Use a recent Chrome, Edge, Firefox or Safari in a secure (HTTPS) context.</li>
       <li><strong class="text-white">Still stuck?</strong> Reload the page, try another microphone, and check OS-level mic privacy switches.</li>
     </ul>
+    <h2 class="text-white font-semibold mt-6">Try this order first</h2>
+    <ol class="list-decimal ml-5 space-y-2 mt-2">
+      <li>Reload the page and press Start once more. A second rapid click can queue two requests and leave the panel stuck on idle dashes.</li>
+      <li>Confirm the address starts with https. Plain http and file addresses routinely block capture even when the browser looks ready.</li>
+      <li>Select the exact input in the microphone list. Laptops often expose a built-in array plus a headset or monitor microphone, and the wrong choice records a silent room down the hall.</li>
+      <li>Close video calls, voice recorders and other tabs holding the microphone, then reselect the device and press Start.</li>
+      <li>Run the <a class="underline underline-offset-4" href="/microphone-noise-floor-test/">30-second microphone noise-floor test</a>. Real moving dBFS numbers prove the path is alive; frozen dashes point back at permission or a busy device.</li>
+    </ol>
+    <h2 class="text-white font-semibold mt-6">Why the browser asks only once per site</h2>
+    <p class="mt-2">Permission is remembered once per origin, so a later visit on the same address starts faster while a different subdomain asks again. Use a current Chrome, Edge, Firefox or Safari over a secure context, keep the microphone uncovered at ear height, and expect mono capture with echo cancellation, noise suppression and automatic gain requested off where the browser allows it. Input is processed locally and never routed to speakers, so feedback howl during a test means monitoring is on elsewhere. Read <a class="underline underline-offset-4" href="/how-to-use/">how to use the meter</a> for placement and <a class="underline underline-offset-4" href="/privacy/">privacy</a> for what stays in this browser.</p>
+    <h2 class="text-white font-semibold mt-6">Signs the fault sits outside the page</h2>
+    <ul class="space-y-3 mt-2">
+      <li><strong class="text-white">System meter frozen too.</strong> If the operating-system sound panel shows no input movement either, inspect its privacy switch, volume and device selection before returning here.</li>
+      <li><strong class="text-white">Bluetooth device vanished.</strong> Re-pair it, wait for the connected chime, reselect it in the page list, and press Start. Earbuds that dropped back to a laptop microphone change gain and placement entirely.</li>
+      <li><strong class="text-white">Works in one browser, silent in another.</strong> That split usually means a per-browser site permission or an extension blocking capture. Clear the site permission for this origin in the silent browser and allow it again from the address-bar icon.</li>
+    </ul>
     <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Back to the online decibel meter →</a> · <a class="underline underline-offset-4" href="/how-to-use/">How to use →</a></p>
   </Article>
 </Layout>

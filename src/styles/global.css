@@ -157,14 +157,13 @@ body {
   contain-intrinsic-size: auto 480px;
 }
 
-/* Group variant for the static article sections below the homepage meter:
- * one class on the container defers each direct section child. Fragment
- * anchors (#how, #acc, …) still work — the browser renders skipped content
- * when navigating to it. */
-#main .cv-group > section {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 480px;
-}
+/* Group variant REMOVED (was: #main .cv-group > section with
+ * content-visibility: auto). Those text sections also carry the data-reveal
+ * opacity/transform entrance transition, and that combination paints garbled,
+ * overlapping glyphs on mobile Chrome while desktop stays fine. Plain text
+ * sections are cheap to lay out, so they render normally now; deferred
+ * rendering stays only on the heavier interactive meter panels (.cv-defer),
+ * which have no entrance transition and are unaffected. */
 
 .hairline {
   border-color: var(--border);

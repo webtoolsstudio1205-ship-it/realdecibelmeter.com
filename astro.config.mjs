@@ -48,7 +48,14 @@ function sitemapPriority(url) {
     return { priority: 0.9, changefreq: 'daily' };
   }
 
-  // Priority 2: Primary Web Audio Tools & Interactive Calculators
+  // Priority 2: Homepage cluster — the four core entry pages that feed the
+  // homepage most impressions. Sole step below '/' so crawlers always see
+  // the homepage as the site's most important URL.
+  if (['/guides/', '/faq/', '/calibration/', '/accuracy/'].includes(path)) {
+    return { priority: 0.8, changefreq: 'weekly' };
+  }
+
+  // Priority 3: Primary Web Audio Tools & Interactive Calculators
   if (
     [
       '/tone-generator/',
@@ -66,11 +73,11 @@ function sitemapPriority(url) {
     return { priority: 0.8, changefreq: 'weekly' };
   }
 
-  // Priority 3: Guides, Methodology & Calibration Content
+  // Priority 4: Guides, Methodology & Calibration Content
   if (
     [
-      '/guides/', '/calibration/', '/accuracy/', '/methodology/', '/how-to-use/',
-      '/decibel-chart/', '/db-vs-dba/', '/microphone-not-working/', '/faq/',
+      '/methodology/', '/how-to-use/',
+      '/decibel-chart/', '/db-vs-dba/', '/microphone-not-working/',
       '/dbfs-vs-db-spl/', '/validation/',
       '/de/anleitungen/', '/de/kalibrierung/', '/de/genauigkeit/', '/de/dezibel-tabelle/',
       '/de/db-vs-dba/', '/de/mikrofon-funktioniert-nicht/', '/de/handy-dezibel-messen/',
@@ -82,7 +89,7 @@ function sitemapPriority(url) {
     return { priority: 0.7, changefreq: 'weekly' };
   }
 
-  // Priority 4 (fallback): remaining indexed pages (e.g. /noise-exposure/,
+  // Priority 5 (fallback): remaining indexed pages (e.g. /noise-exposure/,
   // /it/ guides, locale pages). Legal/utility pages never reach here —
   // they are excluded by sitemapInclude() above.
   return { priority: 0.4, changefreq: 'monthly' };

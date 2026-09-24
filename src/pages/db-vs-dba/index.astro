@@ -27,6 +27,17 @@ const jsonLd = [
     <p class="mt-2">Everyday room and street checks: A. Loud bass-heavy events: compare A and C. Technical comparison between two recordings: Z, with identical response. Whichever you pick, <a class="underline underline-offset-4" href="/calibration/">calibrate with the same weighting</a> you measure with.</p>
     <h2 class="text-white font-semibold mt-6">Fast vs Slow</h2>
     <p class="mt-2">Fast (125 ms) follows peaks; Slow (1 s) smooths them. Neither changes the underlying estimate — only how quickly the display follows it. Leq (energy average) accumulates independently of the display smoothing.</p>
+    <h2 class="text-white font-semibold mt-6">Three rooms where the letter matters</h2>
+    <p class="mt-2">Picture three evening checks with the same phone on the same table. A bedroom with a low refrigerator drone might read near 33 dBA yet 52 dBC, because A-weighting discounts the bass your ears mostly ignore at night. A kitchen chat at normal voice might read 62 dBA and 63 dBC, nearly tied, since speech energy sits where both curves stay close. A living room playing bass-heavy music might read 78 dBA but 88 dBC, a ten-point split caused almost entirely by low strings and kick drum. The spectrum view explains each split: when the dominant band sits low, C and Z climb above A; when speech dominates the middle, the three converge.</p>
+    <h2 class="text-white font-semibold mt-6">Try an A/B flip in 20 seconds</h2>
+    <ol class="list-decimal ml-5 space-y-2 mt-2">
+      <li>Set the device down, pick A-weighting with Slow response, and note the Leq across 20 quiet seconds.</li>
+      <li>Without moving anything, switch to C-weighting and note the fresh Leq across the next 20 seconds.</li>
+      <li>Glance at the spectrum: strong left-side bars predict a higher C figure; strong mid bars predict near-equal figures.</li>
+    </ol>
+    <p class="mt-2">Fast at 125 ms chases door slams while Slow at 1 s steadies the line, yet Leq keeps its own energy average regardless of that smoothing. Average 30 to 60 seconds for everyday rooms and ignore single decimals, since model spreads of 5 to 10 dB dwarf them.</p>
+    <h2 class="text-white font-semibold mt-6">Keep weighting locked for the whole comparison</h2>
+    <p class="mt-2">Choose once per question, then freeze it. Bedroom-to-bedroom night comparisons belong on A. Bass troubleshooting belongs on C with an occasional Z glance for the unweighted picture. Calibrate with the same weighting you later measure with, because the offset belongs to that curve. When you want a worked room routine, follow the <a class="underline underline-offset-4" href="/background-noise-test/">background-noise test</a>; when the low end puzzles you, read the <a class="underline underline-offset-4" href="/frequency-analyzer/">frequency analyzer guide</a>.</p>
     <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/methodology/">How the meter works →</a></p>
   </Article>
 </Layout>

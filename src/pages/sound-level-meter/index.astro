@@ -36,6 +36,21 @@ const jsonLd = [
       <li>Either way, exposure thinking needs duration plus Leq, not a single peak — see <a class="underline underline-offset-4" href="/noise-exposure/">noise exposure</a>.</li>
     </ul>
 
+    <h2 class="text-white font-semibold mt-6">Inside every meter: capsule, weighting, detector, display</h2>
+    <p class="mt-2">Strip any sound level meter to four blocks. The capsule turns air motion into voltage; the weighting shapes that signal to mimic hearing (A for everyday levels, C for heavy peaks, Z for flat); the detector smooths it with Fast at 125 ms or Slow at 1 second; the display reports current level plus Leq, minimum and maximum. This site mirrors that chain: mono audio through the Web Audio API with getUserMedia over HTTPS, reduced to RMS, A, C or Z from the dominant band, Leq accumulated locally. The spectrum is display only, idle shows "--", input never reaches speakers, and permission is asked once per origin.</p>
+    <p class="mt-2">Before you calibrate, the readout is a labelled estimate: weighted dBFS plus a nominal +100 dB offset, with raw dBFS visible in Digital Diagnostics. A saved profile replaces that default with your own device-specific correction.</p>
+
+    <h2 class="text-white font-semibold mt-6">Run a reading you can repeat next week</h2>
+    <p class="mt-2">Pick one question — "how loud is the bedroom at midnight" — and freeze everything else. Stand the microphone where ears actually are, note the distance to the source, choose A-weighting with Slow response, and stay silent for 30 to 60 seconds. Read the Leq, not a flickering instant: a fridge at 1 metre might swing between 38 and 44 dBA yet settle near 41 dBA Leq.</p>
+    <ul class="list-disc pl-5 mt-2">
+      <li>Compare against a known reference at the same spot to build your offset, then redo it whenever the setup changes — case, phone, browser version or headset.</li>
+      <li>Never copy an offset across devices; two models on the same sound commonly sit 5 to 10 dB apart before correction.</li>
+      <li>Keep the last 20 sessions stored locally for before-and-after checks, and export CSV or JSON only once calibrated — see <a class="underline underline-offset-4" href="/calibration/">calibration</a> and <a class="underline underline-offset-4" href="/how-to-use/">how to use</a>.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Read the result without fooling yourself</h2>
+    <p class="mt-2">You get five numbers per run: current, minimum, Leq, maximum and duration, drawn as a 240-point graph. Ignore the decimal place; round to the nearest whole decibel and watch the Leq line. Below about 30 dBA most consumer capsules read high on their own noise floor, above roughly 95 to 100 dBA they clip and read low, and deep bass arrives under-reported. Levels under 70 dBA accept a full day without a second thought, while 85 dBA allows around 8 hours with allowance halving every 3 dB — screening only, per <a class="underline underline-offset-4" href="/noise-exposure/">noise exposure</a>. Anything needing proof belongs on a Class 1 or Class 2 instrument, as described in <a class="underline underline-offset-4" href="/dbfs-vs-db-spl/">dBFS vs dB SPL</a>.</p>
+
     <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/frequency-analyzer/">Frequency analyzer →</a> · <a class="underline underline-offset-4" href="/faq/">Common questions →</a></p>
   </Article>
 </Layout>

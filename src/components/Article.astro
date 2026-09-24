@@ -6,6 +6,37 @@ interface Props {
   reviewed?: string;
 }
 const { title, intro, breadcrumb = [{ name: 'Home', href: '/' }], reviewed } = Astro.props;
+
+// Homepage CTA: every article funnels curious readers back to the live meter.
+// Locale is inferred from the URL so Japanese articles link to /ja/, German
+// to /de/, Italian to /it/, and everything else to the English homepage.
+const LOCALES = ['de', 'it', 'ja', 'es', 'fr', 'pt', 'ko'];
+const prefix = Astro.url.pathname.match(/^\/([a-z]{2})\//)?.[1];
+const ctaLocale = prefix && LOCALES.includes(prefix) ? prefix : 'en';
+const homeHref = ctaLocale === 'en' ? '/' : `/${ctaLocale}/`;
+const CTA: Record<string, { title: string; body: string; link: string }> = {
+  en: {
+    title: 'Try it live',
+    body: 'Curious how loud your surroundings are right now? Measure in seconds — no app, no account.',
+    link: 'Open the live decibel meter →',
+  },
+  de: {
+    title: 'Jetzt selbst testen',
+    body: 'Wie laut ist Ihre Umgebung gerade? Messen Sie in Sekunden — ohne App, ohne Konto.',
+    link: 'Live-Dezibelmesser öffnen →',
+  },
+  it: {
+    title: 'Provalo dal vivo',
+    body: 'Quanto è rumoroso il tuo ambiente in questo momento? Misura in pochi secondi — senza app, senza account.',
+    link: 'Apri il fonometro online →',
+  },
+  ja: {
+    title: '実際に試してみる',
+    body: '今いる場所の音の大きさはどれくらい？数秒で測定できます — アプリも登録も不要。',
+    link: 'ライブメーターを開く →',
+  },
+};
+const cta = CTA[ctaLocale] ?? CTA.en;
 ---
 
 <div class="container-x py-10" style="max-width:1120px">
@@ -30,5 +61,9 @@ const { title, intro, breadcrumb = [{ name: 'Home', href: '/' }], reviewed } = A
   )}
   <div class="panel p-6 mt-6 text-[15px] leading-7 anim-rise" style="--d:120ms;color:var(--muted);max-width:78ch">
     <slot />
+    <div class="mt-6 rounded-xl p-4" style="border:1px solid color-mix(in srgb,#3b82f6 45%,var(--border));background:color-mix(in srgb,#3b82f6 10%,var(--raised))">
+      <p class="font-semibold" style="color:var(--text)">{cta.title}</p>
+      <p class="mt-1 text-sm">{cta.body} <a class="underline underline-offset-4 focus-ring" href={homeHref}>{cta.link}</a></p>
+    </div>
   </div>
 </div>
