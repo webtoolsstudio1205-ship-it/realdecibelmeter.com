@@ -50,6 +50,8 @@ export const NOINDEX_PATHS: readonly string[] = [
   '/es/privacidad/',
   '/fr/confidentialite/',
   '/pt/privacidade/',
+  '/ja/privacy/',
+  '/ko/privacy/',
 ];
 
 /** Returns true for paths that must render `noindex, follow`. */
@@ -156,9 +158,58 @@ export function webAppJsonLd(opts: {
         applicationCategory: 'UtilitiesApplication',
         operatingSystem: 'Any',
         browserRequirements: 'Requires microphone access via getUserMedia; audio is processed locally.',
-        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', availability: 'https://schema.org/OnlineOnly' },
+        featureList: 'Live dBA/dBC/dBZ estimates, Fast/Slow response, Leq, spectrum analyzer, calibration profiles, CSV/JSON export',
+        publisher: { '@type': 'Organization', name: 'Real Decibel Meter', url: `${SITE}/` },
       },
     ],
+  };
+}
+
+/**
+ * Site-wide Organization entity for GEO/E-E-A-T.
+ * Rendered once per page via Layout.astro so every answer engine can
+ * attribute facts to a stable publisher with a named author.
+ */
+export function organizationJsonLd(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': `${SITE}/#organization`,
+    name: 'Real Decibel Meter',
+    url: `${SITE}/`,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${SITE}/og-image.png`,
+      width: 1200,
+      height: 630,
+    },
+  };
+}
+
+/**
+ * HowTo schema for the 3-step measurement flow.
+ * Powers "how to measure decibels" answer boxes and voice assistants.
+ */
+export function howToJsonLd(opts: {
+  name: string;
+  description: string;
+  url: string;
+  inLanguage: string;
+  steps: { name: string; text: string }[];
+}): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: opts.name,
+    description: opts.description,
+    inLanguage: opts.inLanguage,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': opts.url },
+    step: opts.steps.map((s) => ({
+      '@type': 'HowToStep',
+      name: s.name,
+      text: s.text,
+    })),
   };
 }
 
@@ -180,6 +231,8 @@ export function articleJsonLd(opts: {
   url: string;
   inLanguage: string;
   dateModified: string;
+  datePublished?: string;
+  speakableSelectors?: string[];
 }): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
@@ -188,14 +241,27 @@ export function articleJsonLd(opts: {
     description: opts.description,
     url: opts.url,
     inLanguage: opts.inLanguage,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': opts.url },
     author: {
       '@type': 'Person',
       name: 'Bhagya Masalawala',
       jobTitle: 'Full-Stack Developer',
       url: `${SITE}/about/`,
     },
-    publisher: { '@type': 'Organization', name: 'Real Decibel Meter', url: `${SITE}/` },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Real Decibel Meter',
+      url: `${SITE}/`,
+      logo: { '@type': 'ImageObject', url: `${SITE}/og-image.png`, width: 1200, height: 630 },
+    },
+    datePublished: opts.datePublished ?? opts.dateModified,
     dateModified: opts.dateModified,
+    // SpeakableSpecification tells voice assistants and answer engines
+    // exactly which answer-first blocks are safe to read aloud / quote.
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: opts.speakableSelectors ?? ['#short-answer', '#key-facts'],
+    },
   };
 }
 

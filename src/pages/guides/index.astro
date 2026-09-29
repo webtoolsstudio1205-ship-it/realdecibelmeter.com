@@ -33,7 +33,9 @@ const items = [
 ---
 
 <Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/guides/" hreflang={guideHreflang('guides')} jsonLd={jsonLd}>
-  <Article title={title} intro="One hub for every sound-measurement guide: start with the working meter, then go deeper where you need it." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }]}>
+  <Article title={title} intro="One hub for every sound-measurement guide: start with the working meter, then go deeper where you need it." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }]}
+    shortAnswer="Start with a live reading on the homepage, then pick one follow-up guide: how-to-use for first measurement, calibration for accuracy, decibel-chart for context, db-vs-dba for weighting, or microphone-not-working for fixes. Every guide is free, runs in current browsers over HTTPS, and keeps audio local to your device."
+    keyFacts={['First: homepage meter → 30–60 second Leq reading.', 'Accuracy questions → /accuracy/ · method questions → /methodology/.', 'All guides free with no account; audio never leaves the browser.']}>
     <p class="mt-2">You get the most from this hub by starting with a live reading, then picking one follow-up. Open the meter, grant permission once per origin, set the phone down with the mic uncovered, and watch current, minimum, Leq, maximum and duration settle over 30–60 seconds. If the number surprises you, the sections below point to the single guide that answers your next question — no account, no download, current Chrome, Edge, Firefox or Safari over HTTPS.</p>
     <div class="grid gap-3 sm:grid-cols-2">
       {items.map((g) => (

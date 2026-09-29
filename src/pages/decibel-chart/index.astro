@@ -29,7 +29,9 @@ const jsonLd = [
 ---
 
 <Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/decibel-chart/" hreflang={guideHreflang('decibel-chart')} jsonLd={jsonLd}>
-  <Article title={title} intro="Approximate reference levels for everyday sounds. Use for context only — your browser reading is an estimate, not a verified instrument measurement." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Decibel chart', href: '/decibel-chart/' }]}>
+  <Article title={title} intro="Approximate reference levels for everyday sounds. Use for context only — your browser reading is an estimate, not a verified instrument measurement." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Decibel chart', href: '/decibel-chart/' }]}
+    shortAnswer="A quiet bedroom sits near 30–40 dBA, normal conversation near 60 dBA, and busy traffic near 70–80 dBA. The decibel scale is logarithmic — 10 dB more means roughly ten times the sound energy. Chart rows are approximate context only; match them with a 30–60 second Leq after calibration, never with a single peak."
+    keyFacts={['30 dBA bedroom · 40 dBA library · 60 dBA conversation · 70 dBA traffic · 90 dBA mower · 120 dBA siren.', 'Logarithmic scale: +10 dB ≈ 10× sound energy; +3 dB ≈ 2× energy.', 'Compare with Slow-response Leq, rounded to whole decibels.']}>
     <table class="w-full text-sm mt-2" style="border-collapse:collapse">
       <caption class="sr-only">Approximate everyday sound levels in dBA</caption>
       <thead><tr style="border-bottom:1px solid var(--border)"><th scope="col" class="text-left py-2 pr-4">Level (approx.)</th><th scope="col" class="text-left py-2">Example</th></tr></thead>

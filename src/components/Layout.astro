@@ -1,7 +1,7 @@
 ---
 import type { Dict, Locale } from '../i18n/dictionaries';
 import { LOCALES } from '../i18n/dictionaries';
-import { SITE, homepageHreflang, localizedGuidePath, ogLocaleFor, isNoindexPath, type GuideKey } from '../lib/seo';
+import { SITE, homepageHreflang, localizedGuidePath, ogLocaleFor, isNoindexPath, organizationJsonLd, type GuideKey } from '../lib/seo';
 import '../styles/global.css';
 
 interface Props {
@@ -45,6 +45,9 @@ function langHref(code: Locale, base: string): string {
 const hreflangs = Astro.props.hreflang ?? (isHome ? homepageHreflang() : [{ hreflang: locale === 'en' ? 'en' : locale, href: canonical }]);
 const ogLocale = ogLocaleFor(locale as 'en' | 'de' | 'it' | 'ja' | 'es' | 'fr' | 'pt' | 'ko');
 const jsonLdBlocks = Astro.props.jsonLd ?? [];
+// Site-wide publisher entity (GEO/E-E-A-T): every page carries a stable
+// Organization node so answer engines can attribute quoted facts.
+const orgBlock = organizationJsonLd();
 const currentNative = LOCALES.find((l) => l.code === locale)?.native ?? 'English';
 const homeHref = locale === 'en' ? '/' : `/${locale}/`;
 const measureHref = locale === 'en' ? '/#measure' : `/${locale}/#measure`;
@@ -99,6 +102,9 @@ const guideLinks = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="robots" content={robots} />
+    <meta name="author" content="Bhagya Masalawala" />
+    <meta name="generator" content="Astro" />
+    <link rel="alternate" type="text/plain" title="LLM site summary (llms.txt)" href={`${SITE}/llms.txt`} />
     <meta id="theme-color" name="theme-color" content="#08090b" />
     <link rel="canonical" href={canonical} />
     {hreflangs.map((h) => (
@@ -119,6 +125,7 @@ const guideLinks = {
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content="https://realdecibelmeter.com/og-image.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script type="application/ld+json" set:html={JSON.stringify(orgBlock)} />
     {jsonLdBlocks.map((block) => (
       <script type="application/ld+json" set:html={JSON.stringify(block)} />
     ))}
@@ -199,7 +206,7 @@ const guideLinks = {
         <div>
           <p class="font-semibold text-[15px]">Real Decibel Meter</p>
           <p class="text-sm mt-2" style="color:var(--muted)">{dict.footerNote}</p>
-          <a href="https://launchstag.com/p/real-decibel-meter" target="_blank" rel="noopener" class="mt-4 inline-block" aria-label="Featured on Launchstag">
+          <a href="https://launchstag.com/p/real-decibel-meter" target="_blank" rel="noopener">
             <img src="https://launchstag.com/badge-dark.svg" alt="Featured on Launchstag" width="198" height="62" />
           </a>
         </div>
@@ -364,6 +371,286 @@ const guideLinks = {
         } else {
           for (var n = 0; n < revealEls.length; n++) revealEls[n].classList.add('in');
         }
+      })();
+    </script>
+    <script is:inline>
+      /* Fancy select: upgrades every <select data-fancy> into an animated
+       * button + listbox while keeping the native select as value source.
+       * Existing `change` listeners keep working; dynamic option rebuilds
+       * (mic list, compare sessions) are synced via MutationObserver.
+       * Dynamic text uses textContent only; icons are static SVG built via
+       * createElementNS (no HTML string sinks). */
+      (function () {
+        var SVGNS = 'http' + '://www.w3.org/2000/svg';
+        function svgIcon(key) {
+          if (key === 'dot') {
+            var d = document.createElementNS(SVGNS, 'svg');
+            d.setAttribute('viewBox', '0 0 24 24');
+            d.setAttribute('fill', 'currentColor');
+            d.setAttribute('aria-hidden', 'true');
+            var c0 = document.createElementNS(SVGNS, 'circle');
+            c0.setAttribute('cx', '12'); c0.setAttribute('cy', '12'); c0.setAttribute('r', '4');
+            d.appendChild(c0);
+            return d;
+          }
+          var svg = document.createElementNS(SVGNS, 'svg');
+          svg.setAttribute('viewBox', '0 0 24 24');
+          svg.setAttribute('fill', 'none');
+          svg.setAttribute('stroke', 'currentColor');
+          svg.setAttribute('stroke-width', key === 'check' ? '2.6' : '2');
+          svg.setAttribute('stroke-linecap', 'round');
+          svg.setAttribute('aria-hidden', 'true');
+          if (key === 'triangle' || key === 'square' || key === 'sawtooth' || key === 'both' || key === 'left' || key === 'right' || key === 'compare' || key === 'method' || key === 'check') {
+            svg.setAttribute('stroke-linejoin', 'round');
+          }
+          if (key === 'check') { svg.setAttribute('width', '16'); svg.setAttribute('height', '16'); }
+          if (key === 'chev') { svg.setAttribute('width', '15'); svg.setAttribute('height', '15'); svg.setAttribute('class', 'fancy-chev'); }
+          function path(dAttr, opacity) {
+            var p = document.createElementNS(SVGNS, 'path');
+            p.setAttribute('d', dAttr);
+            if (opacity) p.setAttribute('opacity', opacity);
+            svg.appendChild(p);
+          }
+          function circle(cx, cy, r) {
+            var cc = document.createElementNS(SVGNS, 'circle');
+            cc.setAttribute('cx', cx); cc.setAttribute('cy', cy); cc.setAttribute('r', r);
+            svg.appendChild(cc);
+          }
+          function rect(x, y, w, h, rx) {
+            var rr = document.createElementNS(SVGNS, 'rect');
+            rr.setAttribute('x', x); rr.setAttribute('y', y);
+            rr.setAttribute('width', w); rr.setAttribute('height', h); rr.setAttribute('rx', rx);
+            svg.appendChild(rr);
+          }
+          if (key === 'sine') path('M2 12c2-7 4-7 6 0s4 7 6 0 4-7 6 0');
+          else if (key === 'triangle') path('M2 16 7 6l5 10 5-10 5 10');
+          else if (key === 'square') path('M3 16V8h5v8h5V8h5v8');
+          else if (key === 'sawtooth') path('M3 16 8 6v10l5-10v10l5-10v10');
+          else if (key === 'both') { path('M2.5 10v4h2.6l3.4 2.6V7.4L5.1 10H2.5z'); path('M13.5 10v4h2.6l3.4 2.6V7.4l-3.4 2.6h-2.6z'); }
+          else if (key === 'left') { path('M2.5 10v4h2.6l3.4 2.6V7.4L5.1 10H2.5z'); path('M13.5 10v4h2.6l3.4 2.6V7.4l-3.4 2.6h-2.6z', '0.3'); }
+          else if (key === 'right') { path('M2.5 10v4h2.6l3.4 2.6V7.4L5.1 10H2.5z', '0.3'); path('M13.5 10v4h2.6l3.4 2.6V7.4l-3.4 2.6h-2.6z'); }
+          else if (key === 'off') { circle('12', '12', '8'); path('M6 6l12 12'); }
+          else if (key === 'timer') { circle('12', '12', '8'); path('M12 7.5V12l3 2'); }
+          else if (key === 'mic') { rect('9', '2', '6', '12', '3'); path('M5 10a7 7 0 0 0 14 0M12 19v3'); }
+          else if (key === 'compare') path('M8 7h11l-3-3M16 17H5l3 3');
+          else if (key === 'method') { circle('12', '12', '8.5'); path('m8.5 12.5 2.5 2.5 4.5-5.5'); }
+          else if (key === 'check') path('M20 6 9 17l-5-5');
+          else if (key === 'chev') path('m6 9 6 6 6-6');
+          else { return svgIcon('dot'); }
+          return svg;
+        }
+        function iconKeyFor(select, opt) {
+          var raw = opt ? (opt.getAttribute('data-icon') || opt.value || '') : '';
+          var key = String(raw).toLowerCase();
+          var valid = { sine: 1, triangle: 1, square: 1, sawtooth: 1, both: 1, left: 1, right: 1, off: 1, timer: 1, mic: 1, compare: 1, method: 1, dot: 1 };
+          if (valid[key]) return key;
+          var id = (select && select.id) || '';
+          if (id.indexOf('mic') !== -1) return 'mic';
+          if (id.indexOf('cmp') !== -1) return 'compare';
+          if (id.indexOf('ref-method') !== -1) return 'method';
+          if (id.indexOf('wave') !== -1) return 'sine';
+          if (id.indexOf('channel') !== -1) return 'both';
+          if (id.indexOf('timer') !== -1) return 'timer';
+          return 'dot';
+        }
+        function setIcon(box, key) {
+          box.replaceChildren(svgIcon(key));
+        }
+        function spanWith(cls, parent) {
+          var s = document.createElement('span');
+          s.className = cls;
+          if (parent) parent.appendChild(s);
+          return s;
+        }
+        function closeAllExcept(except) {
+          document.querySelectorAll('.fancy').forEach(function (w) {
+            if (w === except) return;
+            var p = w.querySelector('.fancy-pop');
+            var b = w.querySelector('.fancy-btn');
+            if (p && !p.hidden) { p.hidden = true; p.classList.remove('open'); if (b) b.setAttribute('aria-expanded', 'false'); }
+          });
+        }
+        function enhance(select) {
+          if (!select || select.dataset.fancyDone) return;
+          if (!select.hasAttribute('data-fancy')) return;
+          select.dataset.fancyDone = '1';
+          var wrap = document.createElement('div');
+          wrap.className = 'fancy';
+          if (select.parentNode) select.parentNode.insertBefore(wrap, select);
+          wrap.appendChild(select);
+          select.classList.add('fancy-native');
+          select.setAttribute('aria-hidden', 'true');
+          select.tabIndex = -1;
+          var labelEl = select.id ? document.querySelector('label[for="' + select.id + '"]') : null;
+          var ariaLabel = select.getAttribute('aria-label') || (labelEl ? (labelEl.textContent || '').trim() : '') || 'Choose option';
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'fancy-btn focus-ring';
+          btn.setAttribute('aria-haspopup', 'listbox');
+          btn.setAttribute('aria-expanded', 'false');
+          btn.setAttribute('aria-label', ariaLabel);
+          var btnIcon = spanWith('fancy-icon', btn);
+          var btnText = spanWith('fancy-text', btn);
+          var btnLabel = spanWith('fancy-label', btnText);
+          var btnDesc = spanWith('fancy-desc', btnText);
+          btn.appendChild(svgIcon('chev'));
+          wrap.appendChild(btn);
+          var pop = document.createElement('div');
+          pop.className = 'fancy-pop';
+          pop.hidden = true;
+          var list = document.createElement('ul');
+          list.className = 'fancy-list';
+          list.setAttribute('role', 'listbox');
+          list.setAttribute('aria-label', ariaLabel);
+          pop.appendChild(list);
+          wrap.appendChild(pop);
+          var items = [];
+          var activeIdx = -1;
+          function syncBtn(animate) {
+            var sel = select.options[select.selectedIndex] || select.options[0];
+            if (sel) {
+              btnLabel.textContent = sel.textContent || '';
+              var d = sel.getAttribute('data-desc') || '';
+              btnDesc.textContent = d;
+              btnDesc.hidden = !d;
+              setIcon(btnIcon, iconKeyFor(select, sel));
+              btn.dataset.value = sel.value;
+            }
+            items.forEach(function (li, i) {
+              li.setAttribute('aria-selected', i === select.selectedIndex ? 'true' : 'false');
+            });
+            if (animate) {
+              btn.classList.remove('swap');
+              void btn.offsetWidth;
+              btn.classList.add('swap');
+            }
+          }
+          function setActive(i, focus) {
+            items.forEach(function (li, j) {
+              if (j === i) li.setAttribute('data-active', 'true');
+              else li.removeAttribute('data-active');
+            });
+            activeIdx = i;
+            var el = items[i];
+            if (el) {
+              list.setAttribute('aria-activedescendant', el.id);
+              try { el.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+              if (focus) { try { el.focus({ preventScroll: true }); } catch (e) { try { el.focus(); } catch (e2) {} } }
+            }
+          }
+          function onOutside(e) {
+            if (!wrap.contains(e.target)) close(false);
+          }
+          function onKey(e) {
+            if (pop.hidden) return;
+            if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(true); }
+            else if (e.key === 'ArrowDown') { e.preventDefault(); e.stopPropagation(); if (items.length) setActive((activeIdx + 1 + items.length) % items.length, true); }
+            else if (e.key === 'ArrowUp') { e.preventDefault(); e.stopPropagation(); if (items.length) setActive((activeIdx - 1 + items.length) % items.length, true); }
+            else if (e.key === 'Home') { e.preventDefault(); setActive(0, true); }
+            else if (e.key === 'End') { e.preventDefault(); setActive(items.length - 1, true); }
+            else if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault(); e.stopPropagation();
+              var focused = document.activeElement;
+              var idx = items.indexOf(focused);
+              choose(idx >= 0 ? idx : activeIdx);
+            } else if (e.key === 'Tab') { close(false); }
+          }
+          function open() {
+            if (!items.length) return;
+            closeAllExcept(wrap);
+            pop.hidden = false;
+            requestAnimationFrame(function () { pop.classList.add('open'); });
+            btn.setAttribute('aria-expanded', 'true');
+            var start = select.selectedIndex >= 0 ? select.selectedIndex : 0;
+            setActive(start, false);
+            document.addEventListener('pointerdown', onOutside, true);
+            document.addEventListener('keydown', onKey, true);
+          }
+          function close(focusBtn) {
+            if (pop.hidden) return;
+            pop.classList.remove('open');
+            pop.hidden = true;
+            btn.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('pointerdown', onOutside, true);
+            document.removeEventListener('keydown', onKey, true);
+            if (focusBtn) { try { btn.focus(); } catch (e) {} }
+          }
+          function choose(i) {
+            if (i == null || i < 0 || i >= select.options.length) { close(true); return; }
+            if (select.selectedIndex !== i) {
+              select.selectedIndex = i;
+              try { select.dispatchEvent(new Event('input', { bubbles: true })); } catch (e) {}
+              try { select.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+            }
+            syncBtn(true);
+            close(true);
+          }
+          function rebuild() {
+            list.replaceChildren();
+            items = Array.from(select.options).map(function (opt, i) {
+              var li = document.createElement('li');
+              li.className = 'fancy-opt';
+              li.setAttribute('role', 'option');
+              li.id = (select.id || 'fancy') + '-opt-' + i + '-' + Math.floor(Math.random() * 1e6);
+              li.dataset.value = opt.value;
+              li.style.setProperty('--i', String(i));
+              li.tabIndex = -1;
+              var descText = opt.getAttribute('data-desc') || '';
+              var liIcon = spanWith('fancy-icon', li);
+              setIcon(liIcon, iconKeyFor(select, opt));
+              var liText = spanWith('fancy-text', li);
+              var liLabel = spanWith('fancy-label', liText);
+              var liDesc = spanWith('fancy-desc', liText);
+              liLabel.textContent = opt.textContent || '';
+              liDesc.textContent = descText;
+              liDesc.hidden = !descText;
+              var liCheck = spanWith('fancy-check', li);
+              liCheck.appendChild(svgIcon('check'));
+              li.setAttribute('aria-selected', opt.selected ? 'true' : 'false');
+              li.setAttribute('aria-label', (opt.textContent || '') + (descText ? '. ' + descText : ''));
+              li.addEventListener('click', function () { choose(i); });
+              li.addEventListener('mousemove', function () {
+                if (activeIdx !== i) setActive(i, false);
+              });
+              list.appendChild(li);
+              return li;
+            });
+            syncBtn(false);
+          }
+          btn.addEventListener('click', function () {
+            if (pop.hidden) open();
+            else close(false);
+          });
+          btn.addEventListener('keydown', function (e) {
+            if ((e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') && pop.hidden) {
+              e.preventDefault(); open();
+            }
+          });
+          select.addEventListener('change', function () { syncBtn(true); });
+          var mo = null;
+          try {
+            mo = new MutationObserver(function () { rebuild(); });
+            mo.observe(select, { childList: true, characterData: true, subtree: true });
+            window.addEventListener('pagehide', function () { try { mo.disconnect(); } catch (e) {} }, { once: true });
+          } catch (e) {}
+          rebuild();
+        }
+        function init(root) {
+          (root || document).querySelectorAll('select[data-fancy]').forEach(enhance);
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { init(document); });
+        else init(document);
+        try {
+          new MutationObserver(function (muts) {
+            muts.forEach(function (m) {
+              m.addedNodes.forEach(function (n) {
+                if (!n || n.nodeType !== 1) return;
+                if (n.matches && n.matches('select[data-fancy]')) enhance(n);
+                if (n.querySelectorAll) n.querySelectorAll('select[data-fancy]').forEach(enhance);
+              });
+            });
+          }).observe(document.documentElement, { childList: true, subtree: true });
+        } catch (e) {}
       })();
     </script>
   </body>

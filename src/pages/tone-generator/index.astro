@@ -43,19 +43,19 @@ const jsonLd = [
         <div class="grid gap-3">
           <div>
             <label for="tg-wave" class="text-sm font-medium">Waveform</label>
-            <select id="tg-wave" class="w-full panel-raised p-2 mt-1" style="border-radius:8px;min-height:44px">
-              <option value="sine">Sine (pure tone)</option>
-              <option value="triangle">Triangle (soft)</option>
-              <option value="square">Square (harsh)</option>
-              <option value="sawtooth">Sawtooth (buzzy)</option>
+            <select id="tg-wave" data-fancy class="w-full panel-raised p-2 mt-1" style="border-radius:8px;min-height:44px">
+              <option value="sine" data-icon="sine" data-desc="Pure single pitch">Sine (pure tone)</option>
+              <option value="triangle" data-icon="triangle" data-desc="Mellow, soft edges">Triangle (soft)</option>
+              <option value="square" data-icon="square" data-desc="Harsh, hollow edge">Square (harsh)</option>
+              <option value="sawtooth" data-icon="sawtooth" data-desc="Buzzy, bright harmonics">Sawtooth (buzzy)</option>
             </select>
           </div>
           <div>
             <label for="tg-channel" class="text-sm font-medium">Channel</label>
-            <select id="tg-channel" class="w-full panel-raised p-2 mt-1" style="border-radius:8px;min-height:44px">
-              <option value="both">Both speakers</option>
-              <option value="left">Left only</option>
-              <option value="right">Right only</option>
+            <select id="tg-channel" data-fancy class="w-full panel-raised p-2 mt-1" style="border-radius:8px;min-height:44px">
+              <option value="both" data-icon="both" data-desc="Same tone each side">Both speakers</option>
+              <option value="left" data-icon="left" data-desc="Isolate left speaker">Left only</option>
+              <option value="right" data-icon="right" data-desc="Isolate right speaker">Right only</option>
             </select>
           </div>
           <div>
@@ -64,11 +64,11 @@ const jsonLd = [
           </div>
           <div>
             <label for="tg-timer" class="text-sm font-medium">Auto stop</label>
-            <select id="tg-timer" class="w-full panel-raised p-2 mt-1" style="border-radius:8px;min-height:44px">
-              <option value="0">Off</option>
-              <option value="5">After 5 s</option>
-              <option value="30">After 30 s</option>
-              <option value="60">After 60 s</option>
+            <select id="tg-timer" data-fancy class="w-full panel-raised p-2 mt-1" style="border-radius:8px;min-height:44px">
+              <option value="0" data-icon="off" data-desc="Play until you stop">Off</option>
+              <option value="5" data-icon="timer" data-desc="Short burst for high pitch">After 5 s</option>
+              <option value="30" data-icon="timer" data-desc="Compare two setups">After 30 s</option>
+              <option value="60" data-icon="timer" data-desc="Extended listening">After 60 s</option>
             </select>
           </div>
         </div>

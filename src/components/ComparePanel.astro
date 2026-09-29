@@ -17,10 +17,10 @@ const ui = getDict(locale).ui;
   <p class="mt-1 text-xs leading-5" style="color:var(--muted)">{f.compareLegalNote}</p>
   <div class="mt-3 grid gap-2 sm:grid-cols-2">
     <label class="block text-sm">{f.compareA}
-      <select id="rdm-cmp-a" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"></select>
+      <select id="rdm-cmp-a" data-fancy class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"></select>
     </label>
     <label class="block text-sm">{f.compareB}
-      <select id="rdm-cmp-b" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"></select>
+      <select id="rdm-cmp-b" data-fancy class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"></select>
     </label>
   </div>
   <div class="mt-2 flex flex-wrap items-center gap-2">
@@ -73,7 +73,12 @@ const ui = getDict(locale).ui;
       entries.slice(0, 20).forEach((e, i) => {
         const o = document.createElement('option');
         o.value = e.id;
-        o.textContent = labelFor(e, i);
+        o.dataset.icon = 'compare';
+        const s = e.session || {};
+        const leq = s.leqDb != null && Number.isFinite(s.leqDb) ? `${formatDb(s.leqDb)} ${s.unit || ''}` : '--';
+        const when = e.label || (e.savedAtIso ? new Date(e.savedAtIso).toLocaleString() : `#${i + 1}`);
+        o.textContent = when;
+        o.dataset.desc = leq;
         sel.appendChild(o);
       });
     }

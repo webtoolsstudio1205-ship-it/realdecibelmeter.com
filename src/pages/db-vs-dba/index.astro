@@ -17,7 +17,9 @@ const jsonLd = [
 ---
 
 <Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/db-vs-dba/" hreflang={guideHreflang('db-vs-dba')} jsonLd={jsonLd}>
-  <Article title={title} intro="dB is the unit; the trailing letter says which frequency weighting was applied." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'dB vs dBA', href: '/db-vs-dba/' }]}>
+  <Article title={title} intro="dB is the unit; the trailing letter says which frequency weighting was applied." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'dB vs dBA', href: '/db-vs-dba/' }]}
+    shortAnswer="dB is the unit; dBA, dBC and dBZ say which frequency weighting shaped the number. A-weighting (dBA) follows human hearing and suits everyday checks, C-weighting (dBC) keeps more bass for loud music and machinery, and Z-weighting (dBZ) stays flat for diagnostics. Use A for exposure talk and C or Z for bass-heavy comparisons."
+    keyFacts={['dBA: speech-like, default for everyday and chart comparisons.', 'dBC: flatter, better near loud peaks and bass-heavy sources.', 'dBZ: flat, best for calibration math and speaker comparisons.']}>
     <ul class="space-y-3 mt-2">
       <li><strong class="text-white">dBZ (Z-weighted).</strong> Flat: all frequencies count equally. Best for comparing spectra and for calibration math.</li>
       <li><strong class="text-white">dBA.</strong> A-weighting roughly follows human hearing at moderate levels — quiet low frequencies count less. Default on this meter for everyday environments and <a class="underline underline-offset-4" href="/decibel-chart/">decibel chart</a> comparisons.</li>

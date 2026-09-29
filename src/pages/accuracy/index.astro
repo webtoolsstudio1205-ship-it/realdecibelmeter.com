@@ -17,7 +17,9 @@ const jsonLd = [
 ---
 
 <Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/accuracy/" hreflang={guideHreflang('accuracy')} jsonLd={jsonLd}>
-  <Article title={title} intro="Your microphone was built for calls, not metrology. This page states plainly what the meter can and cannot claim." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Accuracy', href: '/accuracy/' }]}>
+  <Article title={title} intro="Your microphone was built for calls, not metrology. This page states plainly what the meter can and cannot claim." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Accuracy', href: '/accuracy/' }]}
+    shortAnswer="A browser decibel meter is a screening estimator, not a calibrated sound level meter. Two phones on the same sound commonly differ by 5–10 dB before calibration, readings below about 30 dBA run high, and peaks near 95–100 dBA may clip. Calibrate against a known reference, and use Class 1 or 2 hardware for safety, workplace or legal decisions."
+    keyFacts={['Uncalibrated readings are weighted dBFS plus a nominal +100 dB offset — always labeled estimates.', 'Round to whole decibels and average 30–60 seconds (Leq) instead of chasing peaks.', 'Formal verdicts always need a calibrated instrument plus a qualified operator.']}>
     <h2 class="text-white font-semibold">What the number means</h2>
     <p class="mt-2">The panel shows an <strong>uncalibrated browser estimate</strong> derived from Web Audio time-domain samples. Gain, placement, case resonance and frequency response differ per device, so two phones side by side can disagree by many decibels. Readings are never presented as approved, professional or lab-tested instrument results.</p>
     <h2 class="text-white font-semibold mt-6">Why results differ between devices and browsers</h2>

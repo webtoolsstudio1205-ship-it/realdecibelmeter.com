@@ -18,7 +18,9 @@ const jsonLd = [
 ---
 
 <Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/microphone-not-working/" hreflang={guideHreflang('microphone-not-working')} jsonLd={jsonLd}>
-  <Article title={title} intro="Each failure on this site has its own message. Match yours below and follow the recovery." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Microphone help', href: '/microphone-not-working/' }]}>
+  <Article title={title} intro="Each failure on this site has its own message. Match yours below and follow the recovery." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Microphone help', href: '/microphone-not-working/' }]}
+    shortAnswer="If the meter shows two dashes, grant microphone permission over HTTPS and press Start — nothing is simulated before real audio arrives. If permission was denied, re-allow it via the lock icon in the address bar; if no device appears, connect one and reload; if another app holds the mic, close it first."
+    keyFacts={['Dashes mean waiting for real input — never a fake number.', 'Denied: lock icon → allow microphone → Start again.', 'Busy: close calls and recorders holding the mic, then retry.']}>
     <ul class="space-y-4 mt-2">
       <li><strong class="text-white">Permission denied.</strong> Open the lock/tune icon in the address bar → allow the microphone → press Start again. Also check the OS privacy switch for microphone access.</li>
       <li><strong class="text-white">No microphone detected.</strong> Connect a device, check OS sound settings, reload, press Start.</li>

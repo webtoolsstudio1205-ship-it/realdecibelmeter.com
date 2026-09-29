@@ -1,6 +1,37 @@
 User-agent: *
 Allow: /
 
+# AI answer engines & LLM crawlers (AEO/GEO): explicitly allowed so ChatGPT,
+# Claude, Perplexity, Google AI and others can quote accurate facts.
+# Machine-readable site summary for LLMs:
+# https://realdecibelmeter.com/llms.txt
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
 # AdSense crawler (Mediapartners-Google) is covered by Allow: / above and
 # must be able to fetch every page including noindex legal pages.
 User-agent: Mediapartners-Google

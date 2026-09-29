@@ -1233,7 +1233,12 @@ body,
   .brand-mark rect,
   .hero-orb,
   .hero-wave path,
-  .site-header {
+  .site-header,
+  .fancy-pop.open,
+  .fancy-opt,
+  .fancy-btn.swap .fancy-icon,
+  .fancy-btn.swap .fancy-text,
+  .fancy-opt[aria-selected="true"] .fancy-check {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
@@ -1320,6 +1325,211 @@ body,
 }
 .refresh-btn:hover svg {
   transform: rotate(120deg);
+}
+
+/* ---------- Fancy select (site-wide custom dropdown) ----------
+ * Native <select data-fancy> is kept in the DOM as the source of truth
+ * (value + change events) and visually hidden; JS builds .fancy-btn +
+ * .fancy-pop on top. All motion is transform/opacity, ≤220ms. */
+.fancy {
+  position: relative;
+  min-width: 0;
+}
+.fancy-native {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  clip: rect(0 0 0 0) !important;
+  clip-path: inset(50%) !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+}
+.fancy-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 7px 38px 7px 10px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+.fancy-btn:hover {
+  border-color: color-mix(in srgb, var(--text) 32%, var(--border));
+  transform: translateY(-1px);
+}
+.fancy-btn:active {
+  transform: scale(0.99);
+}
+.fancy-btn[aria-expanded="true"] {
+  border-color: color-mix(in srgb, #3b82f6 55%, var(--border));
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18), 0 8px 24px -12px rgba(59, 130, 246, 0.45);
+}
+.fancy-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(59, 130, 246, 0.16) 52%, rgba(139, 92, 246, 0.16));
+  border: 1px solid color-mix(in srgb, #3b82f6 32%, var(--border));
+  color: var(--text);
+}
+.fancy-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.fancy-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.25;
+}
+.fancy-label {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fancy-desc {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fancy-chev {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  transition: transform 200ms ease, color 180ms ease;
+  pointer-events: none;
+}
+.fancy-btn[aria-expanded="true"] .fancy-chev {
+  transform: translateY(-50%) rotate(180deg);
+  color: var(--text);
+}
+.fancy-btn.swap .fancy-icon,
+.fancy-btn.swap .fancy-text {
+  animation: fancy-swap 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+@keyframes fancy-swap {
+  from { opacity: 0.2; transform: translateY(4px) scale(0.99); }
+  to { opacity: 1; transform: none; }
+}
+.fancy-pop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 40;
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  padding: 6px;
+  transform-origin: top center;
+}
+.fancy-pop[hidden] {
+  display: none;
+}
+.fancy-pop.open {
+  animation: fancy-pop-in 190ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+@keyframes fancy-pop-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.fancy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: min(288px, 60vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.fancy-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  animation: fancy-opt-in 180ms ease both;
+  animation-delay: calc(var(--i, 0) * 28ms);
+  transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+@keyframes fancy-opt-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+.fancy-opt:hover,
+.fancy-opt[data-active="true"] {
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  transform: translateX(2px);
+}
+.fancy-opt:focus-visible {
+  outline: 2px solid var(--color-glow-blue);
+  outline-offset: 1px;
+}
+.fancy-opt[aria-selected="true"] {
+  background: color-mix(in srgb, #3b82f6 13%, var(--raised));
+  border-color: color-mix(in srgb, #3b82f6 45%, var(--border));
+}
+.fancy-opt[aria-selected="true"] .fancy-icon {
+  background: linear-gradient(135deg, #22d3ee, #3b82f6 55%, #8b5cf6);
+  border-color: transparent;
+  color: #fff;
+}
+.fancy-check {
+  margin-left: auto;
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  color: #60a5fa;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+.fancy-opt[aria-selected="true"] .fancy-check {
+  opacity: 1;
+  transform: none;
+  animation: check-pop 200ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+@keyframes check-pop {
+  from { transform: scale(0.5); }
+  60% { transform: scale(1.15); }
+  to { transform: scale(1); }
+}
+[data-theme="light"] .fancy-pop {
+  box-shadow: 0 16px 40px -18px rgba(30, 41, 59, 0.35), 0 1px 2px rgba(30, 41, 59, 0.08);
+}
+[data-theme="light"] .fancy-icon {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(59, 130, 246, 0.12) 52%, rgba(124, 58, 237, 0.1));
 }
 
 /* ---------- Mobile overflow guards ----------

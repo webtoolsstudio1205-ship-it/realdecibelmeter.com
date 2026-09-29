@@ -226,7 +226,7 @@ const featureCopy = getFeatures(locale);
         <p id="rdm-ref-progress" class="text-xs mt-1" style="color:var(--muted)"></p>
         <div class="grid gap-2 sm:grid-cols-2 mt-2">
           <label class="block text-sm">{dict.calOffset}<input id="rdm-ref-reading" name="reference-reading" autocomplete="off" inputmode="decimal" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="number" step="0.1" min="-20" max="160" placeholder="94.0" /></label>
-          <label class="block text-sm">{dict.ui.method}<select id="rdm-ref-method" name="reference-method" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"><option value="">—</option><option value="reference-meter">{dict.ui.referenceMeter}</option><option value="acoustic-calibrator">{dict.ui.acousticCalibrator}</option><option value="other-documented">{dict.ui.otherDocumented}</option></select></label>
+          <label class="block text-sm">{dict.ui.method}<select id="rdm-ref-method" data-fancy name="reference-method" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px"><option value="" data-icon="method">—</option><option value="reference-meter" data-icon="method">{dict.ui.referenceMeter}</option><option value="acoustic-calibrator" data-icon="method">{dict.ui.acousticCalibrator}</option><option value="other-documented" data-icon="method">{dict.ui.otherDocumented}</option></select></label>
         </div>
         <label class="block text-sm mt-2" for="rdm-ref-note">{dict.ui.note}<input id="rdm-ref-note" name="reference-note" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="text" maxlength="200" /></label>
         <label class="block text-sm mt-2" for="rdm-cal-label">{dict.calLabel}<input id="rdm-cal-label" name="calibration-label" autocomplete="off" class="focus-ring mt-1 w-full rounded-lg text-sm" style="min-height:44px;background:var(--surface);border:1px solid var(--border);padding:0 12px" type="text" maxlength="80" /></label>
@@ -290,11 +290,10 @@ const featureCopy = getFeatures(locale);
       <section class="modal-sec" aria-labelledby="rdm-m-mic">
         <h4 id="rdm-m-mic" class="eyebrow mb-2">{dict.micSelect}</h4>
         <div class="flex gap-2">
-          <div class="select-wrap flex-1">
-            <select id="rdm-mic" name="microphone" aria-label={dict.micSelect} autocomplete="off" class="select focus-ring text-sm rounded-lg w-full" style="min-height:44px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0 36px 0 12px">
-              <option value="">{dict.micDefault}</option>
+          <div class="flex-1" style="min-width:0">
+            <select id="rdm-mic" data-fancy name="microphone" aria-label={dict.micSelect} autocomplete="off" class="select focus-ring text-sm rounded-lg w-full" style="min-height:44px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0 36px 0 12px">
+              <option value="" data-icon="mic">{dict.micDefault}</option>
             </select>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </div>
           <button id="rdm-refresh-mics" type="button" class="btn-square focus-ring refresh-btn" title={dict.ui.refreshMics} aria-label={dict.ui.refreshMics}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/></svg>
@@ -569,11 +568,14 @@ const featureCopy = getFeatures(locale);
     sel.replaceChildren();
     const def = document.createElement('option');
     def.value = '';
+    def.dataset.icon = 'mic';
     def.textContent = T('data-mic-default', 'Default microphone');
     sel.appendChild(def);
     devices.forEach((d, i) => {
       const o = document.createElement('option');
       o.value = d.deviceId;
+      o.dataset.icon = 'mic';
+      o.dataset.desc = d.deviceId ? '' : '';
       o.textContent = d.label || `${UI.microphone} ${i + 1}`;
       sel.appendChild(o);
     });
@@ -941,7 +943,7 @@ const featureCopy = getFeatures(locale);
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !els.modalWrap.hidden) closeModal();
     if (e.key === 'Tab' && !els.modalWrap.hidden) {
-      const focusable = Array.from(els.modal.querySelectorAll('button, input, select, summary, [href]')).filter((el) => !el.disabled);
+      const focusable = Array.from(els.modal.querySelectorAll('button, input, select, summary, [href]')).filter((el) => !el.disabled && !el.classList.contains('fancy-native') && el.getAttribute('aria-hidden') !== 'true');
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }

@@ -1,0 +1,56 @@
+{
+  "total": 100,
+  "gates": {
+    "metadata": {
+      "score": 100,
+      "passed": 1551,
+      "total": 1551,
+      "weight": 20
+    },
+    "links": {
+      "score": 100,
+      "passed": 4835,
+      "total": 4835,
+      "weight": 15
+    },
+    "hreflang": {
+      "score": 100,
+      "passed": 1322,
+      "total": 1322,
+      "weight": 15
+    },
+    "sitemap": {
+      "score": 100,
+      "passed": 279,
+      "total": 279,
+      "weight": 15
+    },
+    "crawl": {
+      "score": 100,
+      "passed": 5,
+      "total": 5,
+      "weight": 10
+    },
+    "structured": {
+      "score": 100,
+      "passed": 393,
+      "total": 393,
+      "weight": 10
+    },
+    "localization": {
+      "score": 100,
+      "passed": 7,
+      "total": 7,
+      "weight": 5
+    },
+    "lighthouse": {
+      "score": 100,
+      "passed": 4,
+      "total": 4,
+      "weight": 10
+    }
+  },
+  "failures": [],
+  "indexableRoutes": 88,
+  "sitemapUrls": 88
+}

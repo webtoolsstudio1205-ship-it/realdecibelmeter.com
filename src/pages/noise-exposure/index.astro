@@ -19,7 +19,9 @@ const jsonLd = [
 ---
 
 <Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/noise-exposure/" jsonLd={jsonLd}>
-  <Article title={title} intro="One loud number means little without duration. This guide connects sound level, exposure time and practical hearing protection." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Noise exposure', href: '/noise-exposure/' }]}>
+  <Article title={title} intro="One loud number means little without duration. This guide connects sound level, exposure time and practical hearing protection." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Noise exposure', href: '/noise-exposure/' }]}
+    shortAnswer="Hearing risk is level plus time: sustained 85 dBA across 8 hours is the commonly cited screening boundary, and allowed time halves every 3 dB — 88 dBA for 4 hours, 91 dBA for 2 hours, 100 dBA for about 15 minutes. Levels below 70 dBA seldom raise duration concern. Browser Leq figures are personal-awareness screening only; formal assessment needs calibrated hardware."
+    keyFacts={['85 dBA → 8 h · 88 dBA → 4 h · 91 dBA → 2 h · 94 dBA → 1 h · 100 dBA → ~15 min.', 'Always pair Leq with its duration — a peak alone says little.', 'Use protection, distance and shorter stays near 85 dBA and above.']}>
     <h2 class="text-white font-semibold">Why level and duration combine</h2>
     <p class="mt-2">Hearing dose works like an energy budget: a brief very loud event and a long moderate sound can carry similar risk. A single peak reading such as 100 dBA says little on its own — three hours at that level is a different matter from three seconds. That is why this meter records duration alongside current, minimum, energy-average Leq and maximum values, and why exposure thinking always starts from the average over the full period, never from one instant. See <a class="underline underline-offset-4" href="/methodology/">how the meter works</a> for what each statistic means.</p>
 

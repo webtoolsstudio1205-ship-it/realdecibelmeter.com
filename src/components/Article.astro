@@ -1,11 +1,14 @@
 ---
+import AnswerBox from './AnswerBox.astro';
 interface Props {
   title: string;
   intro: string;
   breadcrumb?: { name: string; href: string }[];
   reviewed?: string;
+  shortAnswer?: string;
+  keyFacts?: string[];
 }
-const { title, intro, breadcrumb = [{ name: 'Home', href: '/' }], reviewed } = Astro.props;
+const { title, intro, breadcrumb = [{ name: 'Home', href: '/' }], reviewed, shortAnswer, keyFacts } = Astro.props;
 
 // Homepage CTA: every article funnels curious readers back to the live meter.
 // Locale is inferred from the URL so Japanese articles link to /ja/, German
@@ -56,8 +59,16 @@ const cta = CTA[ctaLocale] ?? CTA.en;
   </nav>
   <h1 class="font-semibold tracking-tight mt-2" style="font-size:clamp(28px,5vw,40px);line-height:1.1;letter-spacing:-0.02em">{title}</h1>
   <p class="mt-3 text-[16px] leading-7" style="color:var(--muted);max-width:68ch">{intro}</p>
-  {reviewed && (
-    <p class="mt-2 text-xs" style="color:var(--muted)">Last materially reviewed: {reviewed}</p>
+  <p class="mt-2 text-xs" style="color:var(--muted)">
+    By <a href="/about/" class="underline underline-offset-4 focus-ring" rel="author">Bhagya Masalawala</a>
+    {reviewed && (
+      <span> · Last materially reviewed: <time datetime={reviewed}>{reviewed}</time></span>
+    )}
+  </p>
+  {shortAnswer && (
+    <div class="mt-5" style="max-width:78ch">
+      <AnswerBox answer={shortAnswer} facts={keyFacts ?? []} />
+    </div>
   )}
   <div class="panel p-6 mt-6 text-[15px] leading-7 anim-rise" style="--d:120ms;color:var(--muted);max-width:78ch">
     <slot />

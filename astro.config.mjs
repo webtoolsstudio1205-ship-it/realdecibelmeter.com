@@ -29,6 +29,7 @@ const NOINDEX_PATHS = [
   '/es/privacidad/',
   '/fr/confidentialite/',
   '/pt/privacidade/',
+  '/ja/privacy/',
   '/ko/privacy/',
 ];
 

@@ -18,7 +18,9 @@ const jsonLd = [
 ---
 
 <Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/how-to-use/" hreflang={guideHreflang('how-to-use')} jsonLd={jsonLd}>
-  <Article title={title} intro="Three steps: allow the microphone, watch the live panel, tune and export." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'How to use', href: '/how-to-use/' }]}>
+  <Article title={title} intro="Three steps: allow the microphone, watch the live panel, tune and export." reviewed="2026-09-16" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'How to use', href: '/how-to-use/' }]}
+    shortAnswer="Press Start, grant microphone permission once, hold the phone at ear height with the mic uncovered, and let the reading settle for a few seconds. Read the 30–60 second average or Leq rather than peaks, keep distance, weighting and Fast or Slow identical between comparisons, then export CSV or JSON."
+    keyFacts={['Step 1: Start + microphone permission over HTTPS.', 'Step 2: ear height, stable surface, 30–60 second Leq.', 'Step 3: lock A/C/Z + Fast/Slow, optionally calibrate, then export.']}>
     <h2 class="text-white font-semibold">1. Allow the microphone</h2>
     <p class="mt-2">Press Start and accept the browser prompt. Use HTTPS; file:// and plain HTTP origins may block capture. Pick the input in the selector if you have several. If nothing happens, follow <a class="underline underline-offset-4" href="/microphone-not-working/">microphone troubleshooting</a>.</p>
     <h2 class="text-white font-semibold mt-6">2. Place the device and read the panel</h2>
