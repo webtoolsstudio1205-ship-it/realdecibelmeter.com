@@ -55,7 +55,7 @@ const tools = [
   { href: '/background-noise-test/', t: 'Background noise test', d: 'A simple pause-and-resume workflow with honest calibrated and uncalibrated modes.' },
   { href: '/dbfs-vs-db-spl/', t: 'dBFS vs dB SPL', d: 'Understand why digital microphone levels cannot be converted universally to sound pressure.' },
   { href: '/validation/', t: 'Validation protocol', d: 'Reproducible repeatability checks and current verification status.' },
-  { href: '/tone-generator/', t: 'Tone generator', d: 'Play pure test tones with capped volume, in your browser.' },
+  { href: '/tone-generator/', t: 'Online tone generator', d: 'Free sine wave & frequency generator online — 20 Hz–20 kHz tones in your browser.' },
   { href: '/speaker-test/', t: 'Speaker test', d: 'Check channels, polarity and rattles with a sweep.' },
   { href: '/hearing-age-test/', t: 'Hearing age test', d: 'Find your highest audible pitch. Screening only.' },
   { href: '/noise-exposure-calculator/', t: 'Exposure calculator', d: 'Daily dose from any average level and duration.' },
@@ -87,16 +87,6 @@ const tools = [
   </div>
 
   <div class="container-x pb-4" style="max-width:1120px">
-    <div class="mt-4">
-      <AnswerBox
-        answer="Real Decibel Meter is a free online decibel meter that estimates sound levels in dBA, dBC or dBZ directly in your browser. Microphone audio is processed locally and never uploaded. Uncalibrated readings are screening estimates — calibrate against a known reference for better device-specific accuracy."
-        facts={[
-          'Free, no download, no account — works in current Chrome, Edge, Firefox and Safari over HTTPS.',
-          'Shows current, minimum, energy-average Leq and maximum plus a 240-point live graph.',
-          'Calibration replaces the nominal +100 dB offset with your device-specific offset.',
-        ]}
-      />
-    </div>
     <MeterPanel dict={dict} locale={locale} />
     <ChecklistPanel locale={locale} />
     <ExposurePanel locale={locale} />
@@ -109,6 +99,16 @@ const tools = [
       This free <a class="underline underline-offset-4 focus-ring" href="/methodology/">online sound meter</a>
       works as a sound level meter and noise level meter for quick checks — not as a certified instrument.
     </p>
+    <div class="mt-6">
+      <AnswerBox
+        answer="Real Decibel Meter is a free online decibel meter that estimates sound levels in dBA, dBC or dBZ directly in your browser. Microphone audio is processed locally and never uploaded. Uncalibrated readings are screening estimates — calibrate against a known reference for better device-specific accuracy."
+        facts={[
+          'Free, no download, no account — works in current Chrome, Edge, Firefox and Safari over HTTPS.',
+          'Shows current, minimum, energy-average Leq and maximum plus a 240-point live graph.',
+          'Calibration replaces the nominal +100 dB offset with your device-specific offset.',
+        ]}
+      />
+    </div>
     <SoundLevelGuide locale={locale} />
   </div>
 

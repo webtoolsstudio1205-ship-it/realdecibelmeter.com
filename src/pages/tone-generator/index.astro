@@ -1,18 +1,59 @@
 ---
 import Layout from '../../components/Layout.astro';
+import AnswerBox from '../../components/AnswerBox.astro';
 import { getDict } from '../../i18n/dictionaries';
-import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd, webAppJsonLd, howToJsonLd } from '../../lib/seo';
 
 const dict = getDict('en');
-const title = 'Browser Tone Generator';
-const description = 'Generate pure test tones in your browser: adjustable frequency, waveform, channel and volume cap. Free, local, no install.';
+const title = 'Online Tone Generator – Free Sine Wave Generator';
+const description =
+  'Free online tone generator: play sine, triangle, square and sawtooth tones from 20 Hz to 20 kHz. Online frequency generator with safe volume cap, no install.';
 const url = `${SITE}/tone-generator/`;
+const faq = [
+  {
+    q: 'What is an online tone generator?',
+    a: 'An online tone generator plays a steady audio tone in your browser at a frequency you choose. This one synthesizes sine, triangle, square and sawtooth waves from 20 Hz to 20 kHz with the Web Audio API, so nothing is downloaded and no microphone is needed.',
+  },
+  {
+    q: 'What does a sine wave generator do?',
+    a: 'A sine wave generator plays the purest single pitch with no added harmonics. Use sine to check whether a speaker still reproduces 90 Hz or 3 kHz at all, then switch to triangle, square or sawtooth when you want to hear harmonic edge or buzz.',
+  },
+  {
+    q: 'What frequency range does this frequency generator online support?',
+    a: '20 Hz to 20,000 Hz with a live slider plus presets at 220 Hz, 440 Hz, 1 kHz, 4 kHz and 8 kHz. You can drag the slider while a tone plays to bend pitch live, which is how most people run an online frequency generator for quick sweeps.',
+  },
+  {
+    q: 'Is this online frequency generator free?',
+    a: 'Yes. It is free with no download, no account and no microphone permission. It works in current Chrome, Edge, Firefox and Safari over HTTPS, and audio is synthesized locally on your device.',
+  },
+  {
+    q: 'Is it safe for my speakers and hearing?',
+    a: 'Start at the lowest volume that works, keep high-frequency tones short, and stop if playback feels uncomfortable. Volume here is capped at 25% so a slip cannot blast full scale, but never raise volume to hunt a pitch you cannot hear, especially past 12 kHz.',
+  },
+  {
+    q: 'Can I use it to test speakers or as a calibration reference?',
+    a: 'Yes for pitch-path checks: compare left versus right with 1 kHz, isolate a rattle near 120–180 Hz, or hold a steady 1 kHz sine as a pitch reference while comparing setups. A browser tone is a pitch reference, not a decibel-level reference — use the decibel meter and the calibration guide for level work.',
+  },
+];
 const jsonLd = [
-  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  webAppJsonLd({ name: title, url, description, inLanguage: 'en' }),
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-10-01' }),
+  faqJsonLd(faq),
+  howToJsonLd({
+    name: 'How to generate a tone online',
+    description: 'Play a sine wave or any audio frequency in your browser with this free online tone generator.',
+    url,
+    inLanguage: 'en',
+    steps: [
+      { name: 'Pick a frequency', text: 'Drag the slider from 20 Hz to 20 kHz or tap a preset such as 440 Hz or 1 kHz.' },
+      { name: 'Pick waveform and channel', text: 'Choose sine for a pure tone, or triangle, square or sawtooth for harmonic checks, then pick Both, Left or Right.' },
+      { name: 'Play at low volume', text: 'Press Play tone at low volume and raise gradually. Use Auto stop after 5, 30 or 60 seconds for bounded bursts.' },
+    ],
+  }),
   breadcrumbJsonLd([
     { name: 'Home', url: `${SITE}/` },
     { name: 'Guides', url: `${SITE}/guides/` },
-    { name: 'Tone generator', url },
+    { name: 'Online tone generator', url },
   ]),
 ];
 ---
@@ -20,13 +61,27 @@ const jsonLd = [
 <Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/tone-generator/" jsonLd={jsonLd}>
   <div class="container-x py-10" style="max-width:1040px">
     <header class="mb-6">
-      <p class="eyebrow">Working audio tool</p>
-      <h1 class="hero-title mt-2">Tone Generator</h1>
-      <p class="hero-sub">Pure test tones generated live with the Web Audio API. Start at low volume and raise gradually — high frequencies can feel loud without sounding loud.</p>
+      <p class="eyebrow">Free online frequency generator · no download</p>
+      <h1 class="hero-title mt-2">Online Tone Generator – Free Sine Wave &amp; Frequency Generator</h1>
+      <p class="hero-sub mt-3">
+        Generate a pure sine wave tone or any audio frequency online, free in your browser. Play 20 Hz to 20 kHz with
+        waveform, channel and safe-volume controls — no install, no account, no microphone needed.
+      </p>
     </header>
 
-    <section class="panel p-6" aria-labelledby="tg-heading">
-      <h2 id="tg-heading" class="text-xl font-semibold tracking-tight">Generator</h2>
+    <div class="mt-4" style="max-width:78ch">
+      <AnswerBox
+        answer="This online tone generator is a free online frequency generator that plays sine wave tones plus triangle, square and sawtooth waves from 20 Hz to 20 kHz directly in your browser. Audio is synthesized locally with the Web Audio API and never uploaded. Volume is capped at 25% for safer speaker and hearing checks."
+        facts={[
+          'Free frequency generator online: 20–20,000 Hz slider with 220 Hz, 440 Hz, 1 kHz, 4 kHz and 8 kHz presets and live pitch bend.',
+          'Sine wave generator mode for pure single pitch; triangle, square and sawtooth for harmonic checks; Both, Left or Right channel.',
+          'Auto-stop after 5, 30 or 60 seconds, capped volume, works in Chrome, Edge, Firefox and Safari over HTTPS.',
+        ]}
+      />
+    </div>
+
+    <section class="panel p-6 mt-6" aria-labelledby="tg-heading">
+      <h2 id="tg-heading" class="text-xl font-semibold tracking-tight">Online tone generator</h2>
       <p id="tg-status" class="mt-2 text-sm" style="color:var(--muted)" role="status">Stopped.</p>
       <div class="mt-4 grid gap-4 md:grid-cols-2">
         <div>
@@ -80,34 +135,56 @@ const jsonLd = [
     </section>
 
     <div class="article-rich panel p-6 mt-6">
-      <h2>Safe use</h2>
-      <p>Start at the lowest volume that works, keep tones short at high frequencies, and stop immediately if playback feels uncomfortable. Never test hearing at high volume — the <a href="/hearing-age-test/">hearing age test</a> runs at a fixed moderate level for exactly this reason.</p>
-      <h2>How to dial in a clean tone</h2>
-      <p>Start with 440 Hz sine on Both speakers near 12% volume, press Play, then raise the slider one step at a time until the pitch sits clearly above room noise. Everything sounds here through the Web Audio API inside your own browser, with no microphone involved and nothing uploaded, so you can run it in current Chrome, Edge, Firefox or Safari without an account or install. Dragging the frequency slider while a tone plays bends the pitch live, and Auto stop cuts playback after 5, 30 or 60 seconds when you want a bounded burst for a high pitch.</p>
-      <h2>Which waveform and channel to pick</h2>
-      <p>Sine gives you the purest single pitch, which makes it the best choice when you ask whether a driver still reproduces 90 Hz or 3 kHz at all. Triangle sounds softer around the edges, while square and sawtooth add stacked harmonics that read as harsh or buzzy — keep those two near 8 to 10%. Both sends the same signal to each side, Left isolates the left speaker or earcup, Right isolates the right, and that split settles arguments fast when one earbud went quiet after pocket lint. Expect little phones and thin laptops to fade below roughly 150 to 200 Hz; a missing 40 Hz rumble on that hardware says more about cabinet size than about your audio file.</p>
-      <h2>Four checks that actually tell you something</h2>
-      <p>You moved a bookshelf pair and the left one now sounds thin. Play 120 Hz sine on Both at modest level, switch to Left only, then Right only, and listen for equal weight — a 20-second A/B like that exposes a loose plug quicker than any playlist. Your right earbud dropped in volume last week. Run 1 kHz Left, then Right, at the same slider position; if Right needs three or four extra clicks to match, clean the mesh or check balance settings before buying a replacement. You want a steady reference while reading about <a href="/calibration/">calibration</a>. Hold 1 kHz sine for 30 seconds and compare two setups, remembering a browser tone is a pitch reference rather than a level reference. Open the <a href="/frequency-analyzer/">frequency spectrum</a> in a second tab, play 220 Hz here, then 4 kHz, and watch the energy hump march from left to right.</p>
-      <h2>What this generator cannot tell you</h2>
-      <p>A tone tells you a pitch path works, never how loud your room is in decibels and never how your hearing thresholds score — chase those questions with the meter and the screening test instead. Never raise the volume to hunt a pitch you cannot hear, especially past 12 kHz, because discomfort arrives late at those frequencies and the 25% cap exists to keep a slip from blasting full scale. Phone speakers compress bass, Bluetooth codecs shave extreme treble, and room modes boost some notes near walls while swallowing others in the middle of the room, so walk two steps and re-listen before you blame a speaker. For everyday level context, skim the <a href="/decibel-chart/">decibel comparison chart</a>, and for method questions browse the <a href="/faq/">frequently asked questions</a>.</p>
+      <h2>What is an online tone generator?</h2>
+      <p>
+        An online tone generator plays a steady audio tone in your browser at the exact frequency you pick — no app, no audio file,
+        no microphone. This free frequency generator online synthesizes every tone live with the Web Audio API inside your own browser,
+        so it runs in current Chrome, Edge, Firefox or Safari without an account or install and nothing is uploaded. Start with 440 Hz
+        sine on Both speakers near 12% volume, press Play, then raise the slider one step at a time until the pitch sits clearly above
+        room noise. Dragging the frequency slider while a tone plays bends the pitch live, and Auto stop cuts playback after 5, 30 or
+        60 seconds when you want a bounded burst for a high pitch.
+      </p>
+      <h2>Sine wave generator and other waveforms</h2>
+      <p>Sine gives you the purest single pitch, which makes this sine wave generator mode the best choice when you ask whether a driver still reproduces 90 Hz or 3 kHz at all. Triangle sounds softer around the edges, while square and sawtooth add stacked harmonics that read as harsh or buzzy — keep those two near 8 to 10%. Both sends the same signal to each side, Left isolates the left speaker or earcup, Right isolates the right, and that split settles arguments fast when one earbud went quiet. Expect little phones and thin laptops to fade below roughly 150 to 200 Hz; a missing 40 Hz rumble on that hardware says more about cabinet size than about your audio file.</p>
+      <h2>Online frequency generator: range, presets and live pitch</h2>
+      <p>Use this online frequency generator anywhere from 20 Hz to 20 kHz. Tap 220 Hz for low-mid warmth, 440 Hz concert pitch for a neutral reference, 1 kHz for channel matching, 4 kHz for presence and sibilance checks, or 8 kHz for top-octave hiss. Everything is synthesized locally, so the frequency readout is the requested digital frequency — what you hear still depends on your speaker, Bluetooth codec and room. Open the <a href="/frequency-analyzer/">frequency spectrum</a> in a second tab, play 220 Hz here, then 4 kHz, and watch the energy hump march from left to right.</p>
+      <h2>Four speaker checks that actually tell you something</h2>
+      <p>You moved a bookshelf pair and the left one now sounds thin. Play 120 Hz sine on Both at modest level, switch to Left only, then Right only, and listen for equal weight — a 20-second A/B like that exposes a loose plug quicker than any playlist. Your right earbud dropped in volume last week. Run 1 kHz Left, then Right, at the same slider position; if Right needs three or four extra clicks to match, clean the mesh or check balance settings before buying a replacement. You want a steady reference while reading about <a href="/calibration/">calibration</a>. Hold 1 kHz sine for 30 seconds and compare two setups, remembering a browser tone is a pitch reference rather than a level reference. For a full sweep instead of a steady tone, run the <a href="/speaker-test/">speaker test</a> 20 Hz – 20 kHz sweep.</p>
+      <h2>Safe use: volume cap, hearing and small speakers</h2>
+      <p>Start at the lowest volume that works, keep tones short at high frequencies, and stop immediately if playback feels uncomfortable. Never test hearing at high volume — the <a href="/hearing-age-test/">hearing age test</a> runs at a fixed moderate level for exactly this reason. Never raise the volume to hunt a pitch you cannot hear, especially past 12 kHz, because discomfort arrives late at those frequencies and the 25% cap exists to keep a slip from blasting full scale. Phone speakers compress bass, Bluetooth codecs shave extreme treble, and room modes boost some notes near walls while swallowing others in the middle of the room, so walk two steps and re-listen before you blame a speaker.</p>
+      <h2>What this frequency generator cannot tell you</h2>
+      <p>A tone tells you a pitch path works, never how loud your room is in decibels and never how your hearing thresholds score — chase those questions with the <a href="/#measure">online decibel meter</a> and the screening test instead. For everyday level context, skim the <a href="/decibel-chart/">decibel comparison chart</a>, and for method questions browse the <a href="/faq/">frequently asked questions</a>.</p>
       <h2>What it is good for</h2>
       <p>Checking a speaker still plays a given pitch, comparing left and right channels with the <a href="/speaker-test/">speaker test</a>, producing a steady 1 kHz reference for <a href="/calibration/">calibration</a> comparisons, and demonstrating the <a href="/frequency-analyzer/">frequency spectrum</a> live: play a tone here and watch the meter spectrum react in another tab.</p>
       <p><a href="/hearing-age-test/">Hearing age test →</a> · <a href="/speaker-test/">Speaker test →</a> · <a href="/#measure">Open the decibel meter →</a></p>
     </div>
-    <section class="mt-10 panel-raised p-6 rounded-2xl">
-      <h2 class="text-lg font-semibold tracking-tight">More Online Audio Tools</h2>
+
+    <section class="panel p-6 mt-6" aria-labelledby="tg-faq">
+      <h2 id="tg-faq" class="text-xl font-semibold tracking-tight">Online tone generator: common questions</h2>
+      <div class="mt-3 grid gap-2">
+        {faq.map((f) => (
+          <details class="panel-raised px-4" style="border-radius:10px">
+            <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+            <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="mt-6 panel-raised p-6 rounded-2xl">
+      <h2 class="text-lg font-semibold tracking-tight">More online audio tools</h2>
       <div class="mt-3 grid gap-3 sm:grid-cols-3 text-sm">
         <a href="/#measure" class="block p-3 rounded-xl border border-hairline hover:border-strong transition">
           <strong class="block text-primary">Decibel Meter</strong>
-          <span class="text-xs text-muted">Measure sound level & dBA in real-time</span>
+          <span class="text-xs text-muted">Measure sound level &amp; dBA in real-time</span>
         </a>
         <a href="/frequency-analyzer/" class="block p-3 rounded-xl border border-hairline hover:border-strong transition">
           <strong class="block text-primary">Frequency Analyzer</strong>
-          <span class="text-xs text-muted">FFT audio spectrum & pitch analysis</span>
+          <span class="text-xs text-muted">FFT audio spectrum &amp; pitch analysis</span>
         </a>
-        <a href="/noise-exposure-calculator/" class="block p-3 rounded-xl border border-hairline hover:border-strong transition">
-          <strong class="block text-primary">Noise Exposure Calculator</strong>
-          <span class="text-xs text-muted">NIOSH/OSHA daily noise dose estimator</span>
+        <a href="/speaker-test/" class="block p-3 rounded-xl border border-hairline hover:border-strong transition">
+          <strong class="block text-primary">Speaker Test</strong>
+          <span class="text-xs text-muted">Left/right channels, polarity and sweep</span>
         </a>
       </div>
     </section>

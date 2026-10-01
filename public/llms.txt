@@ -35,7 +35,7 @@
 - [Sound level meter explainer](https://realdecibelmeter.com/sound-level-meter/): what an SLM measures.
 - [Phone decibel meter](https://realdecibelmeter.com/phone-decibel-meter/): measure with a smartphone.
 - [iPhone decibel meter](https://realdecibelmeter.com/iphone-decibel-meter/): measure with iOS Safari.
-- [Tone generator](https://realdecibelmeter.com/tone-generator/): reference tones for calibration checks.
+- [Online tone generator](https://realdecibelmeter.com/tone-generator/): free sine wave generator and online frequency generator, 20 Hz–20 kHz tones for speaker checks.
 - [Speaker test](https://realdecibelmeter.com/speaker-test/): left, right and frequency sweeps.
 - [Hearing age test](https://realdecibelmeter.com/hearing-age-test/): screening-only high-frequency check.
 - [Noise exposure calculator](https://realdecibelmeter.com/noise-exposure-calculator/): dose from level plus duration.
