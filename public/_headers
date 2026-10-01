@@ -34,3 +34,9 @@
 
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Machine-readable site files: cache at the edge so Lighthouse llms.txt
+# fetch (2s timeout) never hits a cold origin. Served as static files.
+/llms.txt
+  Cache-Control: public, max-age=86400
+  Content-Type: text/plain; charset=utf-8
