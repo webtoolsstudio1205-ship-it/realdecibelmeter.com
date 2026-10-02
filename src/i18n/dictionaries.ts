@@ -109,11 +109,11 @@ function base(over: CoreDict): CoreDict {
 
 export const dicts: Record<Locale, CoreDict> = {
   en: base({
-    metaTitle: 'Free Online Decibel Meter – Measure Sound in Browser',
-    metaDescription: 'Use this free online decibel meter for an immediate estimated sound level in dBA, dBC or dBZ. Calibrate for better device-specific accuracy.',
+    metaTitle: 'Decibel Meter Online – Free Sound Level Meter',
+    metaDescription: 'Free online decibel meter in your browser. Measure sound levels in dBA, dBC or dBZ live with no app or install required. Instant, private Web Audio tool.',
     navGuides: 'Guides', navMeasure: 'Measure', headerTag: 'Browser SPL estimate',
-    heroEyebrow: 'PRIVATE • REAL-TIME • NO DOWNLOAD', heroH1: 'Online Decibel Meter – Measure Sound Level in Your Browser',
-    heroSub: 'Measure an estimated sound level in dBA immediately, then calibrate your device for better device-specific accuracy.',
+    heroEyebrow: 'PRIVATE • REAL-TIME • NO DOWNLOAD', heroH1: 'Online Decibel Meter',
+    heroSub: 'Free online decibel meter in your browser — live dBA, dBC, and dBZ sound level estimates. Audio stays local on your device with no app required.',
     startMeasuring: 'Start Measuring', howAccuracy: 'How Accuracy Works',
     liveRegion: 'Live measurement status',
     statusIdle: 'Idle', statusRequesting: 'Requesting permission…',

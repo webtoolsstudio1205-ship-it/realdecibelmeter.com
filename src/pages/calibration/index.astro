@@ -4,8 +4,8 @@ import Article from '../../components/Article.astro';
 import { getDict } from '../../i18n/dictionaries';
 import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang } from '../../lib/seo';
 const dict = getDict('en');
-const title = 'How to Calibrate a Browser Decibel Meter';
-const description = 'Add a reference offset to browser sound-level estimates: placement, stable references, weighting, profiles and common mistakes.';
+const title = 'How to Calibrate a Decibel Meter';
+const description = 'Learn how to calibrate your browser decibel meter: add a device-specific offset against a reference meter for better sound level estimate accuracy.';
 const url = `${SITE}/calibration/`;
 const jsonLd = [
   articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-19' }),
@@ -16,8 +16,8 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/calibration/" hreflang={guideHreflang('calibration')} jsonLd={jsonLd}>
-  <Article title={title} intro="Calibration here means one thing: adding a fixed dB offset measured against a reference you trust." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Calibration', href: '/calibration/' }]}
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/calibration/" hreflang={guideHreflang('calibration')} jsonLd={jsonLd}>
+  <Article title={title} intro="Step-by-step guide to calibrating your browser sound meter using a reference decibel meter and a device-specific offset." reviewed="2026-09-19" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Calibration', href: '/calibration/' }]}
     shortAnswer="To calibrate, place your device beside a trusted reference playing a steady tone near 70 dBA, note the difference, and save reference-minus-meter as a device-specific offset. The offset belongs to one microphone, browser, weighting and position only — redo it after any change and never copy it across devices."
     keyFacts={['Use a stable 70 dBA-range reference at the same spot and settings.', 'Offset = reference reading minus your meter reading.', 'One offset per device: mic, case, browser, weighting or position changes invalidate it.']}>
     <h2 class="text-white font-semibold">Why calibration matters</h2>

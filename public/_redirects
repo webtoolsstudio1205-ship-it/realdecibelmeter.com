@@ -1,1 +1,6 @@
 /sitemap.xml /sitemap-index.xml 301
+
+# Canonical domain: https + non-www
+https://www.realdecibelmeter.com/* https://realdecibelmeter.com/:splat 301!
+http://realdecibelmeter.com/* https://realdecibelmeter.com/:splat 301!
+http://www.realdecibelmeter.com/* https://realdecibelmeter.com/:splat 301!

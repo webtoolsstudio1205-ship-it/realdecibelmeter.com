@@ -97,7 +97,8 @@ export function guideHreflang(key: GuideKey): HreflangEntry[] {
     href: `${SITE}${path}`,
   }));
   const english = GUIDE_PATHS[key].en;
-  if (english) entries.push({ hreflang: 'x-default', href: `${SITE}${english}` });
+  const defaultUrl = english ? `${SITE}${english}` : `${SITE}/`;
+  entries.push({ hreflang: 'x-default', href: defaultUrl });
   return entries;
 }
 

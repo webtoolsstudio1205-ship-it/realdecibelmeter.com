@@ -42,7 +42,7 @@ function langHref(code: Locale, base: string): string {
   return currentGuideKey ? (localizedGuidePath(currentGuideKey, code) ?? base) : base;
 }
 // hreflang: full reciprocal cluster on homepages; self-only on guides until every locale has an equivalent.
-const hreflangs = Astro.props.hreflang ?? (isHome ? homepageHreflang() : [{ hreflang: locale === 'en' ? 'en' : locale, href: canonical }]);
+const hreflangs = Astro.props.hreflang ?? (isHome ? homepageHreflang() : (currentGuideKey ? guideHreflang(currentGuideKey) : [{ hreflang: locale === 'en' ? 'en' : locale, href: canonical }, { hreflang: 'x-default', href: `${SITE}/` }]));
 const ogLocale = ogLocaleFor(locale as 'en' | 'de' | 'it' | 'ja' | 'es' | 'fr' | 'pt' | 'ko');
 const jsonLdBlocks = Astro.props.jsonLd ?? [];
 // Site-wide publisher entity (GEO/E-E-A-T): every page carries a stable

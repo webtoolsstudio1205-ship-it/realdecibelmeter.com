@@ -4,8 +4,8 @@ import { getDict } from '../../i18n/dictionaries';
 import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
 
 const dict = getDict('en');
-const title = 'Noise Exposure Calculator';
-const description = 'Estimate daily noise dose from any average level and duration with the NIOSH 3 dB rule. Free, instant, no microphone needed.';
+const title = 'Noise Dose Calculator & Exposure Chart';
+const description = 'Calculate daily noise dose and view decibel exposure charts based on NIOSH 3 dB rules. Free online calculator to estimate safe exposure duration instantly.';
 const url = `${SITE}/noise-exposure-calculator/`;
 const jsonLd = [
   articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
@@ -17,11 +17,11 @@ const jsonLd = [
 ];
 ---
 
-<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/noise-exposure-calculator/" jsonLd={jsonLd}>
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/noise-exposure-calculator/" jsonLd={jsonLd}>
   <div class="container-x py-10" style="max-width:1040px">
     <header class="mb-6">
       <p class="eyebrow">Working screening tool</p>
-      <h1 class="hero-title mt-2">Noise Exposure Calculator</h1>
+      <h1 class="hero-title mt-2">Decibel Exposure & Noise Dose Calculator</h1>
       <p class="hero-sub">Enter an average level and a duration to estimate the daily noise dose. Uses the same tested NIOSH 3 dB math as the live meter — screening only, never compliance.</p>
     </header>
 
