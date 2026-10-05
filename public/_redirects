@@ -1,6 +1,9 @@
 /sitemap.xml /sitemap-index.xml 301
 
-# Canonical domain: https + non-www
+# Canonical domain: https + non-www, single-hop only.
+# www (https) is handled here in one hop. Plain-http (apex + www) is handled
+# by functions/_middleware.js which upgrades protocol + strips www together,
+# so http://www.* never chains via https://www.*. Do NOT re-add http:// rules
+# here — duplicates caused the Ahrefs "Redirect chain" (http www -> https www
+# -> https apex = 2 hops). Cloudflare "Always Use HTTPS" is the final backstop.
 https://www.realdecibelmeter.com/* https://realdecibelmeter.com/:splat 301!
-http://realdecibelmeter.com/* https://realdecibelmeter.com/:splat 301!
-http://www.realdecibelmeter.com/* https://realdecibelmeter.com/:splat 301!

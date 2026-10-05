@@ -96,8 +96,13 @@ export function guideHreflang(key: GuideKey): HreflangEntry[] {
     hreflang,
     href: `${SITE}${path}`,
   }));
+  // Reciprocal x-default (Ahrefs "Missing reciprocal hreflang" fix):
+  // prefer English when it exists; otherwise point x-default at the single
+  // existing translation itself (never the homepage — the homepage cluster
+  // does not link back, which is exactly what Ahrefs flags as non-reciprocal).
   const english = GUIDE_PATHS[key].en;
-  const defaultUrl = english ? `${SITE}${english}` : `${SITE}/`;
+  const firstPath = Object.values(GUIDE_PATHS[key])[0];
+  const defaultUrl = english ? `${SITE}${english}` : `${SITE}${firstPath}`;
   entries.push({ hreflang: 'x-default', href: defaultUrl });
   return entries;
 }

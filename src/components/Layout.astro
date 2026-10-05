@@ -26,12 +26,12 @@ const ogType = Astro.props.ogType ?? 'website';
 const canonical = `${SITE}${path}`;
 const isHome = path === '/' || /^\/[a-z]{2}\/$/.test(path);
 const guideKeyByPath: Partial<Record<string, GuideKey>> = {
-  '/guides/': 'guides', '/de/anleitungen/': 'guides', '/ja/guides/': 'guides', '/es/guias/': 'guides', '/fr/guides/': 'guides', '/pt/guias/': 'guides', '/ko/guides/': 'guides',
-  '/calibration/': 'calibration', '/de/kalibrierung/': 'calibration', '/ja/calibration/': 'calibration', '/es/calibracion/': 'calibration', '/fr/calibrage/': 'calibration', '/pt/calibracao/': 'calibration', '/ko/calibration/': 'calibration',
-  '/accuracy/': 'accuracy', '/de/genauigkeit/': 'accuracy', '/ja/accuracy/': 'accuracy', '/es/precision/': 'accuracy', '/fr/precision/': 'accuracy', '/pt/precisao/': 'accuracy', '/ko/accuracy/': 'accuracy',
-  '/decibel-chart/': 'decibel-chart', '/de/dezibel-tabelle/': 'decibel-chart', '/ja/decibel-chart/': 'decibel-chart', '/es/tabla-decibelios/': 'decibel-chart', '/fr/tableau-decibels/': 'decibel-chart', '/pt/tabela-decibeis/': 'decibel-chart', '/ko/decibel-chart/': 'decibel-chart',
-  '/db-vs-dba/': 'db-vs-dba', '/de/db-vs-dba/': 'db-vs-dba', '/ja/db-vs-dba/': 'db-vs-dba', '/es/db-vs-dba/': 'db-vs-dba', '/fr/db-vs-dba/': 'db-vs-dba', '/pt/db-vs-dba/': 'db-vs-dba', '/ko/db-vs-dba/': 'db-vs-dba',
-  '/microphone-not-working/': 'microphone-not-working', '/de/mikrofon-funktioniert-nicht/': 'microphone-not-working', '/ja/microphone-not-working/': 'microphone-not-working', '/es/microfono-no-funciona/': 'microphone-not-working', '/fr/microphone-ne-fonctionne-pas/': 'microphone-not-working', '/pt/microfone-nao-funciona/': 'microphone-not-working', '/ko/microphone-not-working/': 'microphone-not-working',
+  '/guides/': 'guides', '/de/anleitungen/': 'guides', '/it/guide/': 'guides', '/ja/guides/': 'guides', '/es/guias/': 'guides', '/fr/guides/': 'guides', '/pt/guias/': 'guides', '/ko/guides/': 'guides',
+  '/calibration/': 'calibration', '/de/kalibrierung/': 'calibration', '/it/calibrazione/': 'calibration', '/ja/calibration/': 'calibration', '/es/calibracion/': 'calibration', '/fr/calibrage/': 'calibration', '/pt/calibracao/': 'calibration', '/ko/calibration/': 'calibration',
+  '/accuracy/': 'accuracy', '/de/genauigkeit/': 'accuracy', '/it/accuratezza/': 'accuracy', '/ja/accuracy/': 'accuracy', '/es/precision/': 'accuracy', '/fr/precision/': 'accuracy', '/pt/precisao/': 'accuracy', '/ko/accuracy/': 'accuracy',
+  '/decibel-chart/': 'decibel-chart', '/de/dezibel-tabelle/': 'decibel-chart', '/it/tabella-decibel/': 'decibel-chart', '/ja/decibel-chart/': 'decibel-chart', '/es/tabla-decibelios/': 'decibel-chart', '/fr/tableau-decibels/': 'decibel-chart', '/pt/tabela-decibeis/': 'decibel-chart', '/ko/decibel-chart/': 'decibel-chart',
+  '/db-vs-dba/': 'db-vs-dba', '/de/db-vs-dba/': 'db-vs-dba', '/it/db-vs-dba/': 'db-vs-dba', '/ja/db-vs-dba/': 'db-vs-dba', '/es/db-vs-dba/': 'db-vs-dba', '/fr/db-vs-dba/': 'db-vs-dba', '/pt/db-vs-dba/': 'db-vs-dba', '/ko/db-vs-dba/': 'db-vs-dba',
+  '/microphone-not-working/': 'microphone-not-working', '/de/mikrofon-funktioniert-nicht/': 'microphone-not-working', '/it/microfono-non-funziona/': 'microphone-not-working', '/ja/microphone-not-working/': 'microphone-not-working', '/es/microfono-no-funciona/': 'microphone-not-working', '/fr/microphone-ne-fonctionne-pas/': 'microphone-not-working', '/pt/microfone-nao-funciona/': 'microphone-not-working', '/ko/microphone-not-working/': 'microphone-not-working',
   '/how-to-use/': 'how-to-use', '/ja/how-to-use/': 'how-to-use', '/es/como-usar/': 'how-to-use', '/fr/mode-emploi/': 'how-to-use', '/pt/como-usar/': 'how-to-use', '/ko/how-to-use/': 'how-to-use',
   '/methodology/': 'methodology', '/ja/methodology/': 'methodology', '/es/metodologia/': 'methodology', '/fr/methodologie/': 'methodology', '/pt/metodologia/': 'methodology', '/ko/methodology/': 'methodology',
   '/privacy/': 'privacy', '/ja/privacy/': 'privacy', '/es/privacidad/': 'privacy', '/fr/confidentialite/': 'privacy', '/pt/privacidade/': 'privacy', '/ko/privacy/': 'privacy',
@@ -41,8 +41,11 @@ function langHref(code: Locale, base: string): string {
   if (isHome) return base;
   return currentGuideKey ? (localizedGuidePath(currentGuideKey, code) ?? base) : base;
 }
-// hreflang: full reciprocal cluster on homepages; self-only on guides until every locale has an equivalent.
-const hreflangs = Astro.props.hreflang ?? (isHome ? homepageHreflang() : (currentGuideKey ? guideHreflang(currentGuideKey) : [{ hreflang: locale === 'en' ? 'en' : locale, href: canonical }, { hreflang: 'x-default', href: `${SITE}/` }]));
+// hreflang: full reciprocal cluster on homepages + translated guides.
+// Standalone tools/pages with no translation use self + x-default→self
+// (x-default→homepage is non-reciprocal — the homepage never links back —
+// which is exactly the Ahrefs "Missing reciprocal hreflang" flag).
+const hreflangs = Astro.props.hreflang ?? (isHome ? homepageHreflang() : (currentGuideKey ? guideHreflang(currentGuideKey) : [{ hreflang: locale === 'en' ? 'en' : locale, href: canonical }, { hreflang: 'x-default', href: canonical }]));
 const ogLocale = ogLocaleFor(locale as 'en' | 'de' | 'it' | 'ja' | 'es' | 'fr' | 'pt' | 'ko');
 const jsonLdBlocks = Astro.props.jsonLd ?? [];
 // Site-wide publisher entity (GEO/E-E-A-T): every page carries a stable

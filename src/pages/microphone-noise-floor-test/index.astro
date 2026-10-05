@@ -4,7 +4,7 @@ import FocusedTestPanel from '../../components/FocusedTestPanel.astro';
 import { getDict } from '../../i18n/dictionaries';
 import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
 const dict = getDict('en');
-const title = 'Microphone Noise Floor Test – 30 Seconds';
+const title = 'Mic Noise Floor Test (30 Seconds)';
 const description = 'Run a private 30-second browser microphone noise-floor test with real current, minimum, energy-average and maximum dBFS readings.';
 const url = `${SITE}/microphone-noise-floor-test/`;
 const jsonLd = [articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-19' }), breadcrumbJsonLd([{ name:'Home', url:`${SITE}/` }, { name:'Microphone noise floor test', url }])];
