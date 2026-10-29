@@ -11,6 +11,9 @@ interface Props {
   description: string;
   path: string;
   robots?: string;
+  /** Override the canonical URL. Pass `null` on error pages (404/500) so a
+   *  missing URL never claims `https://realdecibelmeter.com/` as canonical. */
+  canonical?: string | null;
   hreflang?: { hreflang: string; href: string }[];
   jsonLd?: Record<string, unknown>[];
   ogType?: string;
@@ -23,7 +26,11 @@ const { locale, dict, title, description, path } = Astro.props;
 // Explicit `robots` prop still overrides (used by 404/500).
 const robots = Astro.props.robots ?? (isNoindexPath(path) ? 'noindex, follow' : 'index, follow');
 const ogType = Astro.props.ogType ?? 'website';
-const canonical = `${SITE}${path}`;
+// `canonical={null}` (error pages) omits the tag entirely: a 404 served for
+// an arbitrary missing URL must not canonicalize to the homepage, and must
+// not claim the homepage hreflang cluster either (pass `hreflang={[]}`).
+const canonical = Astro.props.canonical === undefined ? `${SITE}${path}` : Astro.props.canonical;
+const ogUrl = canonical ?? `${SITE}/`;
 const isHome = path === '/' || /^\/[a-z]{2}\/$/.test(path);
 const guideKeyByPath: Partial<Record<string, GuideKey>> = {
   '/guides/': 'guides', '/de/anleitungen/': 'guides', '/it/guide/': 'guides', '/ja/guides/': 'guides', '/es/guias/': 'guides', '/fr/guides/': 'guides', '/pt/guias/': 'guides', '/ko/guides/': 'guides',
@@ -45,7 +52,7 @@ function langHref(code: Locale, base: string): string {
 // Standalone tools/pages with no translation use self + x-default→self
 // (x-default→homepage is non-reciprocal — the homepage never links back —
 // which is exactly the Ahrefs "Missing reciprocal hreflang" flag).
-const hreflangs = Astro.props.hreflang ?? (isHome ? homepageHreflang() : (currentGuideKey ? guideHreflang(currentGuideKey) : [{ hreflang: locale === 'en' ? 'en' : locale, href: canonical }, { hreflang: 'x-default', href: canonical }]));
+const hreflangs = Astro.props.hreflang ?? (isHome ? homepageHreflang() : (currentGuideKey ? guideHreflang(currentGuideKey) : [{ hreflang: locale === 'en' ? 'en' : locale, href: ogUrl }, { hreflang: 'x-default', href: ogUrl }]));
 const ogLocale = ogLocaleFor(locale as 'en' | 'de' | 'it' | 'ja' | 'es' | 'fr' | 'pt' | 'ko');
 const jsonLdBlocks = Astro.props.jsonLd ?? [];
 // Site-wide publisher entity (GEO/E-E-A-T): every page carries a stable
@@ -109,7 +116,7 @@ const guideLinks = {
     <meta name="generator" content="Astro" />
     <link rel="alternate" type="text/plain" title="LLM site summary (llms.txt)" href={`${SITE}/llms.txt`} />
     <meta id="theme-color" name="theme-color" content="#08090b" />
-    <link rel="canonical" href={canonical} />
+    {canonical ? <link rel="canonical" href={canonical} /> : null}
     {hreflangs.map((h) => (
       <link rel="alternate" hreflang={h.hreflang} href={h.href} />
     ))}
@@ -118,7 +125,7 @@ const guideLinks = {
     <meta property="og:locale" content={ogLocale} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    <meta property="og:url" content={ogUrl} />
     <meta property="og:image" content="https://realdecibelmeter.com/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />

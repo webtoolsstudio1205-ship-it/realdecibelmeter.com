@@ -1,4 +1,11 @@
 /sitemap.xml /sitemap-index.xml 301
+/favicon.ico /favicon.svg 301
+
+# English is served from the apex (hreflang `en` -> `/`), there is no `/en/`
+# prefix on this site. Crawlers and answer engines guess it anyway, which
+# surfaces as 404s in Search Console - fold it back to the apex equivalent.
+/en / 301
+/en/* /:splat 301
 
 # Canonical domain: https + non-www, single-hop only.
 # www (https) is handled here in one hop. Plain-http (apex + www) is handled
