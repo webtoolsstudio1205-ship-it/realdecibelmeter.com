@@ -182,8 +182,25 @@ describe('seo foundations', () => {
     expect(home).toContain('href="/guides/"');
     expect(home).not.toMatch(/href="http:\/\//);
     const guides = read('src/pages/guides/index.astro');
-    for (const href of ['/how-to-use/', '/methodology/', '/calibration/', '/accuracy/', '/decibel-chart/', '/db-vs-dba/', '/microphone-not-working/', '/privacy/']) {
+    for (const href of ['/how-to-use/', '/methodology/', '/calibration/', '/accuracy/', '/decibel-chart/', '/db-vs-dba/', '/microphone-not-working/', '/privacy/', '/noise-limits/', '/decibel-meter-app/']) {
       expect(guides).toContain(`'${href}'`);
+    }
+  });
+
+  it('noise-limits and decibel-meter-app pages carry metadata, schema and relative links only', () => {
+    for (const p of ['src/pages/noise-limits/index.astro', 'src/pages/decibel-meter-app/index.astro']) {
+      const src = read(p);
+      expect(src).toContain('faqJsonLd');
+      expect(src).toContain('breadcrumbJsonLd');
+      expect(src).not.toMatch(/href="http:\/\//);
+      expect(src).not.toMatch(/decibelmeter\.bond|localhost:\d/);
+      expect((src.match(/<h1/g) ?? []).length).toBe(0); // H1 comes from Article component
+    }
+    // EN app page joins the hreflang cluster used by its 6 translated siblings.
+    const app = read('src/pages/decibel-meter-app/index.astro');
+    expect(app).toContain("guideHreflang('noise-meter-app')");
+    for (const href of ['/de/handy-dezibel-messen/', '/ja/noise-meter-app/', '/es/movil-decibelimetro/', '/fr/sonometre-telephone/', '/pt/decibelimetro-celular/', '/ko/noise-meter-app/']) {
+      expect(app).toContain(`href="${href}"`);
     }
   });
 

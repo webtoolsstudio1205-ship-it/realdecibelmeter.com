@@ -3,26 +3,26 @@
   "gates": {
     "metadata": {
       "score": 100,
-      "passed": 1551,
-      "total": 1551,
+      "passed": 1585,
+      "total": 1585,
       "weight": 20
     },
     "links": {
       "score": 100,
-      "passed": 4837,
-      "total": 4837,
+      "passed": 4963,
+      "total": 4963,
       "weight": 15
     },
     "hreflang": {
       "score": 100,
-      "passed": 1322,
-      "total": 1322,
+      "passed": 1410,
+      "total": 1410,
       "weight": 15
     },
     "sitemap": {
       "score": 100,
-      "passed": 279,
-      "total": 279,
+      "passed": 285,
+      "total": 285,
       "weight": 15
     },
     "crawl": {
@@ -33,8 +33,8 @@
     },
     "structured": {
       "score": 100,
-      "passed": 396,
-      "total": 396,
+      "passed": 406,
+      "total": 406,
       "weight": 10
     },
     "localization": {
@@ -51,6 +51,6 @@
     }
   },
   "failures": [],
-  "indexableRoutes": 88,
-  "sitemapUrls": 88
+  "indexableRoutes": 90,
+  "sitemapUrls": 90
 }

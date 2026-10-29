@@ -1,0 +1,103 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd, guideHreflang } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Decibel Meter App — Free Online, No Install';
+const description = 'Need a decibel meter app? Use this free web app instead: live dBA, dBC or dBZ estimates, Leq, spectrum and CSV/JSON export in your browser — no download, no account, audio never leaves your device.';
+const url = `${SITE}/decibel-meter-app/`;
+
+const faq = [
+  {
+    q: 'Is there a free decibel meter app?',
+    a: 'Yes — this site is one. Open the page, press Start, allow the microphone, and your browser becomes a live decibel meter with dBA, dBC and dBZ estimates, Leq, minimum, maximum and export. There is no install, no account and no fee.',
+  },
+  {
+    q: 'Do I need to install anything on iPhone or Android?',
+    a: 'No. On iPhone use Safari, on Android use Chrome (or Edge/Firefox). Grant microphone permission once per origin and measure. A store app is only worth installing for offline storage or background logging while the phone does other tasks.',
+  },
+  {
+    q: 'Are decibel meter apps accurate?',
+    a: 'They give screening estimates, not certified readings. Two phones on the same sound commonly differ by 5–10 dBA before calibration; phone capsules also read high near their noise floor and clip near 95–100 dBA. Calibrate once against a known reference for a device-specific offset, and use calibrated Class 1 or Class 2 hardware for formal decisions.',
+  },
+  {
+    q: 'Which is better: a decibel meter app or a web app?',
+    a: 'For quick, occasional checks the web app wins: nothing to install, nothing to update, works on any computer or phone, and audio never leaves the device. Choose a native app only if you need background logging or measurements with no internet connection for loading the page.',
+  },
+  {
+    q: 'Does the web meter work offline?',
+    a: 'The page loads over HTTPS, so you need a connection once to open it. During a measurement all audio analysis happens locally in your browser, and saved sessions and exports stay on your device.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-10-29' }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Decibel meter app', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/decibel-meter-app/" ogType="article" jsonLd={jsonLd} hreflang={guideHreflang('noise-meter-app')}>
+  <Article title={title} intro="A decibel meter app usually means a download from an app store. This page is the no-install alternative: a free web app that runs in the browser tab you already have open." reviewed="2026-10-29" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Decibel meter app', href: '/decibel-meter-app/' }]}
+    shortAnswer="You can skip the app store: this page is a free decibel meter web app. It shows live dBA, dBC and dBZ estimates with Leq, minimum, maximum, a live graph and spectrum, and exports CSV or JSON — no install, no account, and audio is processed locally, never uploaded. Store apps only outperform it for background logging or offline use, and formal decisions still need calibrated Class 1 or Class 2 hardware."
+    keyFacts={['No install: works in current Chrome, Edge, Firefox and Safari on Android, iPhone, Windows, macOS and Linux.', 'Free with no account: press Start, allow the microphone, measure — uninstall nothing later.', 'Uncalibrated readings are screening estimates; calibrate once against a reference for a device-specific offset.']}>
+    <h2 class="text-white font-semibold">What a decibel meter app actually does</h2>
+    <p class="mt-2">Every decibel meter app — installed or web — does the same job with the same hardware: it takes your device microphone signal, applies A, C or Z frequency weighting, smooths it with Fast (125 ms) or Slow (1 s) response, and shows a sound level in decibels alongside statistics such as an energy-average Leq. The differences between apps are the interface, the extras (logging, saving, reporting) and how honestly they label the uncertainty of an uncalibrated microphone. The measurement physics is below in <a class="underline underline-offset-4" href="/methodology/">how the meter works</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">Web app versus store app</h2>
+    <table><caption class="sr-only">Browser decibel meter compared with a native store app</caption><thead><tr><th>Aspect</th><th>This web app</th><th>Typical store app</th></tr></thead><tbody>
+      <tr><td>Install</td><td>None — runs in the tab</td><td>App store download</td></tr>
+      <tr><td>Account</td><td>None</td><td>Often required for sync</td></tr>
+      <tr><td>Portrait of privacy</td><td>Audio processed locally; pages count usage, never recordings</td><td>Varies by app and its permissions</td></tr>
+      <tr><td>Devices</td><td>Any phone or computer browser</td><td>One store platform</td></tr>
+      <tr><td>Updates</td><td>Always the current version on reload</td><td>Manual app updates</td></tr>
+      <tr><td>Offline / background logging</td><td>Page must be open in the tab</td><td>Better fit when supported</td></tr>
+      <tr><td>Export</td><td>CSV and JSON, dB values only when calibrated</td><td>Varies</td></tr>
+    </tbody></table>
+    <p class="mt-2">For a one-off measurement on somebody else's phone, a browser page is also the polite option: no install prompt, no storage permissions beyond the microphone, nothing to uninstall afterwards.</p>
+
+    <h2 class="text-white font-semibold mt-6">What this free decibel meter app includes</h2>
+    <ul class="list-disc pl-5 mt-2 space-y-1">
+      <li>Live estimated dBA, dBC or dBZ with Fast and Slow response — pick the answer in <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a>.</li>
+      <li>Current, minimum, energy-average (Leq) and maximum plus a 240-point graph, following <a class="underline underline-offset-4" href="/how-to-use/">how to use the meter</a>.</li>
+      <li>A display-only spectrum view, read alongside the dB value in the <a class="underline underline-offset-4" href="/frequency-analyzer/">frequency analyzer guide</a>.</li>
+      <li>Calibration profiles that make readings device-specific — see <a class="underline underline-offset-4" href="/calibration/">how to calibrate</a>.</li>
+      <li>Up to 20 saved sessions in the browser plus CSV/JSON export — details in <a class="underline underline-offset-4" href="/privacy/">microphone privacy</a>.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Accuracy you should honestly expect</h2>
+    <p class="mt-2">No app turns a phone microphone into a certified instrument. Uncalibrated readings are nominal estimates: weighted digital levels plus a fixed offset, which is why two devices in the same room disagree by 5–10 dBA. Phone capsules read too high below about 30 dBA, clip near 95–100 dBA and under-report deep bass. Whole numbers over a 30–60 second average beat chasing decimals — the full limitations are in <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>, and a one-time comparison with a known reference is the single biggest upgrade in <a class="underline underline-offset-4" href="/calibration/">calibration</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">When to choose something other than a browser</h2>
+    <p class="mt-2">A native installed app makes sense for background logging while you do other things, or for measurement conditions with no connection to load the page. A calibrated Class 1 or Class 2 sound level meter operated by a qualified person is required for workplace compliance, court cases or any formal report — see the <a class="underline underline-offset-4" href="/validation/">validation protocol</a>. For everything else — bedroom checks, street noise, speaker comparisons, curiosity — open <a class="underline underline-offset-4" href="/#measure">the live meter</a> and measure now. If levels look worrying, continue with <a class="underline underline-offset-4" href="/noise-limits/">noise limits</a> and <a class="underline underline-offset-4" href="/noise-exposure/">noise exposure</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">Decibel meter app FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <h2 class="text-white font-semibold mt-6">Use it in your language — no app either way</h2>
+    <p class="mt-2 text-[15px]" style="color:var(--muted)">The web meter is available in seven languages; each guide below is the same browser-based tool with no download:</p>
+    <ul class="list-disc pl-5 mt-2 text-[15px]">
+      <li><a class="underline underline-offset-4" href="/de/handy-dezibel-messen/" hreflang="de">Deutsch: Dezibel messen mit dem Handy – kostenlos online ohne App →</a></li>
+      <li><a class="underline underline-offset-4" href="/ja/noise-meter-app/" hreflang="ja">日本語: 騒音計アプリ・デシベル計測 – スマホで無料測定 →</a></li>
+      <li><a class="underline underline-offset-4" href="/es/movil-decibelimetro/" hreflang="es">Español: Decibelímetro móvil gratis →</a></li>
+      <li><a class="underline underline-offset-4" href="/fr/sonometre-telephone/" hreflang="fr">Français : Sonomètre téléphone sans app →</a></li>
+      <li><a class="underline underline-offset-4" href="/pt/decibelimetro-celular/" hreflang="pt">Português: Medidor de decibéis online grátis →</a></li>
+      <li><a class="underline underline-offset-4" href="/ko/noise-meter-app/" hreflang="ko">한국어: 스마트폰 소음 측정 앱으로 쓰기 →</a></li>
+    </ul>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/phone-decibel-meter/">Using your phone as a decibel meter →</a> · <a class="underline underline-offset-4" href="/iphone-decibel-meter/">iPhone decibel meter →</a></p>
+  </Article>
+</Layout>

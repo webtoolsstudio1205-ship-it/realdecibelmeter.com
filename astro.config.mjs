@@ -84,7 +84,7 @@ function sitemapPriority(url) {
     [
       '/methodology/', '/how-to-use/',
       '/decibel-chart/', '/db-vs-dba/', '/microphone-not-working/',
-      '/dbfs-vs-db-spl/', '/validation/',
+      '/dbfs-vs-db-spl/', '/validation/', '/noise-exposure/', '/noise-limits/', '/decibel-meter-app/',
       '/de/anleitungen/', '/de/kalibrierung/', '/de/genauigkeit/', '/de/dezibel-tabelle/',
       '/de/db-vs-dba/', '/de/mikrofon-funktioniert-nicht/', '/de/handy-dezibel-messen/',
       '/ja/guides/', '/ja/how-to-use/', '/ja/methodology/', '/ja/calibration/',

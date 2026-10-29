@@ -70,7 +70,7 @@ export interface HreflangEntry {
   href: string;
 }
 
-export type GuideKey = 'guides' | 'calibration' | 'accuracy' | 'decibel-chart' | 'db-vs-dba' | 'microphone-not-working' | 'how-to-use' | 'methodology' | 'privacy' | 'handy-dezibel-messen' | 'noise-meter-app' | 'iphone-decibel-meter' | 'movil-decibelimetro' | 'sonometre-telephone' | 'decibelimetro-celular' | 'noise-meter-app-ko';
+export type GuideKey = 'guides' | 'calibration' | 'accuracy' | 'decibel-chart' | 'db-vs-dba' | 'microphone-not-working' | 'how-to-use' | 'methodology' | 'privacy' | 'noise-meter-app' | 'iphone-decibel-meter';
 
 const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/', it: '/it/guide/', es: '/es/guias/', fr: '/fr/guides/', pt: '/pt/guias/', ko: '/ko/guides/' },
@@ -82,13 +82,21 @@ const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   'how-to-use': { en: '/how-to-use/', ja: '/ja/how-to-use/', es: '/es/como-usar/', fr: '/fr/mode-emploi/', pt: '/pt/como-usar/', ko: '/ko/how-to-use/' },
   methodology: { en: '/methodology/', ja: '/ja/methodology/', es: '/es/metodologia/', fr: '/fr/methodologie/', pt: '/pt/metodologia/', ko: '/ko/methodology/' },
   privacy: { en: '/privacy/', ja: '/ja/privacy/', es: '/es/privacidad/', fr: '/fr/confidentialite/', pt: '/pt/privacidade/', ko: '/ko/privacy/' },
-  'handy-dezibel-messen': { de: '/de/handy-dezibel-messen/' },
-  'noise-meter-app': { ja: '/ja/noise-meter-app/' },
+  // "Decibel meter without an app" guide — one reciprocal hreflang cluster
+  // across all seven languages (English is the canonical member at
+  // /decibel-meter-app/; each locale keeps its native slugs). Previously six
+  // single-locale keys, which forced each page to emit only self + x-default
+  // hreflang and left the translations unlinked.
+  'noise-meter-app': {
+    en: '/decibel-meter-app/',
+    de: '/de/handy-dezibel-messen/',
+    ja: '/ja/noise-meter-app/',
+    es: '/es/movil-decibelimetro/',
+    fr: '/fr/sonometre-telephone/',
+    pt: '/pt/decibelimetro-celular/',
+    ko: '/ko/noise-meter-app/',
+  },
   'iphone-decibel-meter': { en: '/iphone-decibel-meter/' },
-  'movil-decibelimetro': { es: '/es/movil-decibelimetro/' },
-  'sonometre-telephone': { fr: '/fr/sonometre-telephone/' },
-  'decibelimetro-celular': { pt: '/pt/decibelimetro-celular/' },
-  'noise-meter-app-ko': { ko: '/ko/noise-meter-app/' },
 };
 
 export function guideHreflang(key: GuideKey): HreflangEntry[] {

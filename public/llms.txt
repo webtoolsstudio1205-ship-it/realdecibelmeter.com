@@ -25,6 +25,8 @@
 - [dBFS vs dB SPL](https://realdecibelmeter.com/dbfs-vs-db-spl/): digital scale versus acoustic scale.
 - [Microphone troubleshooting](https://realdecibelmeter.com/microphone-not-working/): fix blocked or silent mic input.
 - [Noise exposure and hearing safety](https://realdecibelmeter.com/noise-exposure/): duration limits and screening rules.
+- [Noise limits: how loud is too loud?](https://realdecibelmeter.com/noise-limits/): OSHA, NIOSH, WHO and everyday safe-level thresholds side by side.
+- [Decibel meter app, no install](https://realdecibelmeter.com/decibel-meter-app/): the free browser app versus native store apps.
 - [Validation protocol](https://realdecibelmeter.com/validation/): how estimates are checked against references.
 
 ## Tools

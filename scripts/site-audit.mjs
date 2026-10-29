@@ -13,7 +13,7 @@ const SOCIAL_IMAGE = `${SITE}/og-image.png`;
 
 // ---------------------------------------------------------------------------
 // Route inventory (single source of truth for the audit)
-// INDEXABLE: exactly what the sitemap must contain (88 URLs, prod build).
+// INDEXABLE: exactly what the sitemap must contain (90 URLs, prod build).
 // NOINDEX: legal/utility pages that exist in dist with `noindex, follow`
 // and are excluded from the sitemap (see isNoindexPath in src/lib/seo.ts
 // and sitemapInclude in astro.config.mjs — the two lists must mirror it).
@@ -23,6 +23,7 @@ const INDEXABLE = [
   '/de/', '/de/anleitungen/', '/de/db-vs-dba/', '/de/dezibel-tabelle/', '/de/genauigkeit/',
   '/de/handy-dezibel-messen/', '/de/kalibrierung/', '/de/mikrofon-funktioniert-nicht/',
   '/decibel-chart/',
+  '/decibel-meter-app/',
   '/es/', '/es/calibracion/', '/es/como-usar/', '/es/db-vs-dba/', '/es/guias/', '/es/metodologia/',
   '/es/microfono-no-funciona/', '/es/movil-decibelimetro/', '/es/precision/', '/es/tabla-decibelios/',
   '/faq/',
@@ -39,7 +40,7 @@ const INDEXABLE = [
   '/ko/guides/', '/ko/how-to-use/', '/ko/methodology/', '/ko/microphone-not-working/',
   '/ko/noise-meter-app/',
   '/methodology/', '/microphone-noise-floor-test/', '/microphone-not-working/',
-  '/noise-exposure/', '/noise-exposure-calculator/', '/phone-decibel-meter/',
+  '/noise-exposure/', '/noise-exposure-calculator/', '/noise-limits/', '/phone-decibel-meter/',
   '/pt/', '/pt/calibracao/', '/pt/como-usar/', '/pt/db-vs-dba/', '/pt/decibelimetro-celular/',
   '/pt/guias/', '/pt/metodologia/', '/pt/microfone-nao-funciona/', '/pt/precisao/',
   '/pt/tabela-decibeis/',

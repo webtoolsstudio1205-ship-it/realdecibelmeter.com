@@ -1,0 +1,105 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'How Loud Is Too Loud? Noise Limits & Safe Decibel Levels';
+const description = 'Noise limits in one table: OSHA and NIOSH workplace thresholds, WHO environmental guidance, everyday safe decibel levels and how to check your own exposure with a browser meter.';
+const url = `${SITE}/noise-limits/`;
+
+const faq = [
+  {
+    q: 'How many decibels is too loud?',
+    a: 'For hearing risk, the answer depends on the average level and how long you stay in it. Sustained 85 dBA across 8 hours is the widely used boundary for harm-reduction guidance, and allowed time halves for every extra 3 dB. A single loud moment does not set your dose; the level and time together do.',
+  },
+  {
+    q: 'What are the OSHA noise limits?',
+    a: 'Under US OSHA rules, an 8-hour time-weighted average of 90 dBA is the permissible exposure limit using a 5 dB exchange rate, and employers must run a hearing-conservation programme from 85 dBA TWA — including noise monitoring, audiometric testing and making hearing protection available. These are legal minimums for workplaces; NIOSH guidance is stricter.',
+  },
+  {
+    q: 'What noise level does NIOSH consider safe?',
+    a: 'NIOSH recommends limiting exposure to 85 dBA averaged over 8 hours with a 3 dB exchange rate: about 4 hours at 88 dBA, 2 hours at 91 dBA and roughly 15 minutes at 100 dBA. Everyday levels below about 70 dBA raise little duration concern.',
+  },
+  {
+    q: 'How loud is too loud for headphones?',
+    a: 'A practical rule is the 60/60 habit: no more than about 60% of maximum volume and hourly breaks. If your headphones produce more than roughly 85 dBA at the ear for extended periods, treat it like any other 85 dBA exposure — shorten the session or turn it down.',
+  },
+  {
+    q: 'Why do OSHA and NIOSH numbers differ?',
+    a: 'They use different exchange rates. OSHA doubles allowable time for every 5 dB drop, NIOSH for every 3 dB — matching the measured energy-doubling of sound. For long, steady exposures OSHA permits more time at the same level; NIOSH is the more protective screening guide.',
+  },
+  {
+    q: 'How loud does a room need to be to sleep well?',
+    a: 'There is no single legal bedroom limit, but WHO environmental noise guidance treats night-time outside levels around 40 dBA as protective for sleep disturbance prevention, with indoor bedroom levels usually lower. A bedroom that measures in the low 30s dBA with occasional blips is typical of a quiet home.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-10-29' }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Noise limits', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} — Real Decibel Meter`} description={description} path="/noise-limits/" ogType="article" jsonLd={jsonLd}>
+  <Article title={title} intro="“Too loud” is not one number: hearing guidance, workplace law and community standards each draw the line differently. This page puts the main thresholds side by side and shows what each means for a single measurement." reviewed="2026-10-29" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Noise limits', href: '/noise-limits/' }]}
+    shortAnswer="For hearing, sustained 85 dBA across 8 hours is the widely used screening boundary: OSHA's hearing-conservation action level is 85 dBA as an 8-hour average (permissible limit 90 dBA, 5 dB exchange), while NIOSH recommends 85 dBA for 8 hours with a stricter 3 dB exchange. Everyday levels below about 70 dBA raise little duration concern; at 100 dBA, allowed time shrinks to roughly minutes. Every limit applies to an average plus duration — a single peak does not set the risk."
+    keyFacts={['OSHA: 90 dBA 8-hour permissible limit (5 dB exchange); hearing conservation from 85 dBA TWA.', 'NIOSH REL: 85 dBA for 8 hours with a 3 dB exchange — 88 dBA → 4 h, 91 dBA → 2 h, 100 dBA → ~15 min.', 'WHO environmental guidance points near 40 dBA at night outside for sleep protection.', 'Headphones hide the dose: ~60% volume, hourly breaks, and mind the total listening time.']}>
+    <h2 class="text-white font-semibold">Why every limit combines level and time</h2>
+    <p class="mt-2">All three frameworks assess dose, not moments: they average the sound level across the exposure period and trade level for time. The exchange rate decides how quickly trade happens — 3 dB per halving (NIOSH, and the physics of sound energy), or 5 dB per halving (OSHA, reflecting historical workplace practice). That is why the same 88 dBA workshop is “fine all day” under a casual reading of the numbers but is four permitted NIOSH hours, or about ten and a half permitted hours under OSHA's gentler exchange. The chart in <a class="underline underline-offset-4" href="/noise-exposure/">noise exposure</a> uses the stricter 3 dB rule because it doubles as a personal-health guide, not a legal floor.</p>
+
+    <h2 class="text-white font-semibold mt-6">Occupational noise limits at a glance</h2>
+    <table><caption class="sr-only">Regulatory and advisory workplace noise limits</caption><thead><tr><th>Framework</th><th>Limit / action value</th><th>What it triggers</th></tr></thead><tbody>
+      <tr><td>US OSHA permissible limit</td><td>90 dBA, 8-hour TWA (5 dB exchange)</td><td>Employer-required hearing protection programme at or above this average</td></tr>
+      <tr><td>US OSHA action level</td><td>85 dBA, 8-hour TWA</td><td>Hearing conservation: monitoring, audiometric testing, protection made available</td></tr>
+      <tr><td>US NIOSH recommended limit</td><td>85 dBA, 8-hour TWA (3 dB exchange)</td><td>Advisory target for exposure reduction and hearing protection</td></tr>
+      <tr><td>EU Directive 2003/10/EC</td><td>Lower action 80 dBA; upper action 85 dBA; limit 87 dBA (weekly average)</td><td>Information at 80, mandatory controls and protectors from 85; cannot exceed 87 at the ear</td></tr>
+    </tbody></table>
+    <p class="mt-2">These are public summaries for personal awareness, not legal advice. The authoritative texts — OSHA 29 CFR 1910.95, the NIOSH criteria document 98-126 and EU Directive 2003/10/EC — include measurement specifics such as impulse allowances, peak ceilings of 135–140 dBC and how weekly averaging works, so always check the current source before relying on a number for compliance.</p>
+
+    <h2 class="text-white font-semibold mt-6">Everyday safe levels</h2>
+    <table><caption class="sr-only">Approximate everyday levels and how to treat them</caption><thead><tr><th>Level (approx.)</th><th>Everyday example</th><th>How to treat the duration</th></tr></thead><tbody>
+      <tr><td>30–40 dBA</td><td>Quiet bedroom at night, soft library</td><td>No duration concern; protect it for sleep</td></tr>
+      <tr><td>50–60 dBA</td><td>Calm office, normal conversation</td><td>Comfortable indefinitely for hearing</td></tr>
+      <tr><td>70 dBA</td><td>Bustling street at distance, TV room</td><td>Annoyance threshold; fine for normal sessions</td></tr>
+      <tr><td>80–85 dBA</td><td>Blender, heavy traffic one metre away</td><td>Start tracking time — hours matter from 85</td></tr>
+      <tr><td>90–100 dBA</td><td>Motorbike, mower, front-row concert</td><td>Permitted time shrinks from ~2 h (90) to ~15 min (100) under the 3 dB rule</td></tr>
+      <tr><td>110–120 dBA</td><td>Nightclub speaker, chainsaw close</td><td>Minutes at most; every extra minute counts</td></tr>
+      <tr><td>130+ dBA</td><td>Siren at the ear, airbag deployment</td><td>Pain threshold territory; risk is immediate and cumulative</td></tr>
+    </tbody></table>
+    <p class="mt-2">Match a live reading to these bands with the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a>; a browser estimate over 30–60 seconds is the right tool for placing your own environment on the list.</p>
+
+    <h2 class="text-white font-semibold mt-6">Community, nightlife and sleep</h2>
+    <p class="mt-2">Environmental guidance is measured outside the facade, usually as a day-evening-night or night-time average. WHO environmental noise guidance for Europe indicates values near 40 dBA at night outside as protective against sleep disturbance, with daytime road-traffic guidance in the low-to-mid tens of dBA depending on the source. These community numbers sit far below workplace limits because they are about rest, concentration and long-term annoyance, not a one-shift dose. If you are checking whether a street or venue sleeps well, measure on <a class="underline underline-offset-4" href="/background-noise-test/">background noise test</a> terms: a full quiet-period average, not a minute of passing traffic.</p>
+
+    <h2 class="text-white font-semibold mt-6">Headphones: the most common hidden dose</h2>
+    <p class="mt-2">Personal audio is the exposure most people choose for themselves daily, and it is measured at the eardrum, not in the room. A practical habit is 60/60: around 60% of maximum volume, with a break roughly every hour. Ear-tip fit matters — a well-sealed ear-tip needs less volume to reach the same perceived loudness, which lowers the dose. If your ears ring afterwards or sound muffled for hours, the session was above your comfortable dose regardless of what any meter says. Phone "hearing safety" dashboards track this daily output estimate directly, and this site helps you choose hardware wisely in the <a class="underline underline-offset-4" href="/sound-level-meter/">sound level meter guide</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">Checking your own levels against the limits</h2>
+    <ol class="list-decimal pl-5 mt-2 space-y-1">
+      <li>Place the device at ear height where people actually are, microphone hole uncovered — the placement rules live in <a class="underline underline-offset-4" href="/how-to-use/">how to use the meter</a>.</li>
+      <li>Measure a full representative period on Slow response and read the Leq, not the dancing current value.</li>
+      <li>Compare the Leq with the tables above, remember the duration, then log each noisy block with the <a class="underline underline-offset-4" href="/noise-exposure-calculator/">noise exposure calculator</a>.</li>
+      <li>Trim the loudest block first — 3 dB less doubles the allowed time, and doubling distance outdoors buys roughly 6 dB.</li>
+    </ol>
+    <p class="mt-2">Uncalibrated browser numbers are screening estimates: good for spotting that a workshop sits in the high-80s, never a compliance document. A one-time comparison with a trusted reference makes the offset device-specific in <a class="underline underline-offset-4" href="/calibration/">calibration</a>, and the residual limitations are collected in <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">Noise limits FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Measure your levels now →</a> · <a class="underline underline-offset-4" href="/noise-exposure/">Noise exposure guide →</a> · <a class="underline underline-offset-4" href="/noise-exposure-calculator/">Exposure calculator →</a> · <a class="underline underline-offset-4" href="/decibel-chart/">Decibel chart →</a></p>
+  </Article>
+</Layout>
