@@ -86,6 +86,7 @@ function sitemapPriority(url) {
       '/decibel-chart/', '/db-vs-dba/', '/microphone-not-working/',
       '/dbfs-vs-db-spl/', '/validation/', '/noise-exposure/', '/noise-limits/', '/decibel-meter-app/',
       '/decibel-meter-for-classroom/',
+      '/a-weighted-decibel-meter/', '/blog/',
       '/de/anleitungen/', '/de/kalibrierung/', '/de/genauigkeit/', '/de/dezibel-tabelle/',
       '/de/db-vs-dba/', '/de/mikrofon-funktioniert-nicht/', '/de/handy-dezibel-messen/',
       '/de/schallpegelmesser/', '/de/laerm-messen/', '/de/ton-generator/',

@@ -2,6 +2,23 @@
 
 Dated list of every URL changed, to compare GSC before/after. Build + 183 vitest tests verified green after each batch.
 
+## 2026-11-01 — Pass 2: "a weighted decibel meter" + Blog post & Homepage Backlinks for realtonegenerator.com
+
+Targets SEMrush keyword "a weighted decibel meter" (US Vol: 110, KD: 10% Easy) and establishes natural, contextual dofollow backlinks to https://realtonegenerator.com/.
+
+### New Pages
+| URL | Title & Query Focus | Reason |
+| --- | --- | --- |
+| `/a-weighted-decibel-meter/` | A-Weighted Decibel Meter: What Is dBA & How to Measure Online | Dedicated spoke targeting the low-KD (10%) high-intent query "a weighted decibel meter". Full IEC 61672 frequency curve breakdown, regulatory limits (OSHA, NIOSH), calibration guide. |
+| `/blog/` | How to Calibrate an A-Weighted Decibel Meter with Audio Test Tones | Dedicated blog post on audio test tones, 1 kHz sine waves (where A-weighting is 0 dB), speaker checks, and decibel meter calibration. Contains contextual dofollow backlinks to https://realtonegenerator.com/. |
+
+### Changed Pages
+- `/` (Main Homepage): In the "What A, C and Z weighting mean" section, integrated direct targeting for "a weighted decibel meter" with link to the new guide. In the calibration section, added a natural editorial dofollow backlink to `https://realtonegenerator.com/` for generating 1 kHz reference sine waves. Guides grid updated with cards for both `/a-weighted-decibel-meter/` and `/blog/`.
+- `/guides/` (Guide Hub): Added directory links for `/a-weighted-decibel-meter/` and `/blog/`.
+- `/db-vs-dba/`: Added internal cross-link to `/a-weighted-decibel-meter/`.
+- `src/lib/seo.ts` & `src/components/Layout.astro`: Registered guide keys and canonical clusters for `a-weighted-decibel-meter` and `blog`.
+- `astro.config.mjs`: Added both URLs to sitemap with priority 0.7 weekly.
+
 ## 2026-11-01 — Germany & Japan Expansion (6 New Target URLs) + Competitor Optimization
 
 Targets competitor traffic drivers from realtimesoundmeter.org, sounddbmeter.com, and sounddecibelmeter.com:

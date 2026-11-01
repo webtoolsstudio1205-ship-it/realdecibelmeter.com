@@ -1,0 +1,130 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'A-Weighted Decibel Meter: What Is dBA & How to Measure Online';
+const description = 'What is an A-weighted decibel meter? Learn how dBA weighting mirrors human hearing, frequency response curves, and how to measure dBA online for free.';
+const url = `${SITE}/a-weighted-decibel-meter/`;
+const jsonLd = [
+  articleJsonLd({
+    headline: title,
+    description,
+    url,
+    inLanguage: 'en',
+    dateModified: '2026-11-01',
+  }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'A-Weighted Decibel Meter', url },
+  ]),
+];
+---
+
+<Layout
+  locale="en"
+  dict={dict}
+  title={`${title} | Real Decibel Meter`}
+  description={description}
+  path="/a-weighted-decibel-meter/"
+  jsonLd={jsonLd}
+>
+  <Article
+    title="What Is an A-Weighted Decibel Meter?"
+    intro="An A-weighted decibel meter measures sound levels using the standardized A-weighting curve (dBA) to match human ear sensitivity across frequencies. Learn how it works, when to use it, and how to measure dBA in your browser."
+    reviewed="2026-11-01"
+    breadcrumb={[
+      { name: 'Home', href: '/' },
+      { name: 'Guides', href: '/guides/' },
+      { name: 'A-Weighted Decibel Meter', href: '/a-weighted-decibel-meter/' },
+    ]}
+    shortAnswer="An A-weighted decibel meter filters audio to approximate human hearing: it suppresses deep bass and very high frequencies where human hearing is less sensitive. Readings are expressed in dBA, the universal standard for workplace, environmental, and residential noise regulations."
+    keyFacts={[
+      'A-weighting (dBA) reflects ear sensitivity: 1,000 to 4,000 Hz frequencies receive the highest weight.',
+      'International standards (OSHA, NIOSH, WHO, IEC 61672) mandate A-weighting for occupational noise exposure.',
+      'Our free browser tool provides live A-weighted decibel estimates directly on your device without downloading an app.',
+    ]}
+  >
+    <h2 class="text-white font-semibold">What is an A-weighted decibel meter?</h2>
+    <p class="mt-2">
+      An <strong>A-weighted decibel meter</strong> (also called a <strong>dBA meter</strong> or <strong>A-weighted sound level meter</strong>) is an acoustic measuring device that passes sound through an electronic filter matching the frequency response of the human ear. The human auditory system does not perceive all sound frequencies at equal loudness: we are far less sensitive to low-frequency rumbles (under 100 Hz) and ultra-high pitches (over 10 kHz) than to mid-range speech frequencies (1 kHz to 4 kHz).
+    </p>
+    <p class="mt-2">
+      When an unweighted sound meter measures a deep 50 Hz bass drone, it reports raw acoustic energy. But to our ears, that rumble sounds much quieter than a 2 kHz alarm siren of the same physical energy. An A-weighted meter applies standardized mathematical curves to attenuate the bass and boost sensitivity in the speech range, providing a single number in <strong>dBA</strong> that correlates closely with perceived loudness and hearing damage risk.
+    </p>
+
+    <h2 class="text-white font-semibold mt-6">How the A-weighting curve filters frequencies</h2>
+    <p class="mt-2">
+      Defined in the international standard <strong>IEC 61672</strong>, the A-weighting curve applies specific decibel corrections across the audible spectrum:
+    </p>
+    <ul class="list-disc pl-5 mt-2 space-y-1">
+      <li><strong>20 Hz:</strong> −50.5 dB (extreme attenuation of sub-bass rumbles)</li>
+      <li><strong>100 Hz:</strong> −19.1 dB (substantial reduction of low bass)</li>
+      <li><strong>500 Hz:</strong> −3.2 dB (minor attenuation in low mid-range)</li>
+      <li><strong>1,000 Hz (1 kHz):</strong> <strong>0.0 dB</strong> (the international reference frequency — zero adjustment)</li>
+      <li><strong>2,000 Hz – 4,000 Hz:</strong> +1.2 dB to +1.0 dB (slight boost where the ear canal resonates)</li>
+      <li><strong>10,000 Hz (10 kHz):</strong> −2.5 dB (moderate high-frequency rolloff)</li>
+      <li><strong>20,000 Hz (20 kHz):</strong> −9.3 dB (treble attenuation near hearing limits)</li>
+    </ul>
+    <p class="mt-2">
+      Because the curve has 0 dB attenuation at 1,000 Hz, calibration equipment and acoustic calibrators consistently emit a pure 1 kHz reference tone.
+    </p>
+
+    <h2 class="text-white font-semibold mt-6">Why regulatory bodies mandate A-weighting</h2>
+    <p class="mt-2">
+      Major health and safety agencies — including <strong>OSHA</strong> (Occupational Safety and Health Administration), <strong>NIOSH</strong> (National Institute for Occupational Safety and Health), and the <strong>WHO</strong> (World Health Organization) — specify noise exposure thresholds strictly in dBA. For example:
+    </p>
+    <ul class="list-disc pl-5 mt-2">
+      <li><strong>85 dBA:</strong> NIOSH recommended exposure limit for an 8-hour workday, with a 3 dB exchange rate.</li>
+      <li><strong>90 dBA:</strong> OSHA permissible exposure limit for an 8-hour shift, with a 5 dB exchange rate.</li>
+      <li><strong>50–55 dBA:</strong> Typical municipal daytime residential noise ordinance limits.</li>
+      <li><strong>35–40 dBA:</strong> Recommended nighttime limits for quiet residential sleeping areas.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">A-weighting vs. C-weighting and Z-weighting</h2>
+    <p class="mt-2">
+      While an A-weighted decibel meter is standard for general noise, sound engineers and industrial hygienists use alternate weightings for specific tasks:
+    </p>
+    <ul class="list-disc pl-5 mt-2">
+      <li><strong>A-Weighting (dBA):</strong> Mimics human hearing at moderate sound levels (around 40 phon). Used for environmental noise, office checks, residential complaints, and occupational safety.</li>
+      <li><strong>C-Weighting (dBC):</strong> Much flatter frequency response, preserving deep bass and sub-frequencies. Used for measuring explosive impacts, heavy machinery, concert subwoofers, and HVAC low-frequency rumble.</li>
+      <li><strong>Z-Weighting (dBZ):</strong> Zero frequency weighting (flat response from 10 Hz to 20 kHz ±1.5 dB). Reports true unshaped physical acoustic energy.</li>
+    </ul>
+    <p class="mt-2">
+      For an in-depth side-by-side comparison, explore our guide on <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA weighting</a>.
+    </p>
+
+    <h2 class="text-white font-semibold mt-6">How to measure sound with a free online A-weighted decibel meter</h2>
+    <p class="mt-2">
+      You don't need dedicated hardware to get an immediate, reliable screening estimate of A-weighted decibels. This site turns your smartphone, tablet, or laptop into a free browser-based A-weighted decibel meter:
+    </p>
+    <ol class="list-decimal pl-5 mt-2 space-y-2">
+      <li>Open the <a class="underline underline-offset-4" href="/#measure">online decibel meter</a> on your device in Chrome, Safari, Edge, or Firefox.</li>
+      <li>Press <strong>Start</strong> and allow microphone access when prompted. Audio is processed entirely on your local device — no sound is ever recorded or uploaded.</li>
+      <li>Ensure <strong>A-weighting</strong> is selected in the settings panel (enabled by default).</li>
+      <li>Hold your device at ear level with the microphone opening unobstructed, remain still, and watch the <strong>Leq (energy average)</strong> over 30 to 60 seconds.</li>
+    </ol>
+
+    <h2 class="text-white font-semibold mt-6">Calibrating an A-weighted decibel meter with test tones</h2>
+    <p class="mt-2">
+      Consumer microphones inside laptops and smartphones have variable sensitivity. To transform relative screening numbers into reliable decibel estimates, you can calibrate your browser meter against a known reference.
+    </p>
+    <p class="mt-2">
+      Because A-weighting has exactly 0 dB attenuation at 1,000 Hz, testing with a clean 1 kHz sine wave eliminates frequency curve discrepancies. To generate stable reference tones or test sweeps across the audio spectrum, you can use <a class="underline underline-offset-4 font-medium" href="https://realtonegenerator.com/" target="_blank" rel="noopener">Real Tone Generator</a>, a free online tone generator that outputs pure sine waves, sweeps, and pink noise directly in your browser. For step-by-step instructions, read our full <a class="underline underline-offset-4" href="/calibration/">decibel meter calibration guide</a>.
+    </p>
+
+    <h2 class="text-white font-semibold mt-6">Accuracy and limits of phone and browser meters</h2>
+    <p class="mt-2">
+      While an online A-weighted decibel meter is excellent for everyday screening, neighborhood noise logs, and classroom noise management, it is not a certified Class 1 instrument. Built-in phone microphones clip near 95–100 dBA and have internal noise floors around 30 dBA. For legal disputes, formal OSHA compliance audits, or court evidence, certified hardware calibrated with a laboratory acoustic calibrator is required. See <a class="underline underline-offset-4" href="/accuracy/">measurement accuracy and limitations</a> for more details.
+    </p>
+
+    <p class="mt-6 flex flex-wrap gap-3">
+      <a class="btn-primary focus-ring text-sm" href="/#measure">Launch Live A-Weighted Meter →</a>
+      <a class="btn-secondary focus-ring text-sm" href="/decibel-chart/">View Decibel Comparison Chart →</a>
+      <a class="btn-secondary focus-ring text-sm" href="/blog/">Read Calibration Blog →</a>
+    </p>
+  </Article>
+</Layout>

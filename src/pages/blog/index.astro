@@ -1,0 +1,166 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'How to Calibrate an A-Weighted Decibel Meter with Audio Test Tones | Blog';
+const description = 'Learn how to calibrate and test an A-weighted decibel meter using audio test tones, 1 kHz reference sine waves, and frequency sweeps. Expert guide.';
+const url = `${SITE}/blog/`;
+const jsonLd = [
+  articleJsonLd({
+    headline: 'How to Calibrate an A-Weighted Decibel Meter with Audio Test Tones',
+    description,
+    url,
+    inLanguage: 'en',
+    dateModified: '2026-11-01',
+  }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Blog', url },
+  ]),
+];
+---
+
+<Layout
+  locale="en"
+  dict={dict}
+  title={`${title} | Real Decibel Meter`}
+  description={description}
+  path="/blog/"
+  jsonLd={jsonLd}
+>
+  <Article
+    title="How to Calibrate an A-Weighted Decibel Meter with Audio Test Tones"
+    intro="Whether you are measuring environmental noise, monitoring classroom volume, or checking workplace safety, sound level readings must be verified. Discover how audio test tones, reference sine waves, and frequency generators make decibel meter calibration simple and repeatable."
+    reviewed="2026-11-01"
+    breadcrumb={[
+      { name: 'Home', href: '/' },
+      { name: 'Blog', href: '/blog/' },
+    ]}
+    shortAnswer="To calibrate an A-weighted decibel meter, acousticians use a pure 1,000 Hz (1 kHz) sine wave because A-weighting attenuation at 1 kHz is exactly 0.0 dB. Generating a clean 1 kHz reference tone allows you to determine your device's gain offset without frequency weighting distortions."
+    keyFacts={[
+      '1,000 Hz is the global standard calibration frequency across IEC 61672 and ANSI standards.',
+      'A-weighting (dBA) applies 0 dB correction at 1 kHz, making it identical to unweighted Z (dBZ) at that exact frequency.',
+      'You can synthesize clean sine waves and test tones directly in your browser using Real Tone Generator.',
+    ]}
+  >
+    <div class="mb-6 p-4 rounded-xl border border-blue-500/30 bg-blue-500/10 text-sm leading-6">
+      <p class="font-medium text-white">Looking to generate reference tones right now?</p>
+      <p class="mt-1 text-slate-300">
+        You can produce pure sine waves, frequency sweeps, and acoustic test signals for calibration using
+        <a class="text-blue-400 font-semibold underline underline-offset-4 hover:text-blue-300" href="https://realtonegenerator.com/" target="_blank" rel="noopener">Real Tone Generator</a>,
+        a free online audio tool that runs directly in your browser with zero downloads.
+      </p>
+    </div>
+
+    <h2 class="text-white font-semibold">The role of calibration in sound level measurement</h2>
+    <p class="mt-2">
+      Every microphone capsule has a distinct sensitivity curve. Smartphone and laptop microphones are built to prioritize human voice intelligibility in teleconferencing, employing dynamic gain controls and filtering. When using an <a class="underline underline-offset-4" href="/a-weighted-decibel-meter/">A-weighted decibel meter</a> on a consumer device, the raw digital signal (dBFS) must be translated into physical sound pressure level (dB SPL) via a calibrated offset.
+    </p>
+    <p class="mt-2">
+      Without calibration, two identical smartphones measuring the same noise source can easily differ by 5 to 10 dB. Performing an acoustic reference check aligns your meter to reality and ensures your readings provide dependable, actionable data.
+    </p>
+
+    <h2 class="text-white font-semibold mt-6">Why the 1,000 Hz (1 kHz) sine wave is the universal reference</h2>
+    <p class="mt-2">
+      In acoustic engineering and international standard specifications (such as IEC 61672), professional sound level calibrators consistently produce a 1 kHz tone at 94 dB SPL (or 114 dB SPL).
+    </p>
+    <p class="mt-2">
+      There is a crucial mathematical reason for this choice: <strong>the A-weighting filter curve is normalized to 0.0 dB at exactly 1,000 Hz</strong>. At 100 Hz, A-weighting reduces measured sound by −19.1 dB; at 10 kHz, it reduces it by −2.5 dB. But at 1 kHz:
+    </p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm text-slate-300">
+      <li><strong>A-Weighting (dBA):</strong> 0.0 dB attenuation</li>
+      <li><strong>C-Weighting (dBC):</strong> 0.0 dB attenuation</li>
+      <li><strong>Z-Weighting (dBZ):</strong> 0.0 dB attenuation (linear flat)</li>
+    </ul>
+    <p class="mt-2">
+      This means that regardless of whether your sound meter is configured to dBA, dBC, or unweighted dBZ, a pure 1 kHz test tone will always register identical decibel values. Any discrepancy between your meter's reading and the known source is purely a hardware gain offset, making calibration calculations straightforward.
+    </p>
+
+    <h2 class="text-white font-semibold mt-6">Step-by-step: Calibrating your decibel meter with test tones</h2>
+    <p class="mt-2">
+      Here is the practical, step-by-step workflow for testing and calibrating a browser decibel meter:
+    </p>
+    <ol class="list-decimal pl-5 mt-3 space-y-3 text-slate-300">
+      <li>
+        <strong>Set up a stable tone source:</strong> Open <a class="underline underline-offset-4 text-blue-400 font-medium hover:text-blue-300" href="https://realtonegenerator.com/" target="_blank" rel="noopener">Real Tone Generator</a> on a clean sound source or secondary device connected to high-fidelity speakers or studio monitors.
+      </li>
+      <li>
+        <strong>Select a 1,000 Hz sine wave:</strong> Set the frequency to exactly 1,000 Hz (1 kHz) and choose the "Sine" waveform. Sine waves consist of a single fundamental frequency with zero harmonic distortion, preventing high-frequency overtones from skewing the microphone's input.
+      </li>
+      <li>
+        <strong>Position your devices:</strong> Place your reference meter and the device running your <a class="underline underline-offset-4" href="/#measure">online decibel meter</a> side by side, equidistant from the speaker (typically 1 meter away, at ear height). Ensure both microphone openings are completely uncovered.
+      </li>
+      <li>
+        <strong>Play the tone and settle readings:</strong> Start playback at a moderate, comfortable volume (e.g., approximately 70 dBA). Let the tone play continuously for 15–30 seconds until the room reflections stabilize and both readouts steady.
+      </li>
+      <li>
+        <strong>Calculate and save your offset:</strong> Note the reading on your reference meter (e.g., 72.0 dBA) and the uncalibrated reading on your browser meter. Enter the known reference value in the calibration dialogue on our <a class="underline underline-offset-4" href="/calibration/">calibration panel</a> to store your device-specific profile.
+      </li>
+    </ol>
+
+    <h2 class="text-white font-semibold mt-6">Testing frequency response across the spectrum</h2>
+    <p class="mt-2">
+      Once your 1 kHz reference level is dialed in, you can verify how well your microphone handles the rest of the audible spectrum by generating tones across key frequency checkpoints:
+    </p>
+    <div class="overflow-x-auto mt-3">
+      <table class="w-full text-left text-sm border border-slate-700 rounded-lg">
+        <thead class="bg-slate-800/60 text-white">
+          <tr>
+            <th class="p-3 border-b border-slate-700">Test Frequency</th>
+            <th class="p-3 border-b border-slate-700">Acoustic Region</th>
+            <th class="p-3 border-b border-slate-700">Expected A-Weighting Impact</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800 text-slate-300">
+          <tr>
+            <td class="p-3 font-mono">100 Hz</td>
+            <td class="p-3">Low Bass</td>
+            <td class="p-3">Reading drops by ~19 dB compared to dBC</td>
+          </tr>
+          <tr>
+            <td class="p-3 font-mono">500 Hz</td>
+            <td class="p-3">Lower Midrange</td>
+            <td class="p-3">Minor drop of ~3.2 dB</td>
+          </tr>
+          <tr>
+            <td class="p-3 font-mono">1,000 Hz</td>
+            <td class="p-3">Reference Midrange</td>
+            <td class="p-3"><strong>0.0 dB (Reference baseline)</strong></td>
+          </tr>
+          <tr>
+            <td class="p-3 font-mono">3,000 Hz</td>
+            <td class="p-3">Ear Sensitivity Peak</td>
+            <td class="p-3">Boosted by ~1.2 dB (ear canal resonance)</td>
+          </tr>
+          <tr>
+            <td class="p-3 font-mono">10,000 Hz</td>
+            <td class="p-3">High Treble</td>
+            <td class="p-3">Attenuated by ~2.5 dB</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="text-white font-semibold mt-6">Room acoustics and speaker distortion factors</h2>
+    <p class="mt-2">
+      When using speakers in an untreated room to generate calibration tones, standing waves and room modes can cause constructive or destructive interference. Moving a microphone just 10 centimeters can change the perceived level by several decibels if room reflections are strong.
+    </p>
+    <p class="mt-2">
+      To minimize room mode errors, keep the speaker at least 1 meter away from walls, avoid pointing the speaker directly into room corners, and use pink noise or frequency warble tones if room resonances cause severe level swings.
+    </p>
+
+    <h2 class="text-white font-semibold mt-6">Summary and practical takeaways</h2>
+    <p class="mt-2">
+      Testing with precision audio tones transforms a guesswork decibel measurement into an organized, repeatable screening tool. By using a 1,000 Hz pure sine wave from a dedicated audio generator like <a class="underline underline-offset-4 text-blue-400 font-medium hover:text-blue-300" href="https://realtonegenerator.com/" target="_blank" rel="noopener">Real Tone Generator</a>, you bypass the complexity of frequency weighting curves and ensure that your A-weighted decibel readings reflect real acoustic conditions.
+    </p>
+
+    <p class="mt-6 flex flex-wrap gap-3">
+      <a class="btn-primary focus-ring text-sm" href="/#measure">Open Live Decibel Meter →</a>
+      <a class="btn-secondary focus-ring text-sm" href="/a-weighted-decibel-meter/">Read A-Weighted Meter Guide →</a>
+      <a class="btn-secondary focus-ring text-sm" href="/calibration/">Full Calibration Guide →</a>
+    </p>
+  </Article>
+</Layout>

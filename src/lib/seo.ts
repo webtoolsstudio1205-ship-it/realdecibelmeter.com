@@ -89,7 +89,9 @@ export type GuideKey =
   | 'onryo-sokutei'
   | 'db-sokutei'
   | 'souon-sokutei'
-  | 'decibel-meter-for-classroom';
+  | 'decibel-meter-for-classroom'
+  | 'a-weighted-decibel-meter'
+  | 'blog';
 
 const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/', it: '/it/guide/', es: '/es/guias/', fr: '/fr/guides/', pt: '/pt/guias/', ko: '/ko/guides/' },
@@ -111,6 +113,8 @@ const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   'db-sokutei': { ja: '/ja/db-sokutei/' },
   'souon-sokutei': { ja: '/ja/souon-sokutei/' },
   'decibel-meter-for-classroom': { en: '/decibel-meter-for-classroom/' },
+  'a-weighted-decibel-meter': { en: '/a-weighted-decibel-meter/' },
+  blog: { en: '/blog/' },
   // "Decibel meter without an app" guide — one reciprocal hreflang cluster
   // across all seven languages (English is the canonical member at
   // /decibel-meter-app/; each locale keeps its native slugs). Previously six

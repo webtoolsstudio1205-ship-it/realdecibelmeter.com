@@ -49,6 +49,8 @@ const guides = [
   { href: '/iphone-decibel-meter/', t: 'iPhone decibel meter', d: 'Free online iPhone meter in Safari — no app install, live dBA.' },
   { href: '/frequency-analyzer/', t: 'Frequency analyzer', d: 'Reading the live spectrum alongside the dB value.' },
   { href: '/sound-level-meter/', t: 'Sound level meters', d: 'Hardware classes versus browser estimates.' },
+  { href: '/a-weighted-decibel-meter/', t: 'A-weighted decibel meter', d: 'How dBA filtering mirrors human hearing and how to measure A-weighted sound levels online.' },
+  { href: '/blog/', t: 'Audio calibration blog', d: 'Using audio test tones and 1 kHz reference sine waves to calibrate decibel meters.' },
   { href: '/decibel-meter-for-classroom/', t: 'Decibel meter for classrooms', d: 'Screen classroom noise with typical dBA bands — placement and honest phone-mic limits.' },
   { href: '/privacy/', t: 'Microphone privacy', d: 'How local audio processing keeps recordings on your device.' },
   { href: '/faq/', t: 'FAQ', d: 'Short answers on accuracy, calibration, Leq and safe levels.' },
@@ -151,18 +153,20 @@ const tools = [
       <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
         Every microphone has different gain, so calibration is required before any dBA number can be trusted.
         Place the device where you will measure, play or compare a stable reference of known level, enter the difference as an
-        offset, and keep the same microphone, position and settings. Profiles are device-specific and stop applying when the
-        setup changes. Follow the <a class="underline underline-offset-4 focus-ring" href="/calibration/">calibration guide</a>.
+        offset, and keep the same microphone, position and settings. To generate pure acoustic reference tones (such as a 1 kHz sine wave) or frequency sweeps for testing and calibration, you can use <a class="underline underline-offset-4 focus-ring font-medium text-white" href="https://realtonegenerator.com/" target="_blank" rel="noopener">Real Tone Generator</a>. Profiles are device-specific and stop applying when the
+        setup changes. Follow the <a class="underline underline-offset-4 focus-ring" href="/calibration/">calibration guide</a> or read our <a class="underline underline-offset-4 focus-ring" href="/blog/">calibration blog post</a>.
       </p>
     </section>
 
     <section class="panel p-6" data-reveal aria-labelledby="weighting">
       <h2 id="weighting" class="text-xl font-semibold tracking-tight">What A, C and Z weighting mean</h2>
       <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:75ch">
-        Sound-level weighting shapes which frequencies count most. A-weighting (dBA) approximates human hearing and is the
-        default for everyday checks; C-weighting (dBC) stays flatter near loud peaks; Z-weighting (dBZ) counts all frequencies
-        equally. Fast response follows peaks, Slow smooths them. Compare them in
-        <a class="underline underline-offset-4 focus-ring" href="/db-vs-dba/"> dB vs dBA</a>.
+        Sound-level weighting shapes which frequencies count most. An <strong>A-weighted decibel meter</strong> filters acoustic
+        frequencies through the international A-weighting curve (dBA) to match human ear sensitivity, de-emphasizing low rumbles
+        and extreme treble where hearing is less sensitive. If you need an <strong>a weighted decibel meter</strong> for workplace
+        compliance (OSHA/NIOSH), community noise, or classroom checks, dBA is the global standard. C-weighting (dBC) stays flatter
+        near loud bass peaks, while Z-weighting (dBZ) treats all frequencies equally.
+        Explore our comprehensive <a class="underline underline-offset-4 focus-ring" href="/a-weighted-decibel-meter/">A-weighted decibel meter guide</a> or compare weightings in <a class="underline underline-offset-4 focus-ring" href="/db-vs-dba/">dB vs dBA</a>.
       </p>
     </section>
 
