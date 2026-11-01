@@ -168,8 +168,8 @@ export const dicts: Record<Locale, CoreDict> = {
     footerRights: 'All rights reserved.',
   }),
   de: base({
-    metaTitle: 'Dezibelmesser Online – Lautstärke im Browser messen',
-    metaDescription: 'Kostenloser Dezibelmesser ohne App: sofort geschätzte Schallpegel in dBA, dBC oder dBZ anzeigen und für bessere Genauigkeit kalibrieren.',
+    metaTitle: 'Dezibel messen online – Lautstärke & Schallpegel im Browser',
+    metaDescription: 'Kostenloser Online-Dezibelmesser im Browser. Schallpegel in dBA, dBC und dBZ live messen – ohne App, ohne Download, Audio bleibt auf dem Gerät.',
     navGuides: 'Anleitungen', navMeasure: 'Messen', headerTag: 'Browser-Schätzwert',
     heroEyebrow: 'Kostenloser Dezibelmesser — ohne App, kein Download', heroH1: 'Dezibelmesser online – Lautstärke im Browser messen',
     heroSub: 'Messen Sie sofort einen geschätzten Schallpegel in dBA und kalibrieren Sie das Gerät für eine bessere gerätespezifische Genauigkeit.',
@@ -268,8 +268,8 @@ export const dicts: Record<Locale, CoreDict> = {
     footerRights: 'Tutti i diritti riservati.',
   }),
   ja: base({
-    metaTitle: 'デシベル測定オンライン – ブラウザで音量を計測',
-    metaDescription: '無料のブラウザ・デシベル測定ツール。dBA・dBC・dBZの推定値をすぐ表示し、校正で端末ごとの精度を高めます。',
+    metaTitle: 'デシベル計測・測定 オンライン – 音量と騒音を測定',
+    metaDescription: '無料ブラウザでデシベル計測・測定。dBA・dBCの推定値をリアルタイム表示。アプリ不要でスマホ・PCから音量・騒音を簡単に測定できます。',
     navGuides: 'ガイド', navMeasure: '測定', headerTag: 'ブラウザ推定',
     heroEyebrow: '無料オンラインデシベル計 — ダウンロード不要', heroH1: 'オンライン騒音計 – ブラウザでデシベルを測定',
     heroSub: '推定dBAをすぐ測定し、端末を校正して機種ごとの精度を高めます。処理はすべてブラウザ内で完結します。',

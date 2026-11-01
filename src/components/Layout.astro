@@ -1,7 +1,7 @@
 ---
 import type { Dict, Locale } from '../i18n/dictionaries';
 import { LOCALES } from '../i18n/dictionaries';
-import { SITE, homepageHreflang, localizedGuidePath, ogLocaleFor, isNoindexPath, organizationJsonLd, type GuideKey } from '../lib/seo';
+import { SITE, homepageHreflang, guideHreflang, localizedGuidePath, ogLocaleFor, isNoindexPath, organizationJsonLd, type GuideKey } from '../lib/seo';
 import '../styles/global.css';
 
 interface Props {
@@ -42,6 +42,16 @@ const guideKeyByPath: Partial<Record<string, GuideKey>> = {
   '/how-to-use/': 'how-to-use', '/ja/how-to-use/': 'how-to-use', '/es/como-usar/': 'how-to-use', '/fr/mode-emploi/': 'how-to-use', '/pt/como-usar/': 'how-to-use', '/ko/how-to-use/': 'how-to-use',
   '/methodology/': 'methodology', '/ja/methodology/': 'methodology', '/es/metodologia/': 'methodology', '/fr/methodologie/': 'methodology', '/pt/metodologia/': 'methodology', '/ko/methodology/': 'methodology',
   '/privacy/': 'privacy', '/ja/privacy/': 'privacy', '/es/privacidad/': 'privacy', '/fr/confidentialite/': 'privacy', '/pt/privacidade/': 'privacy', '/ko/privacy/': 'privacy',
+  '/ja/decibel-measurement/': 'decibel-measurement',
+  '/sound-level-meter/': 'schallpegelmesser',
+  '/de/schallpegelmesser/': 'schallpegelmesser',
+  '/tone-generator/': 'ton-generator',
+  '/de/ton-generator/': 'ton-generator',
+  '/de/laerm-messen/': 'laerm-messen',
+  '/ja/onryo-sokutei/': 'onryo-sokutei',
+  '/ja/db-sokutei/': 'db-sokutei',
+  '/ja/souon-sokutei/': 'souon-sokutei',
+  '/decibel-meter-for-classroom/': 'decibel-meter-for-classroom',
 };
 const currentGuideKey = guideKeyByPath[path];
 function langHref(code: Locale, base: string): string {

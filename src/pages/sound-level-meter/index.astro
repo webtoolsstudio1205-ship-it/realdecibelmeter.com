@@ -5,11 +5,11 @@ import { getDict } from '../../i18n/dictionaries';
 import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
 
 const dict = getDict('en');
-const title = 'Sound Level Meter Explained';
-const description = 'What is a sound level meter? Learn how sound level meters work, hardware classes (Class 1 vs Class 2), and how browser sound level meters measure sound.';
+const title = 'Sound Level Meter Guide: Types, Classes & Online Tools';
+const description = 'What is a sound level meter? How Class 1 and Class 2 hardware works, and when a free browser sound level meter is enough for everyday noise checks.';
 const url = `${SITE}/sound-level-meter/`;
 const jsonLd = [
-  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-09-21' }),
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-10-30' }),
   breadcrumbJsonLd([
     { name: 'Home', url: `${SITE}/` },
     { name: 'Guides', url: `${SITE}/guides/` },
@@ -19,7 +19,7 @@ const jsonLd = [
 ---
 
 <Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/sound-level-meter/" jsonLd={jsonLd}>
-  <Article title="What Is a Sound Level Meter?" intro="A sound level meter measures sound pressure level in decibels. Learn how sound meters work, hardware classes (Class 1 vs Class 2), and how browser sound level meters compare." reviewed="2026-09-21" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Sound level meter', href: '/sound-level-meter/' }]}>
+  <Article title="What Is a Sound Level Meter?" intro="A sound level meter measures sound pressure level in decibels. Learn how sound meters work, hardware classes (Class 1 vs Class 2), and how browser sound level meters compare." reviewed="2026-10-30" breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Sound level meter', href: '/sound-level-meter/' }]}>
     <h2 class="text-white font-semibold">One job, three common names</h2>
     <p class="mt-2">A decibel meter reports how intense the sound in the air is, in decibels. Engineers tend to say sound level meter, the public often says noise meter or dB meter, and an online sound meter is the same function running in a browser. For everyday checks the terms are interchangeable: place the microphone where you want to measure, allow access, and read the live dB value. The scale behind the number is covered in the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a>, and the weightings in <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a>.</p>
 

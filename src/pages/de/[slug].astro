@@ -5,7 +5,7 @@ import { getDict } from '../../i18n/dictionaries';
 import { SITE, articleJsonLd, breadcrumbJsonLd, guideHreflang, type GuideKey } from '../../lib/seo';
 
 interface GermanGuide {
-  slug: string; key: GuideKey; title: string; description: string; intro: string; label: string; body: string; article?: boolean;
+  slug: string; key: GuideKey; title: string; description: string; intro: string; label: string; body: string; article?: boolean; dateModified?: string;
 }
 
 const pages: GermanGuide[] = [
@@ -13,7 +13,7 @@ const pages: GermanGuide[] = [
     slug: 'anleitungen', key: 'guides', title: 'Anleitungen zum Online-Dezibelmesser',
     description: 'Deutsche Anleitungen zu Online-Schallpegelmessung, Kalibrierung, Genauigkeit, Dezibel-Tabelle, dB und dBA sowie Mikrofonproblemen.',
     intro: 'Wählen Sie die Anleitung passend zu Ihrer Aufgabe. Unkalibriert zeigt der Browser einen klar gekennzeichneten nominalen Schätzwert; eine Referenzkalibrierung verbessert die gerätespezifische Genauigkeit.', label: 'Anleitungen',
-    body: `<h2>Messen und einordnen</h2><ul><li><a href="/de/kalibrierung/">Dezibelmesser kalibrieren</a> — einen Geräte-Offset mit einer verlässlichen Referenz bestimmen.</li><li><a href="/de/genauigkeit/">Genauigkeit von Online-Dezibelmessern</a> — Hardware, automatische Verstärkung und Grenzen verstehen.</li><li><a href="/de/dezibel-tabelle/">Dezibel-Tabelle</a> — typische Alltagsgeräusche als grobe Orientierung.</li></ul><h2>Begriffe und Fehlerbehebung</h2><ul><li><a href="/de/db-vs-dba/">Unterschied zwischen dB und dBA</a> — A-, C- und Z-Bewertung verständlich erklärt.</li><li><a href="/de/mikrofon-funktioniert-nicht/">Mikrofon funktioniert nicht</a> — Berechtigungen, Geräteauswahl und Browser prüfen.</li></ul><p><a href="/de/#measure">Jetzt Lautstärke online messen →</a></p>`,
+    body: `<h2>Messen und einordnen</h2><ul><li><a href="/de/schallpegelmesser/">Schallpegelmesser Online</a> — Grundlagen, Geräteklassen (Klasse 1 vs 2) und Schallpegelmessung im Browser.</li><li><a href="/de/laerm-messen/">Lärm messen mit dem Handy</a> — Lärmpegel bei Ruhestörung, Verkehr und Nachbarn ermitteln.</li><li><a href="/de/ton-generator/">Online Ton Generator</a> — Sinustöne von 20 bis 20.000 Hz erzeugen und Lautsprecher testen.</li><li><a href="/de/handy-dezibel-messen/">Handy: Dezibel messen</a> — Kostenlos online ohne App (iPhone & Android).</li><li><a href="/de/kalibrierung/">Dezibelmesser kalibrieren</a> — einen Geräte-Offset mit einer verlässlichen Referenz bestimmen.</li><li><a href="/de/genauigkeit/">Genauigkeit von Online-Dezibelmessern</a> — Hardware, automatische Verstärkung und Grenzen verstehen.</li><li><a href="/de/dezibel-tabelle/">Dezibel-Tabelle</a> — typische Alltagsgeräusche als grobe Orientierung.</li></ul><h2>Begriffe und Fehlerbehebung</h2><ul><li><a href="/de/db-vs-dba/">Unterschied zwischen dB und dBA</a> — A-, C- und Z-Bewertung verständlich erklärt.</li><li><a href="/de/mikrofon-funktioniert-nicht/">Mikrofon funktioniert nicht</a> — Berechtigungen, Geräteauswahl und Browser prüfen.</li></ul><p><a href="/de/#measure">Jetzt Lautstärke online messen →</a></p>`,
   },
   {
     slug: 'kalibrierung', key: 'calibration', title: 'Online-Dezibelmesser kalibrieren',
@@ -51,10 +51,104 @@ const pages: GermanGuide[] = [
     intro: 'Ihr Handy ist bereits ein Schallmesser: Browser öffnen, Start tippen, Mikrofon erlauben – schon sehen Sie live geschätzte Dezibel. Kostenlos, ohne App, ohne Download.', label: 'Handy-Messung', article: true,
     body: `<div style="border:1px solid var(--border);border-radius:12px;padding:16px;background:linear-gradient(135deg,rgba(59,130,246,.14),rgba(59,130,246,.03))"><p><strong>Jetzt testen – in 10 Sekunden, ohne App:</strong></p><ol><li>Seite auf dem <strong>Handy oder iPhone</strong> öffnen.</li><li><a href="/de/#measure">Messung starten →</a> und Mikrofon erlauben.</li><li>Live <strong>geschätzte dBA</strong> ablesen – 30–60 Sekunden mitteln.</li></ol><p>Audio bleibt auf Ihrem Gerät. Keine Aufnahme, kein Upload.</p></div><h2>Kann man Dezibel mit dem Handy messen?</h2><p>Ja, für Alltagsfragen. Ob <strong>Dezibel messen mit Handy, iPhone oder Android</strong>: Diese Seite ist ein <strong>kostenloser Online-Dezibelmesser ohne App</strong> – dBA, dBC oder dBZ live, dazu Leq, Minimum, Maximum und Verlaufsdiagramm. Eine <strong>Dezibelmesser-App</strong> müssen Sie dafür nicht installieren.</p><h2>Dezibel messen: iPhone, Handy, App oder online?</h2><ul><li><strong>Dezibel messen iPhone:</strong> In Safari diese Seite öffnen, Start drücken, Mikrofon erlauben. Einmal pro iPhone gegen eine Referenz <a href="/de/kalibrierung/">kalibrieren</a>.</li><li><strong>Dezibel messen Handy (Android):</strong> In Chrome öffnen. Dieses Tool bittet darum, Echo- und Rauschunterdrückung auszuschalten, und zeigt den Verarbeitungsstatus an.</li><li><strong>Dezibel messen App kostenlos:</strong> Die Browser-Seite ersetzt eine kostenlose App – kein Store, kein Konto, immer aktuell. Native Apps lohnen nur für Offline- oder Dauerlogging.</li><li><strong>Dezibel messen online ohne App:</strong> Genau das hier – <a href="/de/#measure">online messen →</a>, Verlauf als CSV oder JSON exportieren.</li></ul><h2>Wie kann man Dezibel messen – Anleitung</h2><ol><li>Mikrofon erlauben und Mikrofonöffnung freilassen.</li><li>Handy in Ohrhöhe halten, Mikrofon zur Quelle, Abstand notieren.</li><li>Ruhig bleiben, Anzeige beruhigen lassen, 30–60 Sekunden <strong>Mittelwert oder Leq</strong> ablesen.</li><li>Für Vergleiche Bewertung (A/C/Z), Fast/Slow, Position und Profil gleich lassen.</li></ol><h2>Wie kann man Dezibel zuhause messen?</h2><p>Handy dort platzieren, wo Sie sitzen, 1–2 Minuten ohne eigene Geräusche messen, Leq notieren. Datum, Uhrzeit, Raum und Abstand dazu schreiben – das hilft bei Nachbarschafts- oder Wohnlärm am meistem.</p><h2>Dezibelmesser, Schallmesser, Lärmmesser – was ist das?</h2><p>Alle drei meinen dasselbe: ein Gerät, das Schall in Dezibel anzeigt. <strong>Dezibelmesser, Schallmesser und Online-Dezibelmesser</strong> unterscheiden sich nur durch Hardware gegen Browser-Schätzung. Für Arbeitsschutz oder Rechtsfragen brauchen Sie ein kalibriertes Klasse-1- oder Klasse-2-Gerät – siehe <a href="/de/genauigkeit/">Genauigkeit und Grenzen</a>.</p><h2>Wie genau ist Handy-Dezibel messen?</h2><p>Als grobe Schätzung auf wenige dB: Zwei Handys weichen am gleichen Geräusch oft 5–10 dB ab, unter ca. 30 dBA rauscht das Mikrofon, über ca. 95–100 dBA clippt es, tiefe Bässe werden zu leise angezeigt. Einmal <a href="/de/kalibrierung/">kalibrieren</a> verbessert den Gesamtpegel deutlich. Details unter <a href="/de/db-vs-dba/">dB und dBA</a> und <a href="/de/dezibel-tabelle/">Dezibel-Tabelle</a>.</p><h2>Häufige Fragen zum Dezibel messen</h2><h3>Wie kann ich Dezibel messen?</h3><p>Browser öffnen, Start drücken, Mikrofon erlauben, 30–60 Sekunden mitteln – fertig. Siehe Anleitung oben.</p><h3>Kann ich mit dem Handy Dezibel messen?</h3><p>Ja. Diese Seite ist dafür gebaut und kostenlos – <a href="/de/#measure">jetzt messen →</a>.</p><h3>Dezibel messen kostenlos?</h3><p>Ja, ohne Kosten, ohne Konto, ohne App-Installation.</p><h3>Online-Dezibelmesser – wie genau?</h3><p>Nützlich für Vergleiche, keine zertifizierte Messung. Für Nachweise brauchen Sie Profi-Hardware.</p><p><a href="/de/#measure">Lautstärke online messen →</a> · <a href="/de/kalibrierung/">Kalibrierung →</a> · <a href="/de/genauigkeit/">Genauigkeit →</a> · <a href="/de/anleitungen/">Alle Anleitungen →</a></p><h2>Tool in Ihrer Sprache – kein Download nötig</h2><p>Dieses Web-Tool braucht in jeder Sprache <strong>keinen Download und keine Installation</strong> – passende Startseite öffnen, Start tippen, messen:</p><ul><li><a href="/iphone-decibel-meter/" hreflang="en">English: iPhone decibel meter – free online, no download →</a> · <a href="/#measure" hreflang="en">Open the English meter →</a></li><li><a href="/ja/noise-meter-app/" hreflang="ja">日本語: 騒音計アプリ・デシベル計測 →</a> · <a href="/ja/#measure" hreflang="ja">日本のメーターを開く →</a></li></ul>`,
   },
+  {
+    slug: 'schallpegelmesser',
+    key: 'schallpegelmesser',
+    title: 'Schallpegelmesser Online: Schallpegel im Browser messen',
+    description: 'Kostenloser Schallpegelmesser im Browser. Schallpegel in dBA, dBC und dBZ live messen, Geräteklassen verstehen und ohne App testen.',
+    intro: 'Ein Schallpegelmesser misst den Schalldruckpegel in Dezibel. Erfahren Sie, wie Schallmessung im Browser funktioniert und wie Klasse-1- und Klasse-2-Geräte abschneiden.',
+    label: 'Schallpegelmesser',
+    article: true,
+    dateModified: '2026-11-01',
+    body: `<h2>Was ist ein Schallpegelmesser?</h2>
+<p>Ein <strong>Schallpegelmesser</strong> (auch <em>Lautstärkemesser</em> oder <em>Dezibelmesser</em> genannt) erfasst den Schalldruckpegel der Umgebung und zeigt ihn in Dezibel (dB) an. Im Alltag werden die Begriffe oft synonym verwendet: Man richtet das Mikrofon auf die Geräuschquelle, startet die Erfassung und liest den aktuellen dB-Wert ab. Für genaue Vergleiche nutzt man standardmäßig die A-Bewertung (dBA), die das menschliche Hörempfinden nachbildet. Die physikalischen Grundlagen finden Sie in unserer <a href="/de/dezibel-tabelle/">Dezibel-Tabelle</a> und im Leitfaden <a href="/de/db-vs-dba/">Unterschied dB und dBA</a>.</p>
+
+<h2>Schallpegelmesser Klassen: Klasse 1 vs. Klasse 2</h2>
+<p>In der professionellen Akustik und Messtechnik unterscheidet man nach IEC 61672 zwei Hauptklassen von Schallpegelmessgeräten:</p>
+<ul>
+  <li><strong>Klasse 1 Schallpegelmesser:</strong> Präzisionsgeräte für Gutachten, behördliche Lärmmessungen, Laborprüfungen und Umweltakustik mit minimalen Toleranzen über das gesamte Frequenzband.</li>
+  <li><strong>Klasse 2 Schallpegelmesser:</strong> Für Betriebsmessungen, Lärm am Arbeitsplatz (Arbeitsschutz) und Vor-Ort-Überprüfungen mit leicht größeren Toleranzen.</li>
+</ul>
+<p>Beide Klassen erfordern zertifizierte Mikrofone und regelmäßige Werks- oder Laborkalibrierungen. Für offizielle rechtliche Nachweise ist solche Hardware zwingend vorgeschrieben.</p>
+
+<h2>Schallpegel online messen im Browser</h2>
+<p>Für private Kontrollen, Orientierungsmessungen in der Wohnung oder im Büro brauchen Sie kein teures Hardware-Messgerät:</p>
+<ol>
+  <li>Öffnen Sie diesen kostenlosen <a href="/de/#measure">Online-Schallpegelmesser</a> auf Smartphone, Tablet oder Laptop.</li>
+  <li>Tippen Sie auf <strong>Start</strong> und erlauben Sie dem Browser den Mikrofonzugriff. Sämtliche Audioverarbeitung erfolgt lokal auf Ihrem Gerät (kein Upload, keine Speicherung auf externen Servern).</li>
+  <li>Halten Sie das Gerät ruhig in Ohrhöhe mit freiliegender Mikrofonöffnung und beobachten Sie 30–60 Sekunden lang den <strong>Leq (Mittelungspegel)</strong>.</li>
+</ol>
+
+<h2>Genauigkeit und Grenzen im Vergleich zur Hardware</h2>
+<p>Consumer-Mikrofone in Handys und PCs besitzen automatische Verstärkungen (AGC) und sind für Sprache optimiert. Unkalibriert liefert der Browser einen Schätzwert mit nominalem Offset. Durch eine <a href="/de/kalibrierung/">Referenzkalibrierung</a> können Sie die Genauigkeit für Ihr spezifisches Gerät erheblich steigern. Beachten Sie dazu unsere Hinweise zur <a href="/de/genauigkeit/">Messgenauigkeit</a>.</p>
+<p><a href="/de/#measure">Schallpegel jetzt messen →</a> · <a href="/de/laerm-messen/">Lärm messen →</a> · <a href="/de/anleitungen/">Alle Anleitungen →</a></p>`,
+  },
+  {
+    slug: 'laerm-messen',
+    key: 'laerm-messen',
+    title: 'Lärm messen Online: Lärmpegel mit Handy & PC ermitteln',
+    description: 'Lärm online messen: Ermitteln Sie Lärmpegel und Dezibel bei Nachbarschaftslärm, Verkehr oder Baustellen kostenlos im Browser ohne App.',
+    intro: 'Ruhestörung, Baulärm oder laute Nachbarn? So messen Sie Lärmpegel mit Smartphone oder Laptop im Browser und führen ein nachvollziehbares Lärmprotokoll.',
+    label: 'Lärm messen',
+    article: true,
+    dateModified: '2026-11-01',
+    body: `<h2>Wie kann man Lärm messen?</h2>
+<p><strong>Lärm messen</strong> bedeutet, störenden oder gesundheitsgefährdenden Schall messtechnisch in Dezibel (dBA) zu erfassen. Ob Ruhestörung durch Nachbarn, Straßenverkehr, Wärmepumpen oder laute Arbeitsumgebungen: Mit diesem kostenlosen Online-Tool können Sie den aktuellen <strong>Lärmpegel</strong> direkt im Webbrowser ermitteln – ganz ohne App-Installation und ohne Registrierung.</p>
+
+<h2>Richtwerte für Lärmpegel (TA Lärm & Alltagsgrenzen)</h2>
+<p>In Deutschland gelten nach der Technischen Anleitung zum Schutz gegen Lärm (TA Lärm) und den Landes-Immissionsschutzgesetzen bestimmte Orientierungswerte für Immissionen:</p>
+<ul>
+  <li><strong>Reine Wohngebiete:</strong> Tagsüber 50 dBA, nachts 35 dBA (in Ruhezeiten wie 22:00 bis 06:00 Uhr).</li>
+  <li><strong>Allgemeine Wohngebiete:</strong> Tagsüber 55 dBA, nachts 40 dBA.</li>
+  <li><strong>Misch- und Kerngebiete:</strong> Tagsüber 60 dBA, nachts 45 dBA.</li>
+  <li><strong>Arbeitsplatz:</strong> Ab 80 dBA muss Gehörschutz bereitgestellt werden; ab 85 dBA besteht Tragepflicht.</li>
+</ul>
+<p>Einen anschaulichen Überblick über typische Lautstärken vom Flüstern bis zum Presslufthammer finden Sie in unserer <a href="/de/dezibel-tabelle/">Dezibel-Tabelle</a>.</p>
+
+<h2>Lärmprotokoll führen in 4 Schritten</h2>
+<ol>
+  <li><strong>Gerät positionieren:</strong> Öffnen Sie den <a href="/de/#measure">Lärmmesser im Browser</a>. Halten Sie das Smartphone am Ort der Belästigung (z. B. am geöffneten Fenster oder im Wohnzimmer) ruhig in Raummitte oder Ohrhöhe.</li>
+  <li><strong>Messung starten:</strong> Drücken Sie auf <em>Start</em> und wählen Sie die A-Bewertung (dBA) sowie die langsame Zeitbewertung (Slow), um kurze Schwankungen zu glätten.</li>
+  <li><strong>Mittelwert (Leq) notieren:</strong> Lassen Sie die Messung mindestens 2–5 Minuten laufen und erfassen Sie den Leq (äquivalenter Dauerschallpegel) sowie den Spitzenpegel (Lmax).</li>
+  <li><strong>Sitzung exportieren:</strong> Nutzen Sie den Button <em>CSV exportieren</em>, um Datum, Uhrzeit und Messwerte digital als Nachweis für Vermieter oder Hausverwaltung abzuspeichern.</li>
+</ol>
+
+<h2>Tipps für ein verlässliches Lärmprotokoll</h2>
+<p>Vermeiden Sie eigene Atem- oder Schrittgeräusche und verdecken Sie die Mikrofonöffnung nicht. Notieren Sie stets Art der Geräuschquelle, Uhrzeit, Dauer und Raumbedingungen. Da Handymikrofone unzertifiziert sind, dient die Browsermessung der Beweissicherung und Orientierung. Für gerichtliche Auseinandersetzungen empfiehlt sich eine zusätzliche Messung mit einem kalibrierten Messgerät. Weitere Tipps finden Sie unter <a href="/de/handy-dezibel-messen/">Handy-Dezibelmessung</a> und <a href="/de/kalibrierung/">Kalibrierung</a>.</p>
+<p><a href="/de/#measure">Lärmmessung jetzt starten →</a> · <a href="/de/schallpegelmesser/">Schallpegelmesser →</a> · <a href="/de/dezibel-tabelle/">Dezibel-Tabelle →</a></p>`,
+  },
+  {
+    slug: 'ton-generator',
+    key: 'ton-generator',
+    title: 'Online Ton Generator: Sinuston & Frequenzen testen',
+    description: 'Kostenloser Online Ton Generator im Browser. Sinustöne von 20 Hz bis 20.000 Hz erzeugen, Lautsprecher testen und Frequenzen prüfen.',
+    intro: 'Erzeugen Sie Sinustöne und Testfrequenzen direkt im Webbrowser. Ideal zum Testen von Lautsprechern, Subwoofern, Kopfhörern oder für akustische Referenzprüfungen.',
+    label: 'Ton-Generator',
+    article: true,
+    dateModified: '2026-11-01',
+    body: `<h2>Was ist ein Online Ton Generator?</h2>
+<p>Ein <strong>Online Ton Generator</strong> ist ein webbasiertes Audio-Werkzeug, das reine Töne (Sinuswellen), Rauschsignale oder Frequenz-Sweeps über die Web Audio API des Browsers synthetisiert. Sie benötigen keine Software, keinen Download und können beliebige Tonhöhen von tiefen Bässen (20 Hz) bis zur menschlichen Hörgrenze (20.000 Hz) per Schieberegler abspielen.</p>
+
+<h2>Wichtige Frequenzen und Testtöne</h2>
+<p>Bestimmte Frequenzen sind Standardwerkzeuge in Akustik, Tontechnik und Kalibrierung:</p>
+<ul>
+  <li><strong>1000 Hz (1 kHz):</strong> Der weltweite Standard-Referenzton für Schallpegelmessung und Mikrofonkalibrierung. Bei 1 kHz ist die Dämpfung der A-Bewertung genau 0 dB.</li>
+  <li><strong>440 Hz:</strong> Der internationale Kammerton A zur Stimmung von Musikinstrumenten.</li>
+  <li><strong>50 Hz – 100 Hz:</strong> Tiefe Basstöne zum Testen von Subwoofern, Bassreflexgehäusen und Raumresonanzen (Raummoden).</li>
+  <li><strong>10.000 Hz – 15.000 Hz:</strong> Hohe Frequenzen zum Prüfen von Hochtönern und dem individuellen Gehörvermögen.</li>
+</ul>
+
+<h2>Lautsprecher und Raumakustik testen</h2>
+<p>Mit reinen Sinustönen lassen sich Verzerrungen, Klirren, lose Gehäuseteile oder dröhnende Raumfrequenzen schnell identifizieren. Wenn eine bestimmte Frequenz im Raum deutlich lauter dröhnt als benachbarte Töne, haben Sie eine Raummode angeregt. Unser interaktiver <a href="/tone-generator/">Online Tone Generator</a> bietet Ihnen präzise Frequenzwahl und Wellenformauswahl.</p>
+
+<h2>Verbindung mit der Schallpegelmessung</h2>
+<p>Der Ton Generator ergänzt den Dezibelmesser ideal: Indem Sie einen stabilen 1-kHz-Sinuston abspielen, können Sie ein konstantes Schallsignal erzeugen, um den Online-Dezibelmesser gegen eine verlässliche Referenz zu <a href="/de/kalibrierung/">kalibrieren</a>. Wie Sie die Ergebnisse richtig interpretieren, erfahren Sie unter <a href="/de/db-vs-dba/">dB vs dBA</a> und in der <a href="/de/dezibel-tabelle/">Dezibel-Tabelle</a>.</p>
+<p><a href="/tone-generator/">Interaktiven Ton-Generator öffnen →</a> · <a href="/de/#measure">Dezibelmesser starten →</a> · <a href="/de/kalibrierung/">Kalibrierungsanleitung →</a></p>`,
+  },
 ];
 
 export function getStaticPaths() {
-  return ['anleitungen', 'kalibrierung', 'genauigkeit', 'dezibel-tabelle', 'db-vs-dba', 'mikrofon-funktioniert-nicht', 'handy-dezibel-messen']
+  return ['anleitungen', 'kalibrierung', 'genauigkeit', 'dezibel-tabelle', 'db-vs-dba', 'mikrofon-funktioniert-nicht', 'handy-dezibel-messen', 'schallpegelmesser', 'laerm-messen', 'ton-generator']
     .map((slug) => ({ params: { slug } }));
 }
 
@@ -65,13 +159,13 @@ const dict = getDict('de');
 const path = `/de/${page.slug}/`;
 const url = `${SITE}${path}`;
 const jsonLd = [
-  ...(page.article ? [articleJsonLd({ headline: page.title, description: page.description, url, inLanguage: 'de', dateModified: '2026-09-19' })] : []),
+  ...(page.article ? [articleJsonLd({ headline: page.title, description: page.description, url, inLanguage: 'de', dateModified: page.dateModified ?? '2026-09-19' })] : []),
   breadcrumbJsonLd([{ name: 'Startseite', url: `${SITE}/de/` }, { name: page.label, url }]),
 ];
 ---
 
 <Layout locale="de" dict={dict} title={`${page.title} | Real Decibel Meter`} description={page.description} path={path} hreflang={guideHreflang(page.key)} jsonLd={jsonLd} ogType={page.article ? 'article' : 'website'}>
-  <Article title={page.title} intro={page.intro} reviewed="2026-09-19" breadcrumb={[{ name: 'Startseite', href: '/de/' }, { name: page.label, href: path }]}>
+  <Article title={page.title} intro={page.intro} reviewed={page.dateModified ?? "2026-09-19"} breadcrumb={[{ name: 'Startseite', href: '/de/' }, { name: page.label, href: path }]}>
     <div class="article-rich" set:html={page.body} />
   </Article>
 </Layout>

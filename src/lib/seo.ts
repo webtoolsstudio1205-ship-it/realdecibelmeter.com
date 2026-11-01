@@ -70,7 +70,26 @@ export interface HreflangEntry {
   href: string;
 }
 
-export type GuideKey = 'guides' | 'calibration' | 'accuracy' | 'decibel-chart' | 'db-vs-dba' | 'microphone-not-working' | 'how-to-use' | 'methodology' | 'privacy' | 'noise-meter-app' | 'iphone-decibel-meter';
+export type GuideKey =
+  | 'guides'
+  | 'calibration'
+  | 'accuracy'
+  | 'decibel-chart'
+  | 'db-vs-dba'
+  | 'microphone-not-working'
+  | 'how-to-use'
+  | 'methodology'
+  | 'privacy'
+  | 'noise-meter-app'
+  | 'iphone-decibel-meter'
+  | 'decibel-measurement'
+  | 'schallpegelmesser'
+  | 'laerm-messen'
+  | 'ton-generator'
+  | 'onryo-sokutei'
+  | 'db-sokutei'
+  | 'souon-sokutei'
+  | 'decibel-meter-for-classroom';
 
 const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/', it: '/it/guide/', es: '/es/guias/', fr: '/fr/guides/', pt: '/pt/guias/', ko: '/ko/guides/' },
@@ -82,6 +101,16 @@ const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   'how-to-use': { en: '/how-to-use/', ja: '/ja/how-to-use/', es: '/es/como-usar/', fr: '/fr/mode-emploi/', pt: '/pt/como-usar/', ko: '/ko/how-to-use/' },
   methodology: { en: '/methodology/', ja: '/ja/methodology/', es: '/es/metodologia/', fr: '/fr/methodologie/', pt: '/pt/metodologia/', ko: '/ko/methodology/' },
   privacy: { en: '/privacy/', ja: '/ja/privacy/', es: '/es/privacidad/', fr: '/fr/confidentialite/', pt: '/pt/privacidade/', ko: '/ko/privacy/' },
+  // "Decibel measurement basics" — single-locale JA cluster:
+  'decibel-measurement': { ja: '/ja/decibel-measurement/' },
+  // German & Japanese targeted search spokes:
+  schallpegelmesser: { de: '/de/schallpegelmesser/', en: '/sound-level-meter/' },
+  'laerm-messen': { de: '/de/laerm-messen/' },
+  'ton-generator': { de: '/de/ton-generator/', en: '/tone-generator/' },
+  'onryo-sokutei': { ja: '/ja/onryo-sokutei/' },
+  'db-sokutei': { ja: '/ja/db-sokutei/' },
+  'souon-sokutei': { ja: '/ja/souon-sokutei/' },
+  'decibel-meter-for-classroom': { en: '/decibel-meter-for-classroom/' },
   // "Decibel meter without an app" guide — one reciprocal hreflang cluster
   // across all seven languages (English is the canonical member at
   // /decibel-meter-app/; each locale keeps its native slugs). Previously six

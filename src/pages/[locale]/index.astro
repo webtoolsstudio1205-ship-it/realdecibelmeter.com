@@ -29,9 +29,11 @@ const COPY: Record<Locale, { intro: string; howT: string; howB: string; calT: st
     calB: 'Jedes Mikrofon verstärkt anders – daher ist eine Kalibrierung vor jedem dBA-Wert nötig. Vergleichen Sie mit einer stabilen Referenz, tragen Sie die Differenz als Offset ein und behalten Sie Mikrofon, Position und Einstellungen bei.',
     accT: 'Genauigkeit im Browser',
     guides: [
+      { t: 'Schallpegelmesser Online', d: 'Schallpegel in dBA messen & Geräteklassen verstehen.', href: '/de/schallpegelmesser/' },
+      { t: 'Lärm messen mit dem Handy', d: 'Lärmpegel und Nachbarschaftslärm kostenlos ermitteln.', href: '/de/laerm-messen/' },
+      { t: 'Online Ton-Generator', d: 'Sinustöne & Frequenzen für Lautsprechertests erzeugen.', href: '/de/ton-generator/' },
       { t: 'Handy: Dezibel messen', d: 'Kostenlos online ohne App – iPhone & Android.', href: '/de/handy-dezibel-messen/' },
       { t: 'Kalibrierung', d: 'Mikrofon mit Referenz abgleichen.', href: '/de/kalibrierung/' },
-      { t: 'Genauigkeit', d: 'Was Browser-Schätzwerte leisten.', href: '/de/genauigkeit/' },
       { t: 'Dezibel-Tabelle', d: 'Typische Alltagspegel im Vergleich.', href: '/de/dezibel-tabelle/' },
     ],
   },
@@ -56,6 +58,10 @@ const COPY: Record<Locale, { intro: string; howT: string; howB: string; calT: st
     calB: 'マイクの感度は機器ごとに異なるため、dBA値を読む前に校正が必要です。安定した基準音と比較し、差分をオフセットとして入力し、マイク・位置・設定を固定してください。',
     accT: 'ブラウザ測定の精度',
     guides: [
+      { t: 'デシベル 測定の基礎', d: 'dB SPL・dBAの意味と、ブラウザで測る手順。', href: '/ja/decibel-measurement/' },
+      { t: '音量測定 オンライン', d: 'ブラウザでPCやスマホの音量をリアルタイム計測。', href: '/ja/onryo-sokutei/' },
+      { t: 'dB測定・デシベル計測', d: 'デシベル計測と音圧レベルの確認手順。', href: '/ja/db-sokutei/' },
+      { t: '騒音測定 オンライン', d: 'スマホで生活音・近隣騒音を測定・ログ保存。', href: '/ja/souon-sokutei/' },
       { t: '騒音計アプリ・デシベル計測', d: 'スマホで無料測定 — iPhone・Android対応。', href: '/ja/noise-meter-app/' },
       { t: '校正', d: '基準器に合わせてデシベル推定値を調整する。', href: '/ja/calibration/' },
       { t: '測定精度', d: 'ブラウザと端末マイクによる推定値の限界を知る。', href: '/ja/accuracy/' },

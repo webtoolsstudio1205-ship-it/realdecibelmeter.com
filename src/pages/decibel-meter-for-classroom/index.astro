@@ -1,0 +1,79 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Decibel Meter for Classroom Noise Checks';
+const description = 'Use a free online decibel meter to screen classroom noise. Typical dBA levels, where to place the device, and the honest limits of a phone microphone.';
+const url = `${SITE}/decibel-meter-for-classroom/`;
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-10-30' }),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Classroom meter', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} – Free Online Tool`} description={description} path="/decibel-meter-for-classroom/" jsonLd={jsonLd}>
+  <Article
+    title="Decibel Meter for Classrooms"
+    intro="Teachers, students and facilities staff can screen classroom noise with a browser meter — no app, no account. Here is what typical levels look like, where to place the device, and what a phone microphone cannot claim."
+    reviewed="2026-10-30"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Classroom meter', href: '/decibel-meter-for-classroom/' }]}
+    shortAnswer="A browser decibel meter is a quick, free way to screen classroom noise: place the device at desk height away from projectors and vents, run it through a full lesson, and read the energy-average (Leq). Treat every number as a screening estimate — a school loudness decision needs a calibrated instrument, not a phone mic."
+    keyFacts={[
+      'Free and app-free: runs in current Chrome, Edge, Firefox and Safari over HTTPS.',
+      'Typical bands on the estimate scale: silent reading near 40–50 dBA, normal lessons 60–70 dBA, group work 70–80 dBA.',
+      'Run the meter a full 30–60 seconds or longer and read Leq, not a flashing instant value.',
+      'Phone mics read too high below ~30 dBA and clip near 95–100 dBA — screening only, never compliance.',
+    ]}
+  >
+    <h2 class="text-white font-semibold">Why measure noise in a classroom</h2>
+    <p class="mt-2">Room loudness shapes everything a class does: how far a teacher's voice carries, how easily concentration holds during independent work, and how tiring a six-period day feels. A meter turns that impression into a number you can compare — before and after rearranging seating, with the door open versus closed, or between the cafeteria and the library corner. Numbers also make student activities concrete: a "quietest minute" challenge works better when the class can watch the level fall.</p>
+    <p class="mt-2">This page works as a free decibel meter for exactly those checks. It runs in the browser on a classroom laptop, tablet or phone, and audio is processed locally — nothing is uploaded.</p>
+
+    <h2 class="text-white font-semibold mt-6">Typical classroom noise levels (approximate)</h2>
+    <p class="mt-2">Every room differs, so treat these as rough bands on the estimate scale rather than promises. Distance, room size and reflectivity move the numbers more than any single "rule".</p>
+    <ul class="list-disc pl-5 mt-2">
+      <li><strong>40–50 dBA:</strong> silent reading, individual worksheets, empty room with systems idling.</li>
+      <li><strong>50–60 dBA:</strong> teacher presentation to a settled class, medium-scale discussion.</li>
+      <li><strong>60–70 dBA:</strong> ordinary lesson with student responses — the most common teaching zone.</li>
+      <li><strong>70–80 dBA:</strong> active group work, lab or art activity with movement and overlapping talk.</li>
+      <li><strong>80–90 dBA:</strong> cafeteria line, gym class, band practice — expect these rooms to sit far above classrooms.</li>
+    </ul>
+    <p class="mt-2">Where these bands sit in the wider world is covered in the <a class="underline underline-offset-4" href="/decibel-chart/">decibel comparison chart</a>, and what the levels mean for ears over a full day in <a class="underline underline-offset-4" href="/noise-limits/">safe noise limits</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">How to run a classroom check in three steps</h2>
+    <ol class="list-decimal pl-5 mt-2">
+      <li><strong>Place the device where ears are.</strong> Desk height in the middle of the room works for a whole-class picture. Keep it clear of projector fans and HVAC vents by a couple of metres, and keep the microphone hole uncovered.</li>
+      <li><strong>Let it run, don't glance.</strong> Start the meter and leave it through a full 30–60 second stretch — better yet a whole activity. The energy average (Leq) describes the lesson; the minimum and maximum capture the settle-down quiet and the loudest interruptions.</li>
+      <li><strong>Compare like with like.</strong> Change one thing at a time — door open or closed, one seating plan versus another — and keep the device position, weighting (A) and response (Slow) identical. Write down where the device sat, or your next run isn't comparable.</li>
+    </ol>
+    <p class="mt-2">The three-step flow is the same anywhere on this site — see <a class="underline underline-offset-4" href="/how-to-use/">how to use the meter</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">Activities where a meter helps</h2>
+    <ul class="list-disc pl-5 mt-2">
+      <li><strong>Before-and-after checks:</strong> rearranged seating, a new rug or curtain, or auditorium acoustics trials — the Leq before versus after is the story.</li>
+      <li><strong>Quiet-time practice:</strong> make lowering the level a class goal; the falling graph gives immediate, neutral feedback to the whole room.</li>
+      <li><strong>Science demonstrations:</strong> A versus C weighting on a bass-heavy clip, or distance doubling, shows logarithmic behaviour with real numbers — see <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA</a>.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">The honest limits of a phone or laptop microphone</h2>
+    <p class="mt-2">Consumer microphone capsules are built for calls, not measurement. Two devices side by side on the same sound often differ by 5–10 dB before calibration; readings read too high below about 30 dBA because of the microphone's own noise floor, and they clip and read low near 95–100 dBA. Deep bass is under-reported on A-weighting. What a browser meter can claim is relative comparison within one room and one device — not a certified measurement, and not evidence for acoustics standards, hearing-conservation programs or any compliance file. Those need a calibrated Class 1 or Class 2 <a class="underline underline-offset-4" href="/sound-level-meter/">sound level meter</a> with a documented procedure, as explained in <a class="underline underline-offset-4" href="/accuracy/">browser measurement accuracy</a>.</p>
+    <p class="mt-2">If you use the same device in the same room repeatedly, a one-point <a class="underline underline-offset-4" href="/calibration/">calibration offset</a> against a known reference makes its numbers steadier — but the offset belongs to that microphone and setup only.</p>
+
+    <h2 class="text-white font-semibold mt-6">FAQ</h2>
+    <h3 class="mt-3 font-semibold">Is a phone decibel meter accurate enough for a classroom?</h3>
+    <p class="mt-2">For relative questions — is this activity louder than that one, did the new seating help — yes, if you keep position and settings fixed and average over time. For absolute claims about a school's loudness, no: use professional hardware.</p>
+    <h3 class="mt-3 font-semibold">Where should I put the device?</h3>
+    <p class="mt-2">At student-ear height in the middle of the seating area, away from vents, projectors and the teacher's desk, with the microphone hole uncovered. Note the spot so every future run matches.</p>
+    <h3 class="mt-3 font-semibold">How long should a classroom measurement run?</h3>
+    <p class="mt-2">At least 30–60 seconds for a snapshot. For a whole-lesson picture, leave it running and read Leq with minimum and maximum; the full 45-minute spread tells you more than any ten-second glance.</p>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Open the online decibel meter →</a> · <a class="underline underline-offset-4" href="/decibel-chart/">Decibel comparison chart →</a> · <a class="underline underline-offset-4" href="/noise-exposure/">Noise exposure basics →</a></p>
+  </Article>
+</Layout>
