@@ -15,7 +15,7 @@ interface Props {
 const { answer, facts = [], answerId = 'short-answer', factsId = 'key-facts' } = Astro.props;
 ---
 
-<section class="panel p-5" data-aeo="short-answer" aria-label="Short answer" style="border-left:3px solid #3B82F6">
+<section class="panel p-5" data-aeo="short-answer" aria-label="Short answer" style="border-left:3px solid #5E6AD2">
   <p id={answerId} class="text-[15px] leading-7" style="max-width:75ch">
     <strong>Short answer: </strong>{answer}
   </p>

@@ -65,9 +65,9 @@ const featureCopy = getFeatures(locale);
       <svg id="rdm-gauge" viewBox="0 0 320 196" role="img" aria-label={dict.ui.gauge}>
         <defs>
           <linearGradient id="rdm-arc-grad" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#22D3EE" />
-            <stop offset="0.5" stop-color="#3B82F6" />
-            <stop offset="1" stop-color="#8B5CF6" />
+            <stop offset="0" stop-color="#5E6AD2" />
+            <stop offset="0.5" stop-color="#828FFF" />
+            <stop offset="1" stop-color="#27A644" />
           </linearGradient>
         </defs>
         <path d="M 24 172 A 136 136 0 0 1 296 172" fill="none" stroke="currentColor" opacity="0.14" stroke-width="14" stroke-linecap="round" />
@@ -159,13 +159,13 @@ const featureCopy = getFeatures(locale);
         <svg id="rdm-graph" viewBox="0 0 600 160" class="w-full" style="height:160px;display:block" role="img" aria-label={dict.graphLabel} preserveAspectRatio="none">
           <defs>
             <linearGradient id="rdm-edge" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stop-color="#22D3EE" />
-              <stop offset="0.5" stop-color="#3B82F6" />
-              <stop offset="1" stop-color="#8B5CF6" />
+              <stop offset="0" stop-color="#5E6AD2" />
+              <stop offset="0.5" stop-color="#828FFF" />
+              <stop offset="1" stop-color="#27A644" />
             </linearGradient>
             <linearGradient id="rdm-area" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#3B82F6" stop-opacity="0.24" />
-              <stop offset="1" stop-color="#8B5CF6" stop-opacity="0" />
+              <stop offset="0" stop-color="#5E6AD2" stop-opacity="0.22" />
+              <stop offset="1" stop-color="#5E6AD2" stop-opacity="0" />
             </linearGradient>
           </defs>
           <g id="rdm-grid" stroke="currentColor" opacity="0.12">
@@ -175,7 +175,7 @@ const featureCopy = getFeatures(locale);
           <g id="rdm-gap-markers"></g>
           <path id="rdm-path" d="" fill="none" stroke="url(#rdm-edge)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
           <line id="rdm-crosshair" x1="0" x2="0" y1="0" y2="160" stroke="currentColor" opacity="0" stroke-dasharray="3 3" />
-          <circle id="rdm-endpoint" cx="0" cy="0" r="4" fill="#3B82F6" stroke="var(--surface)" stroke-width="2" opacity="0" />
+          <circle id="rdm-endpoint" cx="0" cy="0" r="4" fill="#828FFF" stroke="var(--surface)" stroke-width="2" opacity="0" />
         </svg>
         <div id="rdm-tooltip" class="graph-tooltip" role="status" hidden></div>
         <p id="rdm-graph-empty" class="text-xs px-2 py-1" style="color:var(--muted)">{dict.graphEmpty}</p>
@@ -778,7 +778,7 @@ const featureCopy = getFeatures(locale);
     els.panel.dataset.state = st;
     els.panel.setAttribute('data-live', st === 'running' && s.stats.current != null ? 'true' : 'false');
     els.stateText.textContent = STATUS()[st] ?? st;
-    els.stateDot.style.background = st === 'running' ? '#22D3EE' : st === 'error' ? '#f87171' : st === 'paused' ? '#fbbf24' : 'var(--muted)';
+    els.stateDot.style.background = st === 'running' ? '#27A644' : st === 'error' ? '#ef4444' : st === 'paused' ? '#f59e0b' : 'var(--muted)';
     const permMap = PERM();
     els.permText.textContent = permMap[s.permission] ?? s.permission;
     els.calBadge.textContent = s.calibrationValid && s.activeProfile
