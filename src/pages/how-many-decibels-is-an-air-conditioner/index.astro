@@ -1,0 +1,101 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'How Many Decibels Is an Air Conditioner? (Indoor Comfort vs Outdoor Nuisance)';
+const description = 'Air conditioners range from ~19 dBA for quiet mini-splits to ~70 dBA for outdoor condensers. Real ranges by unit type, why inverter units hum instead of clunk, and how to check noise at your property line.';
+const url = `${SITE}/how-many-decibels-is-an-air-conditioner/`;
+
+const faq = [
+  {
+    q: 'How many decibels is a typical air conditioner indoors?',
+    a: 'Modern mini-split and ducted systems idle around 19–32 dBA indoors, window units run 45–58 dBA, and portable single-hose units land near 50–58 dBA because the compressor sits in the room with you.',
+  },
+  {
+    q: 'How loud is the outdoor condenser unit?',
+    a: 'Plan for roughly 48–70 dBA at one metre depending on size, age and load. That is the number your neighbours hear at night, and where local noise ordinances commonly apply nighttime limits in the 45–50 dBA range at the property line.',
+  },
+  {
+    q: 'What is a good dB rating for a bedroom air conditioner?',
+    a: 'Aim for an indoor level you can sleep to without noticing: as a reference point, WHO-style bedroom guidance sits near 30 dBA averaged overnight. Most quiet-inverter splits meet that on low fan from a couple of metres; window units rarely do.',
+  },
+  {
+    q: 'Do inverter air conditioners actually run quieter?',
+    a: 'Yes, on average. They vary compressor speed instead of switching fully on and off, so they avoid the start-surge clunk each cycle and can loaf at a low, steady level that reads several decibels below a fixed-speed unit\'s cycling average.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-11-05', speakableSelectors: ['#short-answer', '#key-facts', '#numbers-by-unit'] }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Air conditioner dB', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/how-many-decibels-is-an-air-conditioner/" ogType="article" jsonLd={jsonLd}>
+  <Article
+    title={title}
+    intro="An air conditioner makes two different noise questions: how loud is the unit in the room you are trying to sleep in, and how loud is the box shaking someone's fence line at 2 a.m. Both deserve their own numbers — here they are."
+    reviewed="2026-11-05"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Air conditioner dB', href: '/how-many-decibels-is-an-air-conditioner/' }]}
+    shortAnswer="Indoors, modern mini-splits idle around 19–32 dBA, window units run 45–58 dBA, and portables sit near 50–58 dBA because their compressor is in the room. The outdoor condenser runs roughly 48–70 dBA at one metre — the figure that matters to neighbours at night, when many local ordinances expect around 45–50 dBA at the property line. Bedroom comfort target: 30 dBA or lower averaged overnight, a level quiet inverter splits meet on low fan."
+    keyFacts={[
+      'Indoor: mini-split 19–32 dBA, window 45–58 dBA, portable 50–58 dBA (compressor indoors).',
+      'Outdoor condenser: 48–70 dBA at 1 m; night-time property-line expectations commonly ~45–50 dBA.',
+      'Inverter/variable-speed units avoid on-off surges: quieter average, no start-cycle clunk.',
+      'Fan speed settings add roughly 2–6 dBA per step; sleep mode typically trims 3–5 dBA.',
+    ]}
+  >
+    <h2 id="numbers-by-unit" class="text-white font-semibold">The numbers by unit type</h2>
+    <p class="mt-2">There is no single "air conditioner" sound. Mixing categories is how spec comparisons mislead, so anchor to the split below:</p>
+    <table><caption class="sr-only">Typical air conditioner noise by unit type and location</caption><thead><tr><th>Unit</th><th>Indoor level</th><th>Outdoor level (at ~1 m)</th><th>Notes</th></tr></thead><tbody>
+      <tr><td>Mini-split / ductless</td><td><strong>19–32 dBA</strong></td><td>45–55 dBA</td><td>The quiet king indoors; compressor noise lives outside entirely</td></tr>
+      <tr><td>Ducted central (indoor air handler)</td><td>35–55 dBA</td><td>55–70 dBA</td><td>Depends on blower type and duct quality; register noise adds regenerated hiss</td></tr>
+      <tr><td>Window unit</td><td>45–58 dBA</td><td>~same side, similar</td><td>Compressor shares the room with you — inherent penalty</td></tr>
+      <tr><td>Portable (single/double hose)</td><td>50–58 dBA</td><td>Exhaust only, minor</td><td>Loudest indoor category for equivalent cooling</td></tr>
+      <tr><td>Swamp/evaporative cooler</td><td>50–60 dBA</td><td>~similar</td><td>Fan-dominant; character is airflow rush rather than hum</td></tr>
+    </tbody></table>
+    <p class="mt-2">Two patterns matter more than any number. First, <strong>where the compressor sits</strong> decides most of the indoor story — that is why the same cooling power reads 20 dBA apart between a split indoor head and a portable box beside your bed. Second, <strong>fan steps and sleep modes</strong> work: stepping from high to low fan typically saves 4–6 dBA, and sleep mode's temperature glide plus slow fan compound with that.</p>
+
+    <h2 class="text-white font-semibold mt-6">Question one: is your bedroom comfortable?</h2>
+    <p class="mt-2">Comfort has known targets. Environmental-health guidance treats roughly <strong>30 dBA indoors overnight</strong> as the reference for undisturbed sleep, and nursery logic (see our <a class="underline underline-offset-4" href="/safe-noise-level-baby-sleep/">baby sleep dB guide</a>) narrows it further. Put a modern inverter split on low fan two metres from the head of the bed — it clears that bar. Drop a window unit into the same room — it may sleep faster than traffic noise, but at 45+ dBA it is the loudest thing in the room, and tonal hum matters more than level alone:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Tonal penalty:</strong> a steady 120 Hz transformer-style hum with harmonics adheres to walls and reads more annoying than broadband rattle of the same dBA. A meter number can under-report what you tolerate.</li>
+      <li><strong>The on/off cycle</strong> is the real sleep-killer: each fixed-speed compressor start adds a surge several dB above the steady value. Inverter technology's whole comfort advantage is a flatter profile.</li>
+      <li><strong>Duct toning:</strong> in central systems, registers whistling under high static pressure can out-noise the air handler. A badly sized or crushed flex run raises the room level by several dB with the condenser perfectly healthy.</li>
+    </ul>
+    <p class="mt-2">Check your own room the honest way — with the unit <em>at the setting you sleep on</em>: set the <a class="underline underline-offset-4" href="/#measure">meter</a> to dBA/Slow, place the phone at pillow height, and read the Leq over a full settling-down period. Then switch the unit off and measure again. The gap between the two averages is the AC's true contribution to your night, which is exactly the method our <a class="underline underline-offset-4" href="/background-noise-test/">background noise test</a> formalises.</p>
+
+    <h2 class="text-white font-semibold mt-6">Question two: is your condenser fair to the neighbourhood?</h2>
+    <p class="mt-2">Outdoor units carry the regulatory weight. Many residential noise ordinances define night-time expectations near <strong>45–50 dBA at the property line</strong> or at the neighbour's facade. Where your condenser stands decides whether a perfectly legal install becomes a dispute:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Level falls ~6 dB per doubling of distance</strong> in free field; a fence, wall or hedge helps a few dBA more by breaking the line of sight, especially for the mid-to-high fan whoosh.</li>
+      <li><strong>Wall and corner placement magnifies:</strong> mounting within 30 cm of a wall reflects energy; ideal is 60+ cm clearance for both airflow and acoustics.</li>
+      <li><strong>Age and neglect show outside:</strong> a failing fan bearing, loose panel or debris-slammed coil adds several dB and a signature rattle — these are the faults most complaints actually describe.</li>
+      <li><strong>Night cycling is what neighbours track.</strong> A fixed-speed kicking on/off at 2 a.m. reads worse than an inverter loafing continuously at similar averages — one event is more memorable than an average.</li>
+    </ul>
+    <p class="mt-2">Measure the property-line case as the neighbours would hear it: outdoor evening, phone wherever the declared impact lands (fence line, their window), dBA, Slow, a settling 30-second average — and always both with the unit running and off, as the full <a class="underline underline-offset-4" href="/noise-limits/">limits framework</a> reminds: it is the difference between the two that identifies the source.</p>
+
+    <h2 class="text-white font-semibold mt-6">Sizing, and the myth of "bigger is louder"</h2>
+    <p class="mt-2">Cooling capacity (BTU) does not raise noise; matching does. An oversized unit reaches setpoint fast, shuts down, and cycles — on/off surges all night — while a correctly sized inverter runs long, slow and quiet. An undersized unit, meanwhile, lives at full blast. The quietest "big" ACs on the market are among the quietest machines in the house precisely because they spend most of their night at partial speed.</p>
+
+    <h2 class="text-white font-semibold mt-6">Air conditioner FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Measure your AC now →</a> · <a class="underline underline-offset-4" href="/background-noise-test/">Room background-noise test →</a> · <a class="underline underline-offset-4" href="/safe-noise-level-baby-sleep/">Nursery sleep dB guide →</a> · <a class="underline underline-offset-4" href="/how-many-decibels-is-a-refrigerator/">Refrigerator dB guide →</a></p>
+  </Article>
+</Layout>

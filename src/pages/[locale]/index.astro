@@ -149,17 +149,45 @@ const jsonLd = [
 ---
 
 <Layout locale={locale} dict={dict} title={dict.metaTitle} description={dict.metaDescription} path={`${prefix}/`} jsonLd={jsonLd}>
-  <div style="position:relative;overflow:hidden">
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="container-x pt-8 md:pt-12 pb-4" style="max-width:1120px">
-      <p class="eyebrow anim-rise" style="--d:0ms">{dict.heroEyebrow}</p>
-      <h1 class="font-semibold tracking-tight mt-2 anim-rise" style="--d:60ms;font-size:clamp(32px,6vw,52px);line-height:1.05;letter-spacing:-0.03em">{dict.heroH1}</h1>
-      <p class="mt-3 text-[16px] leading-6 anim-rise" style="--d:120ms;color:var(--muted);max-width:56ch">{dict.heroSub}</p>
-      <p class="mt-2 text-[15px] leading-6 anim-rise" style="--d:150ms;color:var(--muted);max-width:60ch">{copy.intro}</p>
-      <div class="mt-4 flex flex-wrap gap-2 anim-rise" style="--d:180ms">
-        <a href="#measure" class="btn-primary focus-ring">{dict.startMeasuring}</a>
-        <a href={accuracyHref} class="btn-secondary focus-ring">{dict.howAccuracy}</a>
+  <div class="home-hero">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-a" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-b" aria-hidden="true"></div>
+    <svg class="hero-wave" viewBox="0 0 1120 100" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 55 C80 55 92 31 156 31 S248 74 316 56 402 36 468 53 552 78 620 48 704 25 782 55 862 72 930 45 1008 52 1086 63 1120 48 1120 48" />
+    </svg>
+    <div class="container-x hero-copy">
+      <!-- Linear Release Announcement Pill -->
+      <a href="#measure" class="hero-pill anim-rise" style="--d:20ms">
+        <span class="w-2 h-2 rounded-full bg-[#5e6ad2] animate-pulse"></span>
+        <span class="font-mono text-[11px] text-[#828fff] tracking-wider uppercase font-semibold">Linear Acoustics</span>
+        <span class="text-[#8a8f98]">·</span>
+        <span>{dict.heroEyebrow}</span>
+        <span class="text-[#828fff] ml-0.5">→</span>
+      </a>
+
+      <h1 class="hero-title mt-2 anim-rise" style="--d:80ms">
+        <span>{dict.heroH1}</span>
+      </h1>
+      <p class="hero-sub anim-rise" style="--d:170ms">
+        {copy.intro || dict.heroSub}
+      </p>
+      <div class="hero-actions anim-rise" style="--d:230ms">
+        <a href="#measure" class="btn-primary focus-ring grad-edge px-6 py-3.5 text-[15px] shadow-[0_0_32px_-4px_rgba(94,106,210,0.65)]">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>{dict.startMeasuring}</span>
+        </a>
+        <a href={accuracyHref} class="btn-secondary focus-ring px-5 py-3.5 text-[15px]">
+          <span>{dict.howAccuracy}</span>
+          <span class="font-mono text-[11px] px-1.5 py-0.5 rounded bg-[#141516] border border-[#23252a] text-[#8a8f98]">DSP</span>
+        </a>
       </div>
+      <ul class="trust-row anim-rise" style="--d:290ms" aria-label="Privacy and compatibility">
+        <li>Audio processed locally</li>
+        <li>48 kHz Web Audio API</li>
+        <li>No account required</li>
+        <li>Zero audio upload</li>
+      </ul>
     </div>
   </div>
 
@@ -173,56 +201,108 @@ const jsonLd = [
     <SoundLevelGuide locale={locale} />
   </div>
 
-  <div class="container-x py-8 grid gap-4" style="max-width:1120px">
-    <section class="panel p-6" data-reveal aria-labelledby="how">
-      <h2 id="how" class="text-xl font-semibold tracking-tight">{copy.howT}</h2>
-      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{copy.howB}</p>
-    </section>
+  <!-- Linear Bento Grid: Engineering Specification & Acoustic Standards -->
+  <div class="container-x py-12" style="max-width:1120px">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section class="panel p-6 lg:col-span-2 relative overflow-hidden" data-reveal aria-labelledby="how">
+        <div class="flex items-center gap-2 text-xs font-mono text-[#828fff] mb-2 uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-[#5e6ad2]"></span>
+          <span>Signal Pipeline</span>
+        </div>
+        <h2 id="how" class="text-xl font-semibold tracking-tight text-white">{copy.howT}</h2>
+        <p class="text-[15px] leading-7 mt-2 text-[#d0d6e0]">{copy.howB}</p>
+        <div class="mt-4 pt-4 border-t border-[#23252a] flex flex-wrap items-center gap-2 text-xs font-mono text-[#8a8f98]">
+          <span class="px-2 py-1 rounded bg-[#141516] border border-[#23252a]">Mic PCM</span>
+          <span>→</span>
+          <span class="px-2 py-1 rounded bg-[#141516] border border-[#23252a]">48 kHz RMS</span>
+          <span>→</span>
+          <span class="px-2 py-1 rounded bg-[#141516] border border-[#23252a] text-[#828fff]">A/C/Z Filter</span>
+          <span>→</span>
+          <span class="px-2 py-1 rounded bg-[#141516] border border-[#23252a]">Fast/Slow (125ms)</span>
+          <span>→</span>
+          <span class="px-2 py-1 rounded bg-[#141516] border border-[#23252a] text-[#27a644]">Leq Averaging</span>
+        </div>
+      </section>
 
-    <section class="panel p-6" data-reveal aria-labelledby="cal">
-      <h2 id="cal" class="text-xl font-semibold tracking-tight">{copy.calT}</h2>
-      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{copy.calB}</p>
-    </section>
+      <section class="panel p-6 relative overflow-hidden" data-reveal aria-labelledby="cal">
+        <div class="flex items-center gap-2 text-xs font-mono text-[#828fff] mb-2 uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-[#828fff]"></span>
+          <span>Calibration</span>
+        </div>
+        <h2 id="cal" class="text-xl font-semibold tracking-tight text-white">{copy.calT}</h2>
+        <p class="text-[14px] leading-6 mt-2 text-[#8a8f98]">{copy.calB}</p>
+      </section>
 
-    <section class="panel p-6" data-reveal aria-labelledby="acc">
-      <h2 id="acc" class="text-xl font-semibold tracking-tight">{copy.accT}</h2>
-      <p class="text-[15px] leading-7 mt-2" style="color:var(--muted);max-width:70ch">{dict.accBody}</p>
-    </section>
+      <section class="panel p-6 lg:col-span-3 relative overflow-hidden" data-reveal aria-labelledby="acc">
+        <div class="flex items-center gap-2 text-xs font-mono text-[#828fff] mb-2 uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-[#5e6ad2]"></span>
+          <span>Acoustic Standards</span>
+        </div>
+        <h2 id="acc" class="text-xl font-semibold tracking-tight text-white">{copy.accT}</h2>
+        <p class="text-[14px] leading-6 mt-2 text-[#8a8f98]">{dict.accBody}</p>
+      </section>
+    </div>
 
-    <section class="panel p-6" data-reveal aria-labelledby="steps">
-      <h2 id="steps" class="text-xl font-semibold tracking-tight">{dict.stepsTitle}</h2>
-      <ol class="mt-4 grid gap-4 md:grid-cols-3">
-        <li class="panel-raised p-4"><p class="font-mono text-xs" style="color:var(--muted)">01</p><h3 class="font-semibold mt-1">{dict.step1t}</h3><p class="text-sm mt-1" style="color:var(--muted)">{dict.step1d}</p></li>
-        <li class="panel-raised p-4"><p class="font-mono text-xs" style="color:var(--muted)">02</p><h3 class="font-semibold mt-1">{dict.step2t}</h3><p class="text-sm mt-1" style="color:var(--muted)">{dict.step2d}</p></li>
-        <li class="panel-raised p-4"><p class="font-mono text-xs" style="color:var(--muted)">03</p><h3 class="font-semibold mt-1">{dict.step3t}</h3><p class="text-sm mt-1" style="color:var(--muted)">{dict.step3d}</p></li>
+    <!-- Quick Start Steps -->
+    <section class="panel p-6 mt-4" data-reveal aria-labelledby="steps">
+      <p class="eyebrow">QUICK START</p>
+      <h2 id="steps" class="text-xl font-semibold tracking-tight text-white mt-1">{dict.stepsTitle}</h2>
+      <ol class="mt-4 grid gap-3 md:grid-cols-3">
+        <li class="panel-raised p-4 border border-[#23252a] hover:border-[#34343a] transition-all">
+          <p class="font-mono text-xs text-[#828fff] font-semibold">01 / PERMISSION</p>
+          <h3 class="font-semibold text-white mt-1.5">{dict.step1t}</h3>
+          <p class="text-sm mt-1 text-[#8a8f98]">{dict.step1d}</p>
+        </li>
+        <li class="panel-raised p-4 border border-[#23252a] hover:border-[#34343a] transition-all">
+          <p class="font-mono text-xs text-[#828fff] font-semibold">02 / LIVE METRICS</p>
+          <h3 class="font-semibold text-white mt-1.5">{dict.step2t}</h3>
+          <p class="text-sm mt-1 text-[#8a8f98]">{dict.step2d}</p>
+        </li>
+        <li class="panel-raised p-4 border border-[#23252a] hover:border-[#34343a] transition-all">
+          <p class="font-mono text-xs text-[#828fff] font-semibold">03 / CALIBRATE</p>
+          <h3 class="font-semibold text-white mt-1.5">{dict.step3t}</h3>
+          <p class="text-sm mt-1 text-[#8a8f98]">{dict.step3d}</p>
+        </li>
       </ol>
     </section>
 
-    <section class="panel p-6" data-reveal aria-labelledby="faq">
-      <h2 id="faq" class="text-xl font-semibold tracking-tight">{dict.faqTitle}</h2>
+    <!-- FAQ -->
+    <section class="panel p-6 mt-4" data-reveal aria-labelledby="faq">
+      <p class="eyebrow">QUESTIONS & ANSWERS</p>
+      <h2 id="faq" class="text-xl font-semibold tracking-tight text-white mt-1">{dict.faqTitle}</h2>
       <div class="mt-3 grid gap-2">
         {dict.faq.map((f) => (
-          <details class="panel-raised px-4" style="border-radius:10px">
-            <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
-            <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+          <details class="panel-raised px-4 py-1 border border-[#23252a] rounded-lg hover:border-[#34343a] transition-all">
+            <summary class="cursor-pointer focus-ring font-medium text-[15px] text-[#f7f8f8]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+            <p class="text-sm pb-4 text-[#8a8f98] leading-relaxed">{f.a}</p>
           </details>
         ))}
       </div>
     </section>
 
-    <section class="panel p-6" data-reveal aria-labelledby="guides">
-      <h2 id="guides" class="text-xl font-semibold tracking-tight">{dict.guidesTitle}</h2>
-      <div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {copy.guides.map((g) => (
-          <a href={g.href} class="panel lift p-4 focus-ring block hover:opacity-90">
-            <h3 class="font-semibold text-[15px]">{g.t}</h3>
-            <p class="text-sm mt-1" style="color:var(--muted)">{g.d}</p>
+    <!-- Guides -->
+    <section data-reveal aria-labelledby="guides" class="mt-8">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="eyebrow">KNOWLEDGE BASE</p>
+          <h2 id="guides" class="text-2xl font-semibold tracking-tight text-white mt-1">{dict.guidesTitle}</h2>
+        </div>
+      </div>
+      <div class="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+        {copy.guides.map((g, i) => (
+          <a href={g.href} class="panel lift p-5 focus-ring block group relative overflow-hidden border border-[#23252a] bg-[#0f1011] hover:border-[#5e6ad2]/50 hover:bg-[#141516] transition-all">
+            <div class="flex items-center justify-between text-xs font-mono text-[#8a8f98] mb-2.5">
+              <span>0{i + 1 < 10 ? `0${i+1}` : i + 1}</span>
+              <span class="text-[#828fff] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all">→</span>
+            </div>
+            <h3 class="font-semibold text-[15px] text-[#f7f8f8] group-hover:text-white transition-colors">{g.t}</h3>
+            <p class="text-sm mt-1.5 text-[#8a8f98] line-clamp-2 leading-relaxed">{g.d}</p>
           </a>
         ))}
       </div>
       {!hasGuideSubpages && guidesMoreLabel[locale] && (
-        <p class="mt-3 text-sm" style="color:var(--muted)">
-          <a class="underline underline-offset-4 focus-ring" href="/guides/" hreflang="en">{guidesMoreLabel[locale]}</a>
+        <p class="mt-4 text-sm text-[#8a8f98]">
+          <a class="underline underline-offset-4 focus-ring text-[#828fff]" href="/guides/" hreflang="en">{guidesMoreLabel[locale]}</a>
         </p>
       )}
     </section>

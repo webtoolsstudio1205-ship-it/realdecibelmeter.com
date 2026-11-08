@@ -1,0 +1,113 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'How Many Decibels Is a PC Fan? (Idle vs Load, and Why RPM Rules Everything)';
+const description = 'PC fans measure from ~19 dBA idle to 45+ dBA under full load. Fan-law physics (why +1000 RPM costs ~15 dB), per-component table, and the quiet PC tuning checklist that actually works.';
+const url = `${SITE}/how-many-decibels-is-a-pc-fan/`;
+
+const faq = [
+  {
+    q: 'How many decibels is a PC fan?',
+    a: 'One 120 mm case fan spinning around 1,000 rpm reads near 19–22 dBA a metre away; at 2,000 rpm it climbs to roughly 30–35 dBA. A full desktop idles in the mid-20s dBA and reaches 38–48 dBA under gaming or render load. Laptops under load can exceed 45 dBA right at your face.',
+  },
+  {
+    q: 'Why does fan noise grow so fast with speed?',
+    a: 'Acoustic fan laws say sound power scales roughly with the fifth power of RPM. Doubling the speed therefore adds ~15 dB — not the few dB intuition expects. That is why every "quieter PC" trick ultimately reduces RPM first.',
+  },
+  {
+    q: 'Is liquid cooling quieter than air cooling?',
+    a: 'Not automatically. An AIO moves the radiator into a larger, slower-hearing surface but adds a pump; a good air cooler with the same airflow at lower RPM can be quieter. What reliably buys silence is more surface area running slower — however it is packaged.',
+  },
+  {
+    q: 'What is a normal noise level for a quiet PC build?',
+    a: 'A tuned, quiet desktop idles below ~28 dBA at your seated position — often under the room\'s own background noise. Most stock builds idle around 30–35 dBA and spike above the 40s on load.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-11-05', speakableSelectors: ['#short-answer', '#key-facts', '#physics-fifth-power'] }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'PC fan dB', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/how-many-decibels-is-a-pc-fan/" ogType="article" jsonLd={jsonLd}>
+  <Article
+    title={title}
+    intro="PC cooling is the only consumer-noise topic governed by a physical law that humbles every shopping list: fan noise grows with roughly the fifth power of fan speed. Here's the level you should expect from every part, and the tuning order that quiets a machine for free."
+    reviewed="2026-11-05"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'PC fan dB', href: '/how-many-decibels-is-a-pc-fan/' }]}
+    shortAnswer="A single 120 mm case fan reads ~19–22 dBA at about 1,000 rpm, ~30–35 dBA at 2,000 rpm, and 40+ dBA at 3,000 rpm — fan noise scales near the fifth power of RPM, so doubling speed adds ~15 dB. A tuned desktop idles in the mid-20s dBA at your desk and hits 38–48 dBA under load; laptops push past 45 dBA right at your face. The quiet-PC priority order is clear: reduce RPM (bigger fans, better curve), then add damping, then accept that spec-sheet dBA never matches your room."
+    keyFacts={[
+      'Acoustic fan law: noise scales ≈ RPM⁵ → doubling speed adds ~15 dB, not 3.',
+      'One case fan: ~19–22 dBA (≈1k rpm) → 30–35 dBA (2k rpm) → 40+ dBA (3k rpm).',
+      'Whole desktop: mid-20s idle → 38–48 dBA gaming/render; laptops 45–52 under load at 25 cm.',
+      'Larger-slower wins: a 140 mm at the same airflow beats a 120 mm by ~3–5 dBA.',
+    ]}
+  >
+    <h2 id="physics-fifth-power" class="text-white font-semibold">The physics you should bet on: the fifth-power law</h2>
+    <p class="mt-2">Fan noise is dominated by the swirl off each blade tip, and acoustic theory ties its power to roughly the fifth power of rotational speed (rpm). The practical translation is blunter than most people expect: <strong>every doubling of fan speed adds about 15 dB</strong>. Stack that against the 6-dB-per-doubling distance rule people half-remember, and the shopping list rewrites itself:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li>A fan at 900 rpm is nearly inaudible; the <em>same</em> fan at 2,700 rpm is a jet. A premium "silent" model mostly lowers its top-speed flood a few dB — the real win is simply <em>not reaching</em> 2,000+ rpm.</li>
+      <li><strong>Larger fans at lower speed</strong> beat smaller fans at higher speed for the same airflow — one 140 mm at 900 rpm replaces a 120 mm at 1,400 rpm and banks 4–5 dB directly.</li>
+      <li><strong>Heat is the budget.</strong> Total cooling demand sets the fan speed floor. Undervolting a GPU, cleaning dust, remounting a cooler and tightening the airflow path all cut the <em>required</em> speed — and through the fifth-power law, a 20% speed cut buys roughly 4 dB of silence.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Level by component and state</h2>
+    <table><caption class="sr-only">Typical PC noise contributions by component and load state</caption><thead><tr><th>Source</th><th>Typical level (≈0.5–1 m)</th><th>Notes</th></tr></thead><tbody>
+      <tr><td>One 120 mm case fan, ~1,000 rpm</td><td>19–22 dBA</td><td>Below room noise in most homes — effectively free</td></tr>
+      <tr><td>One 120 mm fan, ~2,000 rpm</td><td>~30–35 dBA</td><td>An audibly "working" fan; still polite</td></tr>
+      <tr><td>One fan, ~3,000+ rpm</td><td>40–45+ dBA</td><td>Complaint territory in shared rooms; loud-hair-dryer territory by 3,500+ rpm</td></tr>
+      <tr><td>GPU under gaming load</td><td>35–45 dBA</td><td>The loudest voice in almost every gaming build</td></tr>
+      <tr><td>AIO pump + radiator fans</td><td>pump ~20–30; fans as above</td><td>Pump hums constantly, never rests; a pump click = trapped air</td></tr>
+      <tr><td>Whole desktop idling</td><td>25–35 dBA</td><td>Depends entirely on the fan curve</td></tr>
+      <tr><td>Whole desktop rendering/game peak</td><td>38–48 dBA</td><td>Fans + VRM/PSU; starts to mask speech</td></tr>
+      <tr><td>Laptop under load</td><td>45–52 dBA at ~25 cm</td><td>Small chassis, high-rpm tiny fans centimetres from your face</td></tr>
+      <tr><td>Non-fan culprits</td><td>various</td><td>Coil whine, HDD chirps, clicking PSU fans — see below</td></tr>
+    </tbody></table>
+    <p class="mt-2">A teaching aside: two fans at the same speed do <strong>not</strong> make one fan's noise twice as loud in dB — equal doubling adds ~3 dB (six adds ~7.8 dB). So a six-fan wall at 30 dBA reads ~38 dBA, not 60. This is the summing rule behind why case-fan count matters less than per-fan speed.</p>
+
+    <h2 class="text-white font-semibold mt-6">How to measure your PC honestly</h2>
+    <p class="mt-2">The spec-sheet figure ("22 dBA!") is a single fan, full voltage, held at a metre in a dead room. Your machine is a <em>bundle</em> under <em>duty</em> in a <em>live room</em>, which is everything spec sheets quietly ignore. Measure the way our <a class="underline underline-offset-4" href="/background-noise-test/">background-noise test</a> prescribes:</p>
+    <ol class="list-decimal pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Idle:</strong> phone at seated head height, meter on dBA/Slow, Leq over a settled 60 seconds with the machine doing nothing. Note it.</li>
+      <li><strong>Load:</strong> start a render, compile, or benchmark that pushes fans to maximum; run the same position for the same 60 s. Record.</li>
+      <li><strong>The gap is your machine's "personality graph"</strong> — a 12 dB gap means curve tuning will transform the experience; a 25 dB gap means stock curve maps are simply too timid.</li>
+      <li>Finally measure from where a webcam or a call mic sits: the number that matters in meetings is the one your <a class="underline underline-offset-4" href="/microphone-noise-floor-test/">microphone's own noise floor</a> has to swallow — a loud PC raises your mic gain, hiss and how you're heard.</li>
+    </ol>
+    <p class="mt-2">Watch the spectrum not just the number: our <a class="underline underline-offset-4" href="/frequency-analyzer/">frequency analyzer</a> distinguishes a broad "air rush" (the acceptable fan signature) from a narrow tonal whine (bearing or motor resonance) and the electrical-family click-cluster that points away from fans entirely.</p>
+
+    <h2 class="text-white font-semibold mt-6">Quieting checklist, in priority order</h2>
+    <ol class="list-decimal pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Rewrite the fan curve</strong> in the BIOS or a fan controller: hold every fan near its minimum speed until temperatures actually call for it (GPU board temperature as the trigger for case inlets is a common, effective scheme; CPU curves starting steeper only above ~40–45 °C match real workloads). Flat-and-slow beats steep-and-loud for idle broadband noise.</li>
+      <li><strong>Undervolt the GPU/components:</strong> a −0.05–0.1 V memory/core shave usually costs negligible performance but directly reduces heat, therefore required fan speed — and through the fifth-power law that's real dB.</li>
+      <li><strong>Clean the heatsinks/air path:</strong> dust fan blades wobbling/recirculating heat costs real airflow and adds a rubbing signature. A 5-minute service can reclaim several dBA.</li>
+      <li><strong>Decouple:</strong> rubber fan mounts (or silicon screws) absorb vibration into the case panels — a humming metal rack resonance is not a dBA rating problem, but your ears will thank you for ≈5 dB of perceived relief.</li>
+      <li><strong>Upgrade surface, not fans:</strong> moving from stock 92 mm fans to twin 140 mm (same airflow at lower speed) is the single genuine physics purchase.</li>
+      <li><strong>Case damping:</strong> foam-lined panels absorb ringing — they do nothing about the noise source, but they take the "boxy" edge off.</li>
+    </ol>
+
+    <h2 class="text-white font-semibold mt-6">What is <em>not</em> a fan</h2>
+    <p class="mt-2">Some of the loudest PC noises have no fan behind them at all, and no level table will diagnose them. <strong>Coil whine</strong> — a thin electrical squeal from power conversion on GPUs or PSUs under heavy load, load-tied and completely unaffected by fan speed — a dB-fleeing annoyance: brief but piercing. A <strong>clicking hard drive</strong> or the <strong>relay clack</strong> of a PSU is far more annoying per event than its dBA suggests. If slowing every fan fails to still the machine, the noise is one of these electrical gremlins, and the fix is a component swap or RMA, not acoustics.</p>
+
+    <h2 class="text-white font-semibold mt-6">PC fan FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Measure your PC now →</a> · <a class="underline underline-offset-4" href="/frequency-analyzer/">See the fan noise spectrum →</a> · <a class="underline underline-offset-4" href="/background-noise-test/">Room background test →</a> · <a class="underline underline-offset-4" href="/microphone-noise-floor-test/">Mic noise floor test →</a></p>
+  </Article>
+</Layout>

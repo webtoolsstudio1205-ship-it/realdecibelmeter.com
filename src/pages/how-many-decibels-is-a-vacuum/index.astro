@@ -1,0 +1,108 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'How Many Decibels Is a Vacuum Cleaner? (By Type, Plus Why Yours Got Louder)';
+const description = 'Vacuum cleaners measure roughly 55–85 dBA depending on type. Real ranges for uprights, stick, robot and shop vacuums, why levels rise over time, and how to measure yours properly.';
+const url = `${SITE}/how-many-decibels-is-a-vacuum/`;
+
+const faq = [
+  {
+    q: 'How many decibels is a normal vacuum cleaner?',
+    a: 'Most household vacuums land between 65 and 80 dBA where you actually hear them while vacuuming. Cordless stick models sit near the low end, corded uprights near the high end, and wet/dry shop vacuums can exceed 80 dBA. Robot vacuums are the quiet category at roughly 55–62 dBA.',
+  },
+  {
+    q: 'Is a vacuum loud enough to damage hearing?',
+    a: 'Short doses are not a concern: the widely used screening boundary is 85 dBA sustained across eight hours, and typical housework adds up to minutes per week, not hours per day. The annoyance is the harsh broadband character, not the dose. Someone running shop-vac equipment for a full work shift is a different situation — that is where dose rules apply.',
+  },
+  {
+    q: 'Why is my vacuum louder than when it was new?',
+    a: 'The usual culprits are a full bag or canister, clogged filters and a brush roll wrapped in hair. Restricted airflow makes the motor work harder and the airflow noise harsher — restoring airflow typically recovers several decibels. A worn bearing develops a new grinding character that cleaning will not fix.',
+  },
+  {
+    q: 'What dBA number is printed on vacuum energy labels?',
+    a: 'European vacuum labels historically showed a sound power level (dB(A) re 1 pW), not the sound pressure you hear in the room. Sound power and sound pressure are related but not interchangeable — expect your own measurement at home to differ from the label figure.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-11-05', speakableSelectors: ['#short-answer', '#key-facts', '#quick-answer'] }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Vacuum cleaner dB', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/how-many-decibels-is-a-vacuum/" ogType="article" jsonLd={jsonLd}>
+  <Article
+    title={title}
+    intro="A vacuum is the appliance your whole house hears — and the exact number depends far more on the style of machine and where you measure than any single spec sheet tells you. Here are the real ranges, what makes a vacuum loud, and the two-minute way to check your own."
+    reviewed="2026-11-05"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Vacuum cleaner dB', href: '/how-many-decibels-is-a-vacuum/' }]}
+    shortAnswer="A typical vacuum cleaner measures about 65–80 dBA where you hear it while cleaning: robot vacuums 55–62 dBA, cordless stick models 65–72 dBA, canisters 68–75 dBA, uprights 71–79 dBA, and wet/dry shop vacuums 75–85 dBA. Levels rise several decibels when a bag or filter clogs, and drop when the machine is quieter-rated. For hearing safety the short cleaning doses are trivially small — 85 dBA sustained across eight hours is the common screening boundary, and nobody vacuums for eight hours."
+    keyFacts={[
+      'Most vacuums: 65–80 dBA in use; robots are the quiet outlier at 55–62 dBA.',
+      'Shop vacs and workshop use push 75–85 dBA — the only vacuum context where dosage rules matter.',
+      'Clogged bag/filter/brush roll typically adds 3–5 dB before any mechanical fault appears.',
+      'Levels fall about 6 dB per doubling of distance in open air — less in furnished rooms.',
+    ]}
+  >
+    <h2 id="quick-answer" class="text-white font-semibold">Quick answer by vacuum type</h2>
+    <table><caption class="sr-only">Typical vacuum cleaner noise levels in use</caption><thead><tr><th>Vacuum type</th><th>Typical level in use</th><th>Context</th></tr></thead><tbody>
+      <tr><td>Robot vacuum</td><td>55–62 dBA</td><td>Runs unattended; air-pump tone dominates, no operator</td></tr>
+      <tr><td>Cordless stick</td><td>65–72 dBA</td><td>MAX mode adds a few dB and halves runtime</td></tr>
+      <tr><td>Canister (corded)</td><td>68–75 dBA</td><td>Turbine-style motors in a sealed body</td></tr>
+      <tr><td>Upright (corded)</td><td>71–79 dBA</td><td>Brush roll + high-power motor at your wrist height</td></tr>
+      <tr><td>Central vacuum (unit in garage/basement)</td><td>~65–70 dBA at the unit; quieter at the hose</td><td>Noise lives with the power unit, not the operator</td></tr>
+      <tr><td>Wet/dry shop vacuum</td><td>75–85 dBA</td><td>Loud by design; bought for suction, not civility</td></tr>
+    </tbody></table>
+    <p class="mt-2">These are ranges for machines running on the floor they were sold for. Pulling an upright bare on hard flooring versus deep carpet changes the character and can add or subtract a couple of decibels — brush rolls load differently against different pile heights.</p>
+
+    <h2 class="text-white font-semibold mt-6">Why a vacuum is that loud</h2>
+    <p class="mt-2">Three noise sources stack on every vacuum, and their proportions explain why models differ so much at the same suction:</p>
+    <ol class="list-decimal pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Motor:</strong> universal-type motors spin at tens of thousands of RPM. The screaming whine is mostly motor mechanical and electromagnetic noise, scaled by RPM — quieter premium models owe their lower rating mainly to better motor mounting and insulation, not weaker motors.</li>
+      <li><strong>Airflow:</strong> turbulence as air is dragged through the hose, P-card filter and exhaust. A clogged filter turns air noise from "rushing" to "straining", which is why a blocked vacuum reads several decibels above its clean self.</li>
+      <li><strong>Brush roll + floor interaction:</strong> the beater bar thumps against carpet texture and ratchets along hard floors. This is the noise a canister vacuum lacks compared with an upright, and part of why robots get away with low ratings — their brush interactions are gentler and farther from the microphone-equivalent ear position.</li>
+    </ol>
+
+    <h2 class="text-white font-semibold mt-6">Where you measure changes the number</h2>
+    <p class="mt-2">Vacuum noise is measured in far more ways than there are labels for, so the honest method beats any certified claim. When you <a class="underline underline-offset-4" href="/#measure">measure with this site</a>, decide which question you're answering first:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>What you experience:</strong> hold the device at chest/head height where you hear the vacuum, meter on Slow, and read the Leq across 30 seconds while it runs on the floor you actually clean.</li>
+      <li><strong>What the house hears:</strong> measure one metre away with the door open — here the ~6 dB-per-doubling-distance rule of open rooms softens the reading, and hyphens matter less than consistent placement run to run.</li>
+      <li><strong>Whether it got louder:</strong> measure before and after a bag-and-filter change on the same floor, same spot. A repeatable drop of 3+ dB confirms the airflow restriction was real, not a mood.</li>
+    </ul>
+    <p class="mt-2">Constant-position repeats (marked tape on the floor) make every one of these numbers meaningful, which is the difference between a measurement you can compare and a number you cannot — the same discipline our <a class="underline underline-offset-4" href="/how-to-use/">how-to-use guide</a> teaches for general measurements.</p>
+
+    <h2 class="text-white font-semibold mt-6">Is vacuum noise risky for hearing?</h2>
+    <p class="mt-2">Run it against the exposure math: 71–79 dBA for a weekly hour of housework is a rounding error in dose terms. The common screening boundary is 85 dBA sustained across eight hours, with allowed time halving for every extra 3 dB — our <a class="underline underline-offset-4" href="/noise-limits/">noise limits page</a> has the full table. The only vacuum scenario with a real dose is occupational: cleaners running shop equipment all day, every day. For home use, the honest answer is that vacuum noise is an <em>annoyance</em> problem, not a hazard problem. Its harsh broadband spectrum adds raggedness beyond what the dBA number suggests, and a running vacuum also masks speech and notification sounds — worth remembering for anyone on calls while someone cleans downstairs.</p>
+    <p class="mt-2">If vacuum timing matters for a napping household member (a running vacuum reads in the 60s dBA through a bedroom door), timing beats technology: schedule robot runs or corded cleaning for waking hours. For the full logic of protecting sleep, see the <a class="underline underline-offset-4" href="/safe-noise-level-baby-sleep/">baby's sleep dB guide</a>.</p>
+
+    <h2 class="text-white font-semibold mt-6">Buying quieter, and labelling traps</h2>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>The label number is sound power, not room sound:</strong> the figure historically printed on vacuum energy labels is an L<sub>WA</sub> (sound power re 1 pW) measured in controlled conditions — not the sound pressure your ears receive in a furnished room. Treat label numbers as a comparison between machines, not as what you will hear.</li>
+      <li><strong>Insulated canisters beat raw-turbine stick vacuums</strong> at the same suction class; motor mounting quality shows up immediately as a lower, kinder whine.</li>
+      <li><strong>Check the mode:</strong> "quiet"/eco modes drop 3–6 dBA — enough to matter for apartment floors and nap schedules.</li>
+      <li><strong>Service beats upgrade:</strong> a clean bag, washed filter and de-furred brush roll recover more decibels than most "quiet" marketing claims save.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Vacuum noise FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Measure your vacuum now →</a> · <a class="underline underline-offset-4" href="/decibel-chart/">Where 70 dBA sits on the chart →</a> · <a class="underline underline-offset-4" href="/how-many-decibels-is-a-hair-dryer/">Hair dryer dB guide →</a> · <a class="underline underline-offset-4" href="/noise-limits/">All safe-level thresholds →</a></p>
+  </Article>
+</Layout>

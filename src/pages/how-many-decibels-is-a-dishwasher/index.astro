@@ -1,0 +1,106 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'How Many Decibels Is a Dishwasher? (By Cycle Phase, Not Just the Label)';
+const description = 'Dishwashers claim 38–50 dBA, but they make that number one phase at a time: fill, wash, drain and dry. Per-phase levels, what the box label actually measures, and how to run one at night without waking the house.';
+const url = `${SITE}/how-many-decibels-is-a-dishwasher/`;
+
+const faq = [
+  {
+    q: 'How many decibels is a dishwasher?',
+    a: 'Modern dishwashers run roughly 38–50 dBA across a full cycle, with 42–46 dBA typical of recent mid-premium machines and older models reaching 52–60 dBA. The level is not constant: the drain pump briefly spikes louder than the main wash.',
+  },
+  {
+    q: 'Why does my dishwasher sound louder than its advertised dB number?',
+    a: 'The advertised figure is a sound power (LWA) claimed under ideal test conditions in a controlled room. In a real kitchen — hard reflective surfaces, cabinets, a door loaded with dishes — expect a few dB more. Loading style matters more than any spec difference between two decent models.',
+  },
+  {
+    q: 'What is the loudest part of a wash cycle?',
+    a: 'The drain pump: a short burst around 55–65 dBA that arrives two or three times per cycle. The main wash pump hums near 46–52 dBA continuously, and the dry phase adds a fan or heater-vent hiss worth a couple of dB.',
+  },
+  {
+    q: 'Is 44 dBA quiet for a dishwasher?',
+    a: 'Yes — that sits in the genuinely quiet tier, several decibels below an average conversation, though the brief drain-pump bursts still peak above the headline number. Everything below ~45 dBA qualifies for night-time running in most homes.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-11-05', speakableSelectors: ['#short-answer', '#key-facts', '#cycle-timeline'] }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Dishwasher dB', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/how-many-decibels-is-a-dishwasher/" ogType="article" jsonLd={jsonLd}>
+  <Article
+    title={title}
+    intro="A dishwasher is not one sound but a schedule of them — fill, spray, drain, dry — and the number on the box compresses all of it into a figure nobody can hear. Here is the noise phase by phase, what the label number really is, and the loading and timing tricks that buy you real decibels."
+    reviewed="2026-11-05"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Dishwasher dB', href: '/how-many-decibels-is-a-dishwasher/' }]}
+    shortAnswer="A dishwasher runs about 38–50 dBA depending on era and tier, measured as a cycle average: main wash pump 46–52 dBA, dry phase 44–50 dBA, and brief drain-pump bursts reaching 55–65 dBA. The headline figure printed on machines is a sound power measured in ideal conditions — your hard-surfaced, cabinet-lined kitchen typically adds a few dB. Under ~45 dBA is the night-safe tier; loading style and door-seating can matter more than the model badge."
+    keyFacts={[
+      'Label ranges: premium 38–42 dBA, mid-premium 42–46, basic 47–50, older machines 52–60.',
+      'The drain pump, not the wash pump, is the loudest moment: brief 55–65 dBA bursts.',
+      'Advertised dBA is sound power under ideal conditions; a real kitchen reads a few dB higher.',
+      'Loading plates touching, oversized pans blocking spray arms — mechanical re-runs add noise per wash.',
+    ]}
+  >
+    <h2 id="cycle-timeline" class="text-white font-semibold">The cycle-timeline approach: noise as a schedule</h2>
+    <p class="mt-2">Every other appliance page on this site measures a steady state. A dishwasher cannot have one: it changes programmes faster than any other kitchen machine. The honest frame is a timeline:</p>
+    <table><caption class="sr-only">Dishwasher noise level by cycle phase</caption><thead><tr><th>Cycle phase</th><th>Typical level (≈0.5–1 m)</th><th>What you hear</th></tr></thead><tbody>
+      <tr><td>Filling / pre-rinse</td><td>~38–44 dBA</td><td>Water inflow and gentle valve clicks; the machine's quietest working phase</td></tr>
+      <tr><td>Main wash pump (spray arms)</td><td><strong>46–52 dBA</strong></td><td>The sustained hum most people recognise as "the dishwasher running"</td></tr>
+      <tr><td>Drain pump bursts</td><td><strong>55–65 dBA</strong></td><td>Short gurgling surges, 2–4 per cycle; the moments that startle and the peaks that spike a meter</td></tr>
+      <tr><td>Heat / dry phase</td><td>44–50 dBA</td><td>Fan or vent convection hum; on fan-assisted dryers, a steady whoosh</td></tr>
+      <tr><td>Door open, unloading</td><td>~50–55 dBA</td><td>Residual spray, cutlery and pans knocking — human noise, not pump noise</td></tr>
+    </tbody></table>
+    <p class="mt-2">Same-machine spread across a single programme is therefore 15+ dB peak-to-trough. If you <a class="underline underline-offset-4" href="/#measure">measure with a phone meter</a>, expect the number to swing every couple of minutes — a single one-second glance captures nothing useful. Read the <em>Leq/average</em> across a whole phase instead: set the meter on dBA + Slow beside the machine, log 2–3 minutes of main wash, then separately hover through a drain burst for its own peak.</p>
+
+    <h2 class="text-white font-semibold mt-6">What the number on the box actually is</h2>
+    <p class="mt-2">Dishwashers carry the most quoted dB figure in the kitchen, and the most misunderstood one. The advertised "44 dBA" is a <strong>sound power</strong> level claimed under standardised test conditions — a controlled room, a standard test load, the ECO programme, the machine in factory configuration — before your home's hard-surfaced kitchen stacks three complications on top:</p>
+    <ol class="list-decimal pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Sound power vs sound pressure:</strong> the label's figure describes total acoustic energy radiated; your ears and a phone meter measure pressure at a point. For domestic machines these typically sit within a few dB of each other — close, but never the same figure, and the difference scales with the room.</li>
+      <li><strong>Surface reflection:</strong> tile, granite, steel fronts and lower cabinets reflect several dB back at your microphone position — the same "hard kitchen" bonus of 2–4 dB noted in our refrigerator guide. It is also the drain burst, not the wash hum, that decides whether the kitchen really <em>sounds</em> quiet.</li>
+      <li><strong>Programme matters:</strong> the label quotes the ECO program, which is often one of the more leisurely ones; shorten the cycle with a faster wash and the pump shifts gears audibly. Quick / intensive cycles often land several dB above the label rating.</li>
+    </ol>
+    <p class="mt-2">The honest lesson: a machine's printed number is a <em>ranking</em> to compare against another machine, not a promise for your room.</p>
+
+    <h2 class="text-white font-semibold mt-6">The loading variable nobody spec-sheets</h2>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Plates touching plates rattle all hour.</strong> This is the top cause of "suddenly loud" washes in quiet dishwashers: a single ceramic-on-ceramic tap every few spray sweeps produces rattling chirps above the pump hum.</li>
+      <li><strong>Oversized pans block spray arms</strong> and cause re-aiming turbulence — a machine actually <em>consuming</em> noise to push water past a barrier.</li>
+      <li><strong>Cutlery basket chatter</strong> is the classic mid-cycle clatter; mixed-metal baskets make the metallic ping. Pocket knives, whisk wires and loose lids are the usual suspects.</li>
+      <li><strong>Door seating:</strong> a mislatched door or a blocked latch lets panel vibration leak into the kitchen. If the machine suddenly became louder without a model change, check the door and the racks before blaming the pump.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Running a dishwasher at night (or during a baby's nap)</h2>
+    <p class="mt-2">Night-safe threshold facts: sleep guidance places bedroom comfort near <a class="underline underline-offset-4" href="/noise-limits/">30–35 dBA</a>, and a kitchen door closed over a modern quiet-tier machine brings most of its wash through a hallway at 35–45 dBA — the drain bursts land briefly louder. Practical protocol that genuinely works:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Choose delayed-start for the <em>middle</em> of people's deep-sleep hours, not the end.</strong> The drain bursts want to land 1–2+ hours after lights-out, not at the same time as lights-out.</li>
+      <li><strong>Prefer the ECO program overnight:</strong> it is both the label's rated cycle and the milder one acoustically.</li>
+      <li><strong>Measure honestly at the useful spot:</strong> with the door closed, at the hallway doorway, where the sleeper actually lies. The closed door does more damping than any cabinet accessory or insulation pad — and a misseated latch leaks panel vibration worth checking before any plumbing fix.</li>
+      <li>For nursery-specific thresholds and safe placement of white-noise-style masking, see our <a class="underline underline-offset-4" href="/safe-noise-level-baby-sleep/">baby's sleep dB guide</a>; the overall framework of household-safe numbers lives on the <a class="underline underline-offset-4" href="/noise-limits/">noise limits</a> page.</li>
+    </ul>
+    <p class="mt-2">One distinction to close: a dishwasher's noise is <em>punctuated</em> — brief peaks inside a modest average — and not a hearing-safety question at these levels. The annoyance math is scheduling, not dose. For actual exposure limits, the <a class="underline underline-offset-4" href="/noise-limits/">OSHA/NIOSH thresholds</a> page is where a number that genuinely matters belongs.</p>
+
+    <h2 class="text-white font-semibold mt-6">Dishwasher FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Measure your dishwasher now →</a> · <a class="underline underline-offset-4" href="/how-many-decibels-is-a-refrigerator/">Refrigerator dB guide →</a> · <a class="underline underline-offset-4" href="/dbfs-vs-db-spl/">dBFS vs dB SPL scales →</a> · <a class="underline underline-offset-4" href="/decibel-chart/">Everyday dB chart →</a></p>
+  </Article>
+</Layout>

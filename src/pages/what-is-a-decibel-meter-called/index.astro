@@ -1,0 +1,110 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'What Is a Decibel Meter Called? (Sound Level Meter & Other Names)';
+const description = 'A decibel meter is properly called a sound level meter (SLM). See every common name — SPL meter, dB meter, noise meter, dosimeter — and which name is which, with clear distinctions.';
+const url = `${SITE}/what-is-a-decibel-meter-called/`;
+
+const faq = [
+  {
+    q: 'What is a decibel meter called in science?',
+    a: 'In science and standards documents the instrument is called a sound level meter (SLM). Modern professional instruments are built to IEC 61672 and report frequency-weighted sound pressure levels in dBA, dBC or dBZ.',
+  },
+  {
+    q: 'Is an SPL meter the same as a decibel meter?',
+    a: 'Yes. SPL stands for sound pressure level, which is the quantity the meter actually measures before weighting. SPL meter, decibel meter, dB meter and sound level meter all describe the same kind of instrument.',
+  },
+  {
+    q: 'Is a noise dosimeter the same thing?',
+    a: 'No. A dosimeter is a small meter an individual wears all shift to accumulate their personal noise dose. It reports the same dBA units but is a different instrument with a different job.',
+  },
+  {
+    q: 'What do you call the app version?',
+    a: 'Apps are generally called noise meter apps or dB meter apps. A browser tool like this site is best described as an online sound level meter — it estimates dBA/dBC/dBZ from the device microphone with the Web Audio API.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-11-05', speakableSelectors: ['#short-answer', '#key-facts', '#direct-answer'] }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Names', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/what-is-a-decibel-meter-called/" ogType="article" jsonLd={jsonLd}>
+  <Article
+    title={title}
+    intro="“Decibel meter” is the everyday name, but the same instrument answers to half a dozen others depending on who is talking. Here is every common name, what each one means, and the one you should use in formal contexts."
+    reviewed="2026-11-05"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Names', href: '/what-is-a-decibel-meter-called/' }]}
+    shortAnswer="A decibel meter is properly called a sound level meter (SLM). You will also see the names SPL meter, decibel meter, dB meter, noise meter and noise level meter — all describe the same instrument. A separate device with a similar but different job is the noise dosimeter, which a person wears to accumulate their own exposure over a shift."
+    keyFacts={[
+      'Sound level meter (SLM) is the formal name used in IEC 61672 and every noise standard.',
+      'SPL meter, dB meter and decibel meter are informal synonyms for the same instrument.',
+      'A noise dosimeter is a different device: worn on the body, it accumulates a personal dose.',
+      '“Decibel” is the unit, not the quantity: the meter measures sound pressure, then applies weighting corrections.',
+    ]}
+  >
+    <h2 id="direct-answer" class="text-white font-semibold">The direct answer</h2>
+    <p class="mt-2">Formally — in standards, textbooks and legal noise limits — the instrument is a <strong>sound level meter</strong>, abbreviated <strong>SLM</strong>. The name is precise on purpose: the meter does not measure “decibels”, it measures <em>sound pressure</em> from the microphone capsule, converts it to a sound pressure level, and then optionally applies a frequency weighting such as A or C. “Decibel meter” names the unit on the display; “sound level meter” names the actual measurement. Both are correct in everyday use, but SLM is the term you will find in IEC 61672, OSHA paperwork and product datasheets from manufacturers like Brüel & Kjær or NTi.</p>
+    <p class="mt-2">The word “decibel” itself is a fraction and a name: one tenth (<em>deci-</em>) of a <em>bel</em>, named for Alexander Graham Bell. The bel was defined at Bell Telephone Laboratories to express power ratios on a log scale; the decibel — one tenth of a bel — turned out to be the practical size for everyday use.</p>
+
+    <h2 class="text-white font-semibold mt-6">Every common name, and who uses it</h2>
+    <table><caption class="sr-only">Names for a decibel meter and typical contexts</caption><thead><tr><th>Name</th><th>Who uses it</th><th>Exactly what it refers to</th></tr></thead><tbody>
+      <tr><td><strong>Sound level meter (SLM)</strong></td><td>Standards bodies, acousticians, manufacturers, law</td><td>The formal instrument: pressure measurement with standardized frequency weighting and time response</td></tr>
+      <tr><td><strong>Decibel meter</strong></td><td>Consumers, product listings, general web search</td><td>Same instrument, named after the unit on the display</td></tr>
+      <tr><td><strong>dB meter</strong></td><td>Apps and websites</td><td>Short form of decibel meter</td></tr>
+      <tr><td><strong>SPL meter</strong></td><td>Live-sound engineers, home-theatre enthusiasts</td><td>Sound pressure level meter — same quantity, informal name</td></tr>
+      <tr><td><strong>Noise meter / noise level meter</strong></td><td>Health &amp; safety, environmental assessments</td><td>Same instrument used for community/occupational noise; “noise” = unwanted sound</td></tr>
+      <tr><td><strong>Acoustic measurement device</strong></td><td>Laboratories</td><td>Broad class label that can include analysers and calibration systems</td></tr>
+      <tr><td><strong>Noise dosimeter / datalogger</strong></td><td>Industrial hygiene, workplace regulation</td><td><em>Different device</em>: body-worn; accumulates a personal dose (%) over an entire shift</td></tr>
+      <tr><td><strong>Environmental noise monitor</strong></td><td>Construction sites, airports, city councils</td><td>Weatherproof SLM configured for outdoor long-term monitoring</td></tr>
+      <tr><td><strong>Noise meter app / online meter</strong></td><td>Smartphone and browser users</td><td>Software estimate of the same quantity using a device microphone</td></tr>
+    </tbody></table>
+    <p class="mt-2">One distinction is worth fixing in your vocabulary: an app or browser tool measures the same physical quantity, but it is not a certified SLM. Unchecked phone microphones can be off by 5–10 dB between devices — our <a class="underline underline-offset-4" href="/accuracy/">accuracy and limitations</a> page explains why, and <a class="underline underline-offset-4" href="/calibration/">one calibration step</a> brings a browser meter close to a reference.</p>
+
+    <h2 class="text-white font-semibold mt-6">The dosimeter is not a decibel meter</h2>
+    <p class="mt-2">The single most confused pair of names is <strong>sound level meter</strong> versus <strong>noise dosimeter</strong>. A sound level meter sits at a point in space and answers “how loud is it <em>here</em>, right now?”. A dosimeter clips to a worker's collar and answers “how much noise did <em>this person</em> absorb over the whole shift?”. The dosimeter is microphone-small, samples for hours, and reports an 8-hour time-weighted average plus a dose percentage — a 100% dose means the person used their full legal allowance. When a safety officer writes up a workplace, OSHA documentation requires dosimeter results; when an engineer checks the noise of a specific machine at its panel, that is a sound level meter measurement with a defined distance:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Sound level meter:</strong> point measurement, seconds to minutes, distance documented (e.g. 1 m from the source).</li>
+      <li><strong>Dosimeter:</strong> personal dose, full shift, location moves with the person.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Classes: the names hiding inside the standard</h2>
+    <p class="mt-2">When you shop for a real instrument you will meet two more labels — <strong>Class 1</strong> and <strong>Class 2</strong>, defined by IEC 61672. They are tolerance grades, not quality grades:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Class 2:</strong> the cheaper grade, adequate for most everyday and workplace screening.</li>
+      <li><strong>Class 1:</strong> tighter tolerances (fast frequency response down to low Hz, better linearity) used for environmental and certification work.</li>
+    </ul>
+    <p class="mt-2">A device advertised simply as a “decibel meter” with no class statement is a consumer gadget: legally purchaseable, but not a compliance instrument. Use it for screening only — the legal thresholds on our <a class="underline underline-offset-4" href="/noise-limits/">noise limits</a> page assume calibrated, class-rated equipment.</p>
+
+    <h2 class="text-white font-semibold mt-6">What each name is called in practice</h2>
+    <p class="mt-2">Search data and trade usage differ by audience, which is why one instrument carries so many names. A quick map:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li>A live-sound engineer at the front-of-house desk calls it an <strong>SPL meter</strong> — usually on a phone during sound check.</li>
+      <li>An industrial hygienist reporting an OSHA survey writes <strong>sound level meter</strong> and <strong>dosimeter</strong> results into a single report.</li>
+      <li>A city noise complaint recorded on a residential street will reference <strong>environmental noise monitors</strong> or certified readings.</li>
+      <li>An app-store user shopping at midnight will type <strong>dB meter</strong> or <strong>noise meter app</strong>.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">Names FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Try the sound level meter in your browser →</a> · <a class="underline underline-offset-4" href="/sound-level-meter/">How a sound level meter works →</a> · <a class="underline underline-offset-4" href="/db-vs-dba/">dB, dBA, dBC, dBZ explained →</a> · <a class="underline underline-offset-4" href="/decibel-chart/">What the numbers mean in practice →</a></p>
+  </Article>
+</Layout>

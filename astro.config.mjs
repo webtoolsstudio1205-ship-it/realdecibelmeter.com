@@ -87,6 +87,13 @@ function sitemapPriority(url) {
       '/dbfs-vs-db-spl/', '/validation/', '/noise-exposure/', '/noise-limits/', '/decibel-meter-app/',
       '/decibel-meter-for-classroom/',
       '/a-weighted-decibel-meter/', '/blog/',
+      // 2026-11 batch: long-tail answer pages (what-is-called, dBA vs dBC,
+      // appliance dB lookups, baby sleep). Weekly freshness keeps them
+      // eligible for recrawl as the low-competition queries settle.
+      '/what-is-a-decibel-meter-called/', '/dba-vs-dbc/', '/safe-noise-level-baby-sleep/',
+      '/how-many-decibels-is-a-vacuum/', '/how-many-decibels-is-a-hair-dryer/',
+      '/how-many-decibels-is-an-air-conditioner/', '/how-many-decibels-is-a-pc-fan/',
+      '/how-many-decibels-is-a-refrigerator/', '/how-many-decibels-is-a-dishwasher/',
       '/de/anleitungen/', '/de/kalibrierung/', '/de/genauigkeit/', '/de/dezibel-tabelle/',
       '/de/db-vs-dba/', '/de/mikrofon-funktioniert-nicht/', '/de/handy-dezibel-messen/',
       '/de/schallpegelmesser/', '/de/laerm-messen/', '/de/ton-generator/',

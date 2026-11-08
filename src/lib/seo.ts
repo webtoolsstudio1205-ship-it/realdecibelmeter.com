@@ -39,8 +39,7 @@ export function canonicalFor(path: string): string {
  * Methodology is deliberately INDEXED: it is core guide content with
  * real search demand. To noindex it, just add '/methodology/' below
  * (and in astro.config.mjs).
- */
-export const NOINDEX_PATHS: readonly string[] = [
+ */export const NOINDEX_PATHS: readonly string[] = [
   '/about/',
   '/contact/',
   '/privacy/',
@@ -91,7 +90,17 @@ export type GuideKey =
   | 'souon-sokutei'
   | 'decibel-meter-for-classroom'
   | 'a-weighted-decibel-meter'
-  | 'blog';
+  | 'blog'
+  // 2026-11 long-tail answer pages (single-locale EN clusters):
+  | 'what-is-a-decibel-meter-called'
+  | 'dba-vs-dbc'
+  | 'safe-noise-level-baby-sleep'
+  | 'how-many-decibels-is-a-vacuum'
+  | 'how-many-decibels-is-a-hair-dryer'
+  | 'how-many-decibels-is-an-air-conditioner'
+  | 'how-many-decibels-is-a-pc-fan'
+  | 'how-many-decibels-is-a-refrigerator'
+  | 'how-many-decibels-is-a-dishwasher';
 
 const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   guides: { en: '/guides/', de: '/de/anleitungen/', ja: '/ja/guides/', it: '/it/guide/', es: '/es/guias/', fr: '/fr/guides/', pt: '/pt/guias/', ko: '/ko/guides/' },
@@ -115,6 +124,17 @@ const GUIDE_PATHS: Record<GuideKey, Partial<Record<SeoLocale, string>>> = {
   'decibel-meter-for-classroom': { en: '/decibel-meter-for-classroom/' },
   'a-weighted-decibel-meter': { en: '/a-weighted-decibel-meter/' },
   blog: { en: '/blog/' },
+  // 2026-11 long-tail answer pages — each is a self-answered single-locale
+  // cluster (self + x-default), the established pattern for EN-only guides.
+  'what-is-a-decibel-meter-called': { en: '/what-is-a-decibel-meter-called/' },
+  'dba-vs-dbc': { en: '/dba-vs-dbc/' },
+  'safe-noise-level-baby-sleep': { en: '/safe-noise-level-baby-sleep/' },
+  'how-many-decibels-is-a-vacuum': { en: '/how-many-decibels-is-a-vacuum/' },
+  'how-many-decibels-is-a-hair-dryer': { en: '/how-many-decibels-is-a-hair-dryer/' },
+  'how-many-decibels-is-an-air-conditioner': { en: '/how-many-decibels-is-an-air-conditioner/' },
+  'how-many-decibels-is-a-pc-fan': { en: '/how-many-decibels-is-a-pc-fan/' },
+  'how-many-decibels-is-a-refrigerator': { en: '/how-many-decibels-is-a-refrigerator/' },
+  'how-many-decibels-is-a-dishwasher': { en: '/how-many-decibels-is-a-dishwasher/' },
   // "Decibel meter without an app" guide — one reciprocal hreflang cluster
   // across all seven languages (English is the canonical member at
   // /decibel-meter-app/; each locale keeps its native slugs). Previously six

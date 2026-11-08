@@ -23,7 +23,7 @@ Free browser-based decibel meter that measures live sound levels in dBA, dBC, an
 
 ### Tagline (under 60 characters)
 ```text
-Free online decibel meter and sound level monitor.
+Free online decibel meter and sound level monit![alt text](image.png)or.
 ```
 
 ### Full Description (Rich text / Markdown)

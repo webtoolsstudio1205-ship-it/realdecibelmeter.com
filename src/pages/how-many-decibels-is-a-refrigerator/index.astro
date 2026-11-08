@@ -1,0 +1,110 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'How Many Decibels Is a Refrigerator? (Including Which Noises Are Faults)';
+const description = 'Modern fridges run 29–40 dBA; older units reach 48 dBA. Real ranges, the noise of each cycle (ice maker, defrost), a normal-vs-faulty sound decoder, and how to measure at the kitchen wall.';
+const url = `${SITE}/how-many-decibels-is-a-refrigerator/`;
+
+const faq = [
+  {
+    q: 'How many decibels is a normal refrigerator?',
+    a: 'A modern fridge-freezer hums along at roughly 29–40 dBA at about a metre; premium inverter models measure 29–33 dBA, and many a pre-2010 unit pushes 42–48 dBA. Refrigerator noise cycles: the compressor runs perhaps a third to half the time, and events like ice-making briefly add character.',
+  },
+  {
+    q: 'Is 40 dBA loud for a refrigerator?',
+    a: 'It is the top of the modern range and audible — in an open-plan living space or through a shared bedroom wall it becomes a genuine presence, since WHO-style bedroom guidance sits near 30 dBA. Within a closed kitchen it blends into normal domestic background.',
+  },
+  {
+    q: 'What refrigerator noises are normal?',
+    a: 'Gentle humming (compressor), occasional gurgling (refrigerant moving through the loop), a click then hum at compressor start, sizzling during defrost, and water slurps from the ice maker filling. All of these are part of ordinary operation.',
+  },
+  {
+    q: 'Which sounds mean the fridge is failing?',
+    a: 'Repeated click-clack with no hum afterwards suggests a struggling start relay; a loud rattle often means a loose drain pan or dirty condenser coils; scraping or knocking from behind the freezer wall points at a fan blade hitting ice; and a compressor that suddenly seems to growl every cycle deserves a technician.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-11-05', speakableSelectors: ['#short-answer', '#key-facts', '#question-one'] }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Refrigerator dB', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/how-many-decibels-is-a-refrigerator/" ogType="article" jsonLd={jsonLd}>
+  <Article
+    title={title}
+    intro="A refrigerator is the only appliance you measure twice: once for how loud it runs, and once for whether the new sound means something. Real level ranges, an event-by-event decoder, and the honest method for reading your kitchen wall."
+    reviewed="2026-11-05"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Refrigerator dB', href: '/how-many-decibels-is-a-refrigerator/' }]}
+    shortAnswer="A modern refrigerator measures roughly 29–40 dBA a metre from the door: premium inverter units 29–33 dBA, typical recent builds 32–40 dBA, and many refrigerators from before ~2010 at 42–48 dBA. But a frost-free fridge also makes <em>events</em> — ice-maker fill and harvest, defrost sizzle, compressor start clicks and gurgle — which flash above the steady level for seconds at a time. Identifying each event by ear (or with a meter plus a note) separates a healthy machine from one that needs a look."
+    keyFacts={[
+      'Steady running: 29–40 dBA modern, 42–48 dBA for older machines.',
+      'Compressors cycle: expect duty of roughly a third of the time, raising the average only modestly.',
+      'Gurgle, click-then-hum and defrost sizzle are normal; repeated click without hum, rattles and blade-scrape are faults.',
+      'Bedroom-wall placement matters: a fridge sharing a bedroom wall turns 35–40 dBA into an all-night presence.',
+    ]}
+  >
+    <h2 id="question-one" class="text-white font-semibold">Question one: how loud when it runs?</h2>
+    <table><caption class="sr-only">Refrigerator noise levels by age and type</caption><thead><tr><th>Machine</th><th>Typical steady level (≈1 m)</th><th>Context</th></tr></thead><tbody>
+      <tr><td>Premium inverter compressor / quiet-rated models</td><td>29–33 dBA</td><td>The "library-quiet" tier; genuinely true even unattended</td></tr>
+      <tr><td>Typical modern fridge-freezer (last ~decade)</td><td>32–40 dBA</td><td>The near-universal case: a gentle background hum</td></tr>
+      <tr><td>Larger side-by-side / through-door ice</td><td>36–44 dBA</td><td>Extra fans (dispenser, circulation) add their own tone</td></tr>
+      <tr><td>Older / a healthy but pre-efficient-era machine</td><td>42–48 dBA</td><td>Loud by modern standards — or a symptom, see the fault table below</td></tr>
+      <tr><td>Chest freezer</td><td>40–46 dBA</td><td>Usually banished to basements and garages for a reason</td></tr>
+      <tr><td>Absorption ("silent") fridges</td><td>Near silence — refrigerant bubbling only</td><td>The zero-motor oddity: RVs, off-grid cabins, minibars</td></tr>
+    </tbody></table>
+    <p class="mt-2">Keep two terms straight while shopping or measuring: regulated markets publish a <strong>sound power</strong> figure (the source's acoustic energy, measured under controlled conditions) while your ears receive <strong>sound pressure</strong> in a reverberant kitchen — close relatives, not the same number, and hard surfaces add 2–4 dB of reflection on top of any printed rating.</p>
+
+    <h2 class="text-white font-semibold mt-6">Question two: what noise is each event?</h2>
+    <p class="mt-2">A frost-free fridge is a series of scheduled performances, and each has a signature that is healthy or worrying:</p>
+    <table><caption class="sr-only">Refrigerator event sounds and what they mean</caption><thead><tr><th>Event</th><th>Sound</th><th>Normal?</th></tr></thead><tbody>
+      <tr><td>Compressor running</td><td>Steady low hum + faint click at start or stop</td><td>Yes</td></tr>
+      <tr><td>Refrigerant flow</td><td>Soft gurgling or hissing for a few seconds after start/stop</td><td>Yes</td></tr>
+      <tr><td>Defrost cycle (every ~8–36 h)</td><td>Occasional sizzle or dripping sounds as meltwater runs and heater runs</td><td>Yes</td></tr>
+      <tr><td>Ice maker fill / harvest</td><td>Water slurp, valve thud, cube-drop clunks</td><td>Yes</td></tr>
+      <tr><td>Relay clicking repeatedly, no hum</td><td>Click…click…click</td><td><strong>Fault:</strong> struggling start relay/compressor — call a technician</td></tr>
+      <tr><td>Loose rattle each cycle</td><td>Buzz at cabinet body</td><td><strong>Fault:</strong> loose drain pan or dirty condenser coils; first clean the coils</td></tr>
+      <tr><td>Scraping/knocking deep inside the freezer wall</td><td>Blade-on-ice rubbing</td><td><strong>Fault:</strong> iced evaporator fan; defrost fully or book service</td></tr>
+      <tr><td>Compressor suddenly growling, vibrating</td><td>Louder every cycle</td><td><strong>Fault:</strong> mounting or mechanical wear; rarely settles on its own</td></tr>
+    </tbody></table>
+    <p class="mt-2">The distinction matters for complaints, diagnostics and repairs alike. Meters happily tell you <em>how</em> loud; knowing <em>which</em> event is the loud one at 3 a.m. is where the dBA number turns into a decision.</p>
+
+    <h2 class="text-white font-semibold mt-6">The kitchen is not an anechoic chamber</h2>
+    <p class="mt-2">Manufacturers test in controlled chambers; kitchens are enthusiastic reverb rooms. Tile fronts and granite counters reflect energy back hard, and a hard-surfaced cluster of cabinets adds 2–4 dB you would never see printed on a box. Placement counsel worth as much as the machine choice:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li>Never park a fridge with its cabinet back flanged <em>directly</em> against a wall behind a headboard — a compressor's low-frequency hum transmits into structure surprisingly far. A shared wall with a bedroom is the single worst domestic placement, since <a class="underline underline-offset-4" href="/noise-limits/">sleep-guidance</a> levels (~30 dBA) are exactly the fridge's own idle range.</li>
+      <li>An open-plan kitchen converts every fridge event into a living-room event. If the plan forces that, favor the quieter tier above rather than positioning tricks.</li>
+      <li>Level the cabinet and keep the door gasket closing cleanly: a tilted fridge both hums harder and clicks its doors.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">How to measure your own fridge</h2>
+    <ol class="list-decimal pl-5 mt-2 space-y-1 text-sm">
+      <li>Open the <a class="underline underline-offset-4" href="/#measure">meter</a> on dBA and Slow response. Set it on a counter ~1 m from the machine, microphone-height roughly half-way up the cabinet — not pressed against the freezer wall.</li>
+      <li>Read the Leq across a settled 2–3 minutes — enough to capture a full compressor segment, and a quiet early-morning measurement lands closest to the machine's clean duty cycle.</li>
+      <li>Note the reading both with the compressor running and during an off-quiet stretch: the <em>difference</em> between the two averages is the hum's true contribution — the same delta method our <a class="underline underline-offset-4" href="/background-noise-test/">background noise test</a> uses.</li>
+      <li>For bedroom-wall placement, repeat at pillow height on the other side of the wall at night; compare with the ~30 dBA sleep target and decide honestly whether the wall or the machine should move.</li>
+    </ol>
+    <p class="mt-2">Browser numbers are screening figures until calibrated; the quick one-tone comparison on our <a class="underline underline-offset-4" href="/calibration/">calibration page</a> makes your phone's readings genuinely comparable across runs.</p>
+
+    <h2 class="text-white font-semibold mt-6">Refrigerator FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Measure your fridge now →</a> · <a class="underline underline-offset-4" href="/how-many-decibels-is-a-dishwasher/">Dishwasher dB guide →</a> · <a class="underline underline-offset-4" href="/safe-noise-level-baby-sleep/">Nursery sleep dB guide →</a> · <a class="underline underline-offset-4" href="/background-noise-test/">Full background noise test →</a></p>
+  </Article>
+</Layout>

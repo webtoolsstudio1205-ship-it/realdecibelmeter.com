@@ -29,6 +29,18 @@
 - [Decibel meter app, no install](https://realdecibelmeter.com/decibel-meter-app/): the free browser app versus native store apps.
 - [Validation protocol](https://realdecibelmeter.com/validation/): how estimates are checked against references.
 
+## Answer guides (2026)
+
+- [What is a decibel meter called?](https://realdecibelmeter.com/what-is-a-decibel-meter-called/): sound level meter, SPL meter, dB meter and dosimeter distinguished.
+- [dBA vs dBC: which should you measure?](https://realdecibelmeter.com/dba-vs-dbc/): decision table plus the C−A low-frequency diagnostic.
+- [How many decibels is a vacuum cleaner?](https://realdecibelmeter.com/how-many-decibels-is-a-vacuum/): 55–85 dBA by vacuum type, and why levels rise over time.
+- [How many decibels is a hair dryer?](https://realdecibelmeter.com/how-many-decibels-is-a-hair-dryer/): 75–90 dBA at the outlet, levels by distance, salon dose math.
+- [How many decibels is an air conditioner?](https://realdecibelmeter.com/how-many-decibels-is-an-air-conditioner/): indoor comfort ranges and outdoor condenser/property-line levels.
+- [How many decibels is a PC fan?](https://realdecibelmeter.com/how-many-decibels-is-a-pc-fan/): 19–48 dBA by RPM and load state; fan-law physics.
+- [How many decibels is a refrigerator?](https://realdecibelmeter.com/how-many-decibels-is-a-refrigerator/): 29–48 dBA plus a normal-versus-faulty noise decoder.
+- [How many decibels is a dishwasher?](https://realdecibelmeter.com/how-many-decibels-is-a-dishwasher/): cycle-phase levels, drain-pump peaks, label-number interpretation.
+- [Safe noise level for a baby's sleep](https://realdecibelmeter.com/safe-noise-level-baby-sleep/): WHO-based reference points, white-noise machine placement, nursery measurement method.
+
 ## Tools
 
 - [Frequency analyzer](https://realdecibelmeter.com/frequency-analyzer/): live spectrum of microphone input.

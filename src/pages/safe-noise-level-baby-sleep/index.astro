@@ -1,0 +1,119 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'Safe Noise Level for a Baby\'s Sleep: A dB Guide (WHO-Based, No Hype)';
+const description = 'What noise level is safe for a sleeping baby? WHO night-noise guidance, hospital nursery practice, white-noise machine cautions, and a simple way to measure the nursery with a phone. Informational only — not medical advice.';
+const url = `${SITE}/safe-noise-level-baby-sleep/`;
+
+const faq = [
+  {
+    q: 'What noise level is safe for a sleeping baby?',
+    a: 'There is no single law for nurseries, but widely used environmental-health guidance points to quiet bedrooms averaging near 30 dBA overnight. A nursery that measures in the low-to-mid 30s dBA with occasional muffled household sounds falls comfortably into the same quiet range most sleep guidance describes.',
+  },
+  {
+    q: 'Is white noise safe for babies all night?',
+    a: 'White noise at low volume, placed across the room and played at roughly 45–50 dBA or lower at the crib, is a common household masking practice. Outlets that recommend checking placement note that white-noise machines held very close to a crib can read much louder — distance and the lowest useful volume are the two controls that matter.',
+  },
+  {
+    q: 'How do I measure my nursery?',
+    a: 'Use a phone or browser sound level meter at crib-mattress height, lights-off, in the conditions you actually sleep in — door open or closed as usual, sound machine on the setting you use. Read an average over several minutes rather than a single glance. Browser readings are screening estimates until calibrated.',
+  },
+  {
+    q: 'Can a phone meter really measure the nursery?',
+    a: 'Yes, for screening. Un-calibrated phone microphones vary several dB between devices, which is exactly why comparisons (same phone, same position, one variable changed) are more reliable than absolute numbers, and a quick reference-tone calibration makes the figure meaningful.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-11-05', speakableSelectors: ['#short-answer', '#key-facts', '#reference-points'] }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Baby sleep dB', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/safe-noise-level-baby-sleep/" ogType="article" jsonLd={jsonLd}>
+  <Article
+    title={title}
+    intro="Ask what noise level is safe for a sleeping baby and you will meet three very confident numbers — and no law backing any of them. Here is what the actual guidance says, how hospital nurseries handle it, and the honest way to measure your own nursery with the phone you already own. Informational only: for anything medical, your pediatrician is the voice that counts."
+    reviewed="2026-11-05"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Baby sleep dB', href: '/safe-noise-level-baby-sleep/' }]}
+    shortAnswer="No regulation sets a nursery decibel level, so lean on the reference points that exist: WHO environmental guidance treats bedrooms averaging near 30 dBA overnight as the sleep-friendly benchmark, hospital neonatal-unit guidance aims much the same, and common practice keeps sound machines modest — roughly 45–50 dBA or lower across the room from the crib, never right beside it. A nursery measuring in the 30s dBA overnight matches the quiet-home range described for adult sleep too."
+    keyFacts={[
+      'Widely cited bedroom benchmark for undisturbed sleep: ~30 dBA averaged overnight (WHO-based guidance).',
+      'Hospital neonatal units aim substantially quiet environments — a professional reference point, not a home rule.',
+      'White-noise practice: across the room, lowest useful volume — machines held close can read far louder.',
+      'Phone meters are screening tools: same-phone comparisons beat absolute numbers.',
+    ]}
+  >
+    <h2 class="text-white font-semibold">First, an honesty note</h2>
+    <p class="mt-2">Nobody has legislated a nursery decibel limit, and we will not invent one for you. What exists is a set of <em>reference points</em>: environmental-health guidance for bedroom noise, published practice from hospital neonatal units, and consumer-level checks on sound machines. This page lines them up so you can judge your own room with context rather than slogan. It is informational content and measurement guidance, not medical advice — decisions about a child's health belong with your pediatrician.</p>
+
+    <h2 id="reference-points" class="text-white font-semibold mt-6">The reference points that actually exist</h2>
+    <table><caption class="sr-only">Published reference points for sleep-environment noise levels</caption><thead><tr><th>Reference</th><th>Level</th><th>What it is (and is not)</th></tr></thead><tbody>
+      <tr><td>WHO-based sleep-environment guidance</td><td>~30 dBA overnight indoors in sleeping rooms</td><td>A general guideline for undisturbed sleep in bedrooms — written for adults, commonly extended to nurseries as a reference</td></tr>
+      <tr><td>WHO European night-noise guidance</td><td>~40 dBA as a night average <em>outside</em> the facade (road traffic)</td><td>About protecting whole communities from traffic-noise sleep disturbance — not a nursery wall reading</td></tr>
+      <tr><td>Hospital neonatal-unit practice</td><td>Significantly quiet room targets (published unit guidance aims well below conversational levels)</td><td>Professional target for fragile infants in monitored units; not transferable to home nurseries as a rule</td></tr>
+      <tr><td>Sound-machine cautions in pediatric press</td><td>Machines placed close to cribs can read loud; keep distance and volume modest</td><td>A consumer-level caution often phrased as distance recommendations drawn from published checks of popular machines</td></tr>
+    </tbody></table>
+    <p class="mt-2">Read once more, the numbers agree even where sources differ: <strong>a quiet home at night measures in the 30s dBA</strong>. Everything above is context to help you reach that room; everything below is how to keep it there.</p>
+
+    <h2 class="text-white font-semibold mt-6">Where typical nurseries land</h2>
+    <p class="mt-2">Measured with a phone at crib height in normal use, ordinary quiet home environments cluster like this:</p>
+    <table><caption class="sr-only">Typical nursery noise levels by source and condition</caption><thead><tr><th>Condition</th><th>Typical reading</th><th>Notes</th></tr></thead><tbody>
+      <tr><td>Quiet nursery, everything off, 2 a.m.</td><td>25–32 dBA</td><td>Building services, distant traffic; this is the baseline "background"</td></tr>
+      <tr><td>Household sounds of a settling evening</td><td>35–45 dBA</td><td>TV through a wall, kitchen closing down, sibling's last shouts</td></tr>
+      <tr><td>Sound machine, lowest useful volume, across the room</td><td>40–50 dBA at the crib</td><td>A deliberate masking bed, workable when modest</td></tr>
+      <tr><td>Sound machine on the nightstand beside the crib</td><td>55–70+ dBA possible</td><td>This is the distance trap parents regret; move it across the room</td></tr>
+      <tr><td>Dishwasher mid-cycle through a wall</td><td>~40s dBA</td><td>A steady wash hum — see the <a class="underline underline-offset-4" href="/how-many-decibels-is-a-dishwasher/">dishwasher dB guide</a> for the phase peaks</td></tr>
+      <tr><td>Window AC on an overnight sleep setting</td><td>45+ dBA in-room</td><td>A steady hum; see the <a class="underline underline-offset-4" href="/how-many-decibels-is-an-air-conditioner/">air conditioner dB guide</a> for the quieter options</td></tr>
+    </tbody></table>
+
+    <h2 class="text-white font-semibold mt-6">White-noise machines: the one control that backfires</h2>
+    <p class="mt-2">Sound machines are the most common nursery noise decision, and the only one with a well-known mistake attached: <strong>distance</strong>. A machine that reads mild across the room can read dramatically louder six inches from a crib, because every doubling of distance removes roughly 6 dB. Published checks of popular machines found levels reaching hearing-risk territory when placed close, which is why the standard, sensible practice is:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Across the room, not on the nightstand.</strong> Aim 2+ metres from the crib, ideally not at the headboard.</li>
+      <li><strong>Lowest volume that works.</strong> The goal is masking household clatter, not constructing a sound shower.</li>
+      <li><strong>Steady sounds over dynamic ones</strong> if the goal is masking: abrupt chirps and jingles wake more than equal-level steady noise. Especially skip recorded nature-loop <em>events</em> (bird calls, crackling fire) as "soothing" bedtime audio.</li>
+      <li><strong>Use the timer if "all night" was not your plan.</strong> If the machine is there as a mask through a noisy 8–11 p.m. corridor, a timer that fades off once the house has settled does the job at a lower total dose.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">The crying variable parents never see listed</h2>
+    <p class="mt-2">One honest observation from measurement: the loudest thing that happens in a nursery is the baby. An infant cry measured at the ear during soothing reads into the 100+ dBA range in close quarters for short bursts — louder than any appliance in this guide. Two practical consequences being noted, plainly informational:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li>The nursery's <em>ambient</em> level rarely matters against the <em>events</em> an infant generates when awake — the ambient target is about supporting sleep, not pacifying crying.</li>
+      <li>Parents holding a crying baby at the shoulder for long stretches experience genuinely high close-proximity levels; some parents choose hearing protection while soothing during night duties — a widely available option worth knowing about, not a prescription.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">How to measure your nursery, properly</h2>
+    <ol class="list-decimal pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>Measure the real conditions.</strong> Open the <a class="underline underline-offset-4" href="/#measure">browser meter</a> on dBA and Slow response, place the phone at crib-mattress height, and measure during the same evening hours you would hear the results — not at noon.</li>
+      <li><strong>One variable at a time.</strong> Baseline (everything off), then household sounds as they happen, then the sound machine at the setting you actually use, then with its location moved across the room. Read each as a settled multi-minute average — single glances mislead at these quiet levels.</li>
+      <li><strong>Trust comparisons more than absolutes.</strong> A phone's microphone offset cancels out when comparing two conditions with the same device in the same place; the absolute reading of an uncalibrated phone can be off several dB — exactly the gap our <a class="underline underline-offset-4" href="/calibration/">one-tone calibration</a> closes if you want defensible numbers.</li>
+      <li><strong>Log the delta.</strong> Note the machine's level change (across-room vs nightstand at the crib) and you will see the distance rule in your own room's geometry — the numbers move by dozens of dB, not a few.</li>
+    </ol>
+    <p class="mt-2">For broader safe-level frameworks across the whole house — the workplace limits, WHO environmental guidance and everyday bands — the <a class="underline underline-offset-4" href="/noise-limits/">noise limits overview</a> keeps every threshold side by side.</p>
+
+    <h2 class="text-white font-semibold mt-6">What is <em>not</em> on this page</h2>
+    <p class="mt-2">We deliberately avoid: prescriptive "decibels cure colic" claims, any statement that a given level is proven harmful or safe for a particular infant, and sleep-training guidance — those belong to pediatric medicine, not acoustics. What a sound meter can honestly contribute is a screening estimate of how loud a room is, and clear comparisons between setups. If a health question opens anywhere in the sentence, the acoustics page ends there.</p>
+
+    <h2 class="text-white font-semibold mt-6">Baby sleep FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Measure the nursery now →</a> · <a class="underline underline-offset-4" href="/noise-limits/">All noise limits side by side →</a> · <a class="underline underline-offset-4" href="/background-noise-test/">Room baseline test →</a> · <a class="underline underline-offset-4" href="/calibration/">Make your phone readings comparable →</a></p>
+  </Article>
+</Layout>

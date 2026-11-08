@@ -1,0 +1,106 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'How Many Decibels Is a Hair Dryer? (And Why Stylists Care More Than You Do)';
+const description = 'Hair dryers measure roughly 70–90 dBA, but the number that matters is the one at your ear. Distance table, quiet-technology explained, and the exposure math that separates a morning ritual from an 8-hour dose.';
+const url = `${SITE}/how-many-decibels-is-a-hair-dryer/`;
+
+const faq = [
+  {
+    q: 'How many decibels is a normal hair dryer?',
+    a: 'Typical household dryers emit roughly 75–90 dBA a few centimetres from the air outlet. Held at the usual styling distance the level at the ear lands closer to 70–80 dBA, and falls another 6 dB or so if kept further away. Quiet-rated and brushless designs reach the low 70s at the outlet.',
+  },
+  {
+    q: 'Is a hair dryer bad for your hearing?',
+    a: 'For ordinary people, no: a 10–20 minute daily blow-dry at 75 dBA is a small fraction of the daily allowance defined by screening rules, which start counting meaningfully at 85 dBA sustained across hours. It becomes a genuine occupational question for stylists, who stand beside multiple dryers for a full shift.',
+  },
+  {
+    q: 'Does a more powerful (higher-wattage) dryer mean louder?',
+    a: 'Not directly. Wattage mostly buys heat. Noise scales with fan speed, motor design and airflow turbulence — a well-engineered 1,800 W model can be quieter than a cheap 2,200 W one because its fan and insulation are better.',
+  },
+  {
+    q: 'Why do hair dryers sound shrill?',
+    a: 'Small motors spin very fast, so their whine sits in the ear-sensitive 2–5 kHz band where A-weighting gives it full weight. The same physical loudness would measure lower if the energy sat in the bass.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-11-05', speakableSelectors: ['#short-answer', '#key-facts', '#levels-by-distance'] }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'Hair dryer dB', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/how-many-decibels-is-a-hair-dryer/" ogType="article" jsonLd={jsonLd}>
+  <Article
+    title={title}
+    intro="The hair dryer is the one appliance you deliberately point at your own head, so the spec-sheet number and the number that reaches your ear are very different things. Here's how loud they really are, at which distances, and when it matters for hearing."
+    reviewed="2026-11-05"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'Hair dryer dB', href: '/how-many-decibels-is-a-hair-dryer/' }]}
+    shortAnswer="A hair dryer measures roughly 75–90 dBA near its air outlet, falling to about 70–80 dBA at the styling distance where the nozzle works near your ear, and roughly 60 dB at a metre away. Short daily doses are harmless — 85 dBA sustained across eight hours is the ordinary screening boundary. The people who should watch this number are stylists and salon workers, who accumulate hours of dryer-level noise every shift — the only population for whom hair-dryer noise is a real occupational dose."
+    keyFacts={[
+      'Outlet region: ~75–90 dBA; typical styling distance: 70–80 dBA at the ear; 1 m away: ~60 dBA.',
+      'Heat (wattage) and noise are different specs: fan speed and motor design set the dBA.',
+      'Shrill character is physics: fast small motors whine in the ear-sensitive 2–5 kHz band.',
+      'Personal doses are tiny; salon full-shift exposure is the scenario where this appliance matters.',
+    ]}
+  >
+    <h2 id="levels-by-distance" class="text-white font-semibold">Levels by distance — the number that matters</h2>
+    <p class="mt-2">The distance rule of outdoors (levelling off near 6 dB per doubling of distance) softens indoors, but the direction still holds: hair-dryer noise is measured in centimetres, not metres. These ranges describe a typical 1,800–2,000 W household dryer:</p>
+    <table><caption class="sr-only">Hair dryer levels by measurement position</caption><thead><tr><th>Position</th><th>Typical level</th><th>What it represents</th></tr></thead><tbody>
+      <tr><td>~5 cm from the air outlet</td><td>80–90 dBA</td><td>Spec-corner measurement; nobody listens here by choice</td></tr>
+      <tr><td>~15–25 cm — normal styling distance</td><td>75–85 dBA</td><td>The practical day-in, day-out figure</td></tr>
+      <tr><td>At the opposite ear during a two-handed dry</td><td>~70–80 dBA</td><td>Same session, one metre of head between source and ear</td></tr>
+      <tr><td>50 cm away (diffusing/sculpting)</td><td>~65–75 dBA</td><td>Wand work at arm's length</td></tr>
+      <tr><td>1 m away (bathroom of a listener)</td><td>~58–68 dBA</td><td>What flatmates and siblings actually experience</td></tr>
+      <tr><td>Next room with the door shut</td><td>~45–55 dBA</td><td>Masked conversation territory</td></tr>
+    </tbody></table>
+    <p class="mt-2">Notice the pattern: the dryer is one of the rare appliance whose "distance to the listener" is under your direct control at all times — and each doubling buys roughly six decibels of relief. That makes posture, not purchase, the strongest lever most people have.</p>
+
+    <h2 class="text-white font-semibold mt-6">Why dryers are loud: speed beats size</h2>
+    <p class="mt-2">A hair dryer is a tiny fan screaming at high RPM. Motor whine and air turbulence both scale with speed — that's why the compact 1,200 W travel dryers everyone tells you to pack are often the loudest things in the bathroom: their small fans must spin harder to push the same air. Three practical consequences:</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>The shrill tone is in your ear's sweet spot.</strong> Ear sensitivity rises toward 2–5 kHz and A-weights those bands upward, so a dryer sounds sharper than its raw dB SPL suggests. The same physical energy at 100 Hz would measure nearly 20 dB lower as dBA — an asymmetry explained in our <a class="underline underline-offset-4" href="/db-vs-dba/">weighting explainer</a>.</li>
+      <li><strong>Wattage buys heat, not noise.</strong> Marketing ties wattage to power; the noise spec lives elsewhere. A 1,800 W model with a well-insulated, slower, larger fan will beat a shrill 2,200 W one.</li>
+      <li><strong>Brushless motors changed the category.</strong> Replacing the old universal motor cuts mechanical whine substantially; the new quiet leaderboards (low-to-mid 70s at the outlet, sometimes claimed lower) are real engineering, though claims are measured at their own chosen distance.</li>
+    </ul>
+
+    <h2 class="text-white font-semibold mt-6">The dose question: who actually needs to care</h2>
+    <table><caption class="sr-only">Hair dryer exposure math for typical users versus stylists</caption><thead><tr><th>User</th><th>Exposure pattern</th><th>Dose verdict</th></tr></thead><tbody>
+      <tr><td>Ordinary home user</td><td>10–20 min/day at ~75 dBA at the ear</td><td>Well under 1% of a daily allowance; not a hearing concern</td></tr>
+      <tr><td>Teen styling long, close and loud</td><td>30 min/day at ~80–85 dBA</td><td>Still minor — below the 85 dBA/8 h boundary by a wide margin</td></tr>
+      <tr><td>Solo stylist in a small salon</td><td>4–6 h of ambient 75–85 dBA from neighbouring stations plus client use</td><td>Occupational-scale dose; total shift average can meet or pass the 85 dBA line</td></tr>
+      <tr><td>Home user running a dryer beside a sleeping infant</td><td>Device held further away; nursery target ~30–35 dBA</td><td>Dryer dose irrelevant, nursery level high — see the <a class="underline underline-offset-4" href="/safe-noise-level-baby-sleep/">baby sleep guide</a></td></tr>
+    </tbody></table>
+    <p class="mt-2">The screening boundary everyone quotes — 85 dBA sustained across eight hours, halving for every 3 dB — cuts through most of the argument in seconds, and you can see the full ladder on the <a class="underline underline-offset-4" href="/noise-limits/">noise limits</a> page or run your own deskside math on the <a class="underline underline-offset-4" href="/noise-exposure-calculator/">noise exposure calculator</a>. For stylists the honest read on the industry is: banks of hot dryers, chatter and radio blending into an all-day hum, and little enforcement — because salons rarely recognise hair work as a noise trade.</p>
+
+    <h2 class="text-white font-semibold mt-6">The honest measurement, in two minutes</h2>
+    <ol class="list-decimal pl-5 mt-2 space-y-1 text-sm">
+      <li>Switch the <a class="underline underline-offset-4" href="/#measure">meter</a> to dBA and Slow response.</li>
+      <li>Stand at your normal styling position — device in your non-dominant hand, phone raised to your <em>ear that gets the nozzle</em>. That is the number to log.</li>
+      <li>Repeat the same position with attachments swapped and heat selector flipped: expect tones to change a few dB while the level barely moves; brush attachments and diffusers redirect turbulence and often shave 2–3 dB.</li>
+      <li>Finally, prop the dryer on the counter and step to the doorway: that last reading is what the rest of the household experiences — and is often the number worth optimizing.</li>
+    </ol>
+    <p class="mt-2">Browser readings are screening estimates, not lab figures — our <a class="underline underline-offset-4" href="/calibration/">calibration page</a> shows how a quick reference-tone comparison makes your phone's numbers genuinely comparable between runs and even between phones.</p>
+
+    <h2 class="text-white font-semibold mt-6">Hair dryer FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Measure your hair dryer now →</a> · <a class="underline underline-offset-4" href="/how-many-decibels-is-a-vacuum/">Vacuum dB guide →</a> · <a class="underline underline-offset-4" href="/how-many-decibels-is-an-air-conditioner/">Air conditioner dB guide →</a> · <a class="underline underline-offset-4" href="/noise-exposure-calculator/">Exposure calculator →</a></p>
+  </Article>
+</Layout>

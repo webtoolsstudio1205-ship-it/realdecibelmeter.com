@@ -44,15 +44,29 @@ const featureCopy = getFeatures(locale);
   <div id="rdm-panel" class="panel meter-card p-4 sm:p-6 md:p-8" data-live="false" data-state="idle">
     <div id="rdm-announcer" class="sr-only" role="status" aria-live="polite"></div>
 
-    <div class="flex flex-wrap items-center gap-2" aria-label={dict.ui.status}>
-      <span class="chip chip-1 inline-flex items-center gap-2 text-[13px] font-medium rounded-full px-3 py-1.5" style="border:1px solid var(--border);background:var(--raised)">
-        <span id="rdm-state-dot" class="inline-block rounded-full" style="width:8px;height:8px;background:var(--muted)" aria-hidden="true"></span>
+    <!-- Linear App Chassis Chrome / Status Bar -->
+    <div class="meter-window-bar flex items-center justify-between pb-3.5 mb-5 border-b border-[#23252a]/70">
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-[#ff5f56]/90 border border-[#e0443e]/40 shadow-[0_0_8px_rgba(255,95,86,0.25)] inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-[#ffbd2e]/90 border border-[#dea123]/40 shadow-[0_0_8px_rgba(255,189,46,0.25)] inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-[#27c93f]/90 border border-[#1aab29]/40 shadow-[0_0_8px_rgba(39,201,63,0.25)] inline-block"></span>
+        <span class="ml-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[#8a8f98] font-medium hidden sm:inline">REAL DECIBEL METER · ACOUSTIC DSP v1.0</span>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-mono text-[#8a8f98] bg-[#141516] px-2.5 py-1 rounded-md border border-[#23252a]">
+        <span class="inline-block w-2 h-2 rounded-full bg-[#27a644] animate-pulse"></span>
+        <span>ENGINE: READY</span>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2 mb-2" aria-label={dict.ui.status}>
+      <span class="chip chip-1 inline-flex items-center gap-2 text-[12px] font-medium rounded-md px-2.5 py-1" style="border:1px solid var(--border);background:var(--raised)">
+        <span id="rdm-state-dot" class="inline-block rounded-full" style="width:7px;height:7px;background:var(--muted)" aria-hidden="true"></span>
         <span id="rdm-state-text">{dict.statusIdle}</span>
       </span>
-      <span id="rdm-cal-badge" class="chip chip-2 inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
+      <span id="rdm-cal-badge" class="chip chip-2 inline-flex items-center gap-2 text-[12px] font-mono rounded-md px-2.5 py-1" style="border:1px solid var(--border);background:var(--raised);color:var(--muted)">
         {dict.calibrationUncal}
       </span>
-      <span class="chip chip-3 inline-flex items-center gap-2 text-[13px] rounded-full px-3 py-1.5" style="border:1px solid var(--border);color:var(--muted)">
+      <span class="chip chip-3 inline-flex items-center gap-2 text-[12px] font-mono rounded-md px-2.5 py-1" style="border:1px solid var(--border);background:var(--raised);color:var(--muted)">
         <span>{dict.micPermission}: </span><strong id="rdm-perm-text" class="font-semibold">{dict.permUnknown}</strong>
       </span>
     </div>
@@ -81,8 +95,8 @@ const featureCopy = getFeatures(locale);
       <div id="rdm-gauge-glow" aria-hidden="true"></div>
 
       <div id="rdm-halo" class="big-halo flex items-baseline justify-center gap-3 mt-1" data-live="false" style="isolation:isolate">
-        <span id="rdm-big" class="tabular font-semibold tracking-tight" style="font-size:clamp(56px,12vw,92px);line-height:1" aria-live="off">--</span>
-        <span id="rdm-unit" class="text-sm font-medium" style="color:var(--muted)">dBA</span>
+        <span id="rdm-big" class="tabular font-bold tracking-tight text-white drop-shadow-[0_0_35px_rgba(94,106,210,0.35)]" style="font-size:clamp(64px,13vw,104px);line-height:0.95" aria-live="off">--</span>
+        <span id="rdm-unit" class="text-sm font-semibold tracking-wider uppercase font-mono px-2 py-0.5 rounded border border-[#23252a] bg-[#141516] text-[#8a8f98]">dBA</span>
       </div>
       <p id="rdm-mode-status" class="meter-status">{dict.statusCalRequired}</p>
       <button id="rdm-cta-cal" type="button" class="btn-secondary focus-ring mt-4">{dict.calibrateCta}</button>

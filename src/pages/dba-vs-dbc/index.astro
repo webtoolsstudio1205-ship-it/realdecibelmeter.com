@@ -1,0 +1,117 @@
+---
+import Layout from '../../components/Layout.astro';
+import Article from '../../components/Article.astro';
+import { getDict } from '../../i18n/dictionaries';
+import { SITE, articleJsonLd, breadcrumbJsonLd, faqJsonLd } from '../../lib/seo';
+
+const dict = getDict('en');
+const title = 'dBA vs dBC: Which Should You Measure? (With Decision Table)';
+const description = 'Measure dBA for most noise and hearing decisions; measure dBC for bass-heavy and impulsive sounds. Weighting comparison table, decision table and how to read the C−A difference.';
+const url = `${SITE}/dba-vs-dbc/`;
+
+const faq = [
+  {
+    q: 'Which is better to measure, dBA or dBC?',
+    a: 'For regulations, hearing risk and everyday loudness comparisons, dBA — it is the default weighting for nearly every noise standard. Switch to dBC when the sound is dominated by real bass energy: thumping music, industrial machinery, artillery-style impulses.',
+  },
+  {
+    q: 'Why does dBA ignore bass?',
+    a: 'Because hearing does too. At low frequencies the ear needs far more energy to hear the same loudness, and A-weighting subtracts up to −50 dB at 20 Hz to model that. That suppression is correct for hearing decisions and wrong when you need to quantify the bass itself.',
+  },
+  {
+    q: 'What does a big difference between C and A readings mean?',
+    a: 'It flags low-frequency dominance. As a screening rule, C − A around 15 dB or more means the sound carries a heavy bass component a dBA number barely represents — typical of thumping music or heavy machinery.',
+  },
+  {
+    q: 'Do I need dBC for hearing protection?',
+    a: 'For impulse peaks, standards specify C-weighted peak limits: 135 to 140 dBC peak depending on the framework. Check the peak reading on dBC if your device reports it.',
+  },
+];
+
+const jsonLd = [
+  articleJsonLd({ headline: title, description, url, inLanguage: 'en', dateModified: '2026-11-05', speakableSelectors: ['#short-answer', '#key-facts', '#decision-table'] }),
+  faqJsonLd(faq),
+  breadcrumbJsonLd([
+    { name: 'Home', url: `${SITE}/` },
+    { name: 'Guides', url: `${SITE}/guides/` },
+    { name: 'dBA vs dBC', url },
+  ]),
+];
+---
+
+<Layout locale="en" dict={dict} title={`${title} | Real Decibel Meter`} description={description} path="/dba-vs-dbc/" ogType="article" jsonLd={jsonLd}>
+  <Article
+    title={title}
+    intro="Two toggles on almost every sound meter, and choosing between them changes the number by tens of decibels. Here is what each weighting does, a decision table for the common cases, and how to read the useful gap between the two readings."
+    reviewed="2026-11-05"
+    breadcrumb={[{ name: 'Home', href: '/' }, { name: 'Guides', href: '/guides/' }, { name: 'dBA vs dBC', href: '/dba-vs-dbc/' }]}
+    shortAnswer="Measure dBA by default: nearly every noise limit, hearing-safety threshold and loudness comparison is defined on A-weighting, which mirrors how human hearing rolls off at low and high frequencies. Choose dBC when the sound genuinely is its bass — thumping music, machinery hum, cannon-like impulses — because C-weighting stays flat down to much lower frequencies. If both toggles are handy, read both: a C−A gap near 15 dB or more is the signature of bass-heavy noise."
+    keyFacts={[
+      'dBA is the default for hearing risk, OSHA/NIOSH limits, community noise and product comparisons.',
+      'dBC stays nearly flat to ~100 Hz (−6.2 dB at 20 Hz vs −50.5 dB for dBA) — the bass-revealing weighting.',
+      'C − A ≥ ~15 dB as a screening rule flags low-frequency dominance the dBA number barely shows.',
+      'Impulse/pulse peak limits are defined in dBC peak: ~135–140 dBC depending on the standard.',
+    ]}
+  >
+    <h2 class="text-white font-semibold">The two weightings in one paragraph</h2>
+    <p class="mt-2">Both dBA and dBC are IEC 61672 weighting filters applied to the same microphone signal — they differ only in how much each frequency band counts. <strong>A-weighting</strong> tilts the spectrum to match human ear sensitivity: heavy subtraction in deep bass, near-flat in speech frequencies, slight lift around 2–4 kHz where the ear canal resonates. <strong>C-weighting</strong> is close to the unweighted (dBZ, linear) curve at everyday levels: almost flat from about 100 Hz upward, with only small corrections at both ends. Neither weighting changes the meter's sensitivity — they change which part of the sound contributes to the display. A full tour of the whole family, including why dBZ exists, lives on the main <a class="underline underline-offset-4" href="/db-vs-dba/">dB vs dBA explainer</a>; this page is the decision guide.</p>
+
+    <h2 class="text-white font-semibold mt-6">Weighting correction table</h2>
+    <table><caption class="sr-only">A and C weighting corrections at key frequencies (IEC 61672)</caption><thead><tr><th>Frequency</th><th>A-weighting</th><th>C-weighting</th><th>What this means</th></tr></thead><tbody>
+      <tr><td class="font-mono">20 Hz</td><td>−50.5 dB</td><td>−6.2 dB</td><td>Sub-bass: dBA all but deletes it, dBC keeps it</td></tr>
+      <tr><td class="font-mono">63 Hz</td><td>−26.2 dB</td><td>−0.8 dB</td><td>Ceiling-rumble / bass-music region</td></tr>
+      <tr><td class="font-mono">125 Hz</td><td>−16.1 dB</td><td>−0.2 dB</td><td>Low machinery and HVAC hum</td></tr>
+      <tr><td class="font-mono">500 Hz</td><td>−3.2 dB</td><td>0.0 dB</td><td>Lower midrange</td></tr>
+      <tr><td class="font-mono">1,000 Hz</td><td>0.0 dB</td><td>0.0 dB</td><td>Both definitions pin 1 kHz as the 0 dB reference</td></tr>
+      <tr><td class="font-mono">4,000 Hz</td><td>+1.0 dB</td><td>−0.8 dB</td><td>Ear-sensitivity peak region</td></tr>
+      <tr><td class="font-mono">16,000 Hz</td><td>−6.6 dB</td><td>−8.5 dB</td><td>Both attenuate the top octave</td></tr>
+    </tbody></table>
+    <p class="mt-2">The asymmetry above 1 kHz is small and only matters for specialist work. The decisive difference is bass: from 60–250 Hz the two weightings divorce by 16–26 dB on the same physical sound.</p>
+
+    <h2 id="decision-table" class="text-white font-semibold mt-6">Decision table: which weighting for your situation</h2>
+    <table><caption class="sr-only">Which weighting to use for common measurement situations</caption><thead><tr><th>Situation</th><th>Measure</th><th>Why</th></tr></thead><tbody>
+      <tr><td>Workplace hearing risk, OSHA/NIOSH dose</td><td><strong>dBA</strong></td><td>All occupational limits are written in dBA; peak limits in dBC</td></tr>
+      <tr><td>Neighborhood noise, sleep quality, all-night average</td><td><strong>dBA</strong></td><td>WHO environmental guidance and annoyance are defined on A-weighting</td></tr>
+      <tr><td>Chainsaw, mower, blender — product troubleshooting or comparing</td><td><strong>dBA</strong></td><td>Ratings are in dBA; hearing-relevant spectrum</td></tr>
+      <tr><td>Thumping party / nightclub bass through a wall</td><td><strong>dBC (+ dBA for the record)</strong></td><td>Bass dominates; dBC quantifies what the wall transmits</td></tr>
+      <tr><td>Impulses: fireworks, nail guns, crashes, sirens at close range</td><td><strong>dBC</strong> (peak, L<sub>Cpeak</sub>)</td><td>Peak limits are specced in C-weighted peak; fast dBA averages under-read impulses</td></tr>
+      <tr><td>Bass guitar PA tuning, subwoofer alignment</td><td><strong>dBC or dBZ</strong></td><td>You need true bass-band levels unaffected by ear tilt</td></tr>
+      <tr><td>Heavy machinery, compressors, HVAC plants</td><td><strong>both</strong></td><td>dBA for compliance, dBC to document the low-frequency nuisance component</td></tr>
+      <tr><td>Plain curiosity in normal rooms</td><td><strong>dBA</strong></td><td>Matches how loud it feels; compares with every chart</td></tr>
+    </tbody></table>
+
+    <h2 class="text-white font-semibold mt-6">The trick of reading both: the C−A gap</h2>
+    <p class="mt-2">Devices offering both weightings hand you a free diagnostic many pros use without saying so: <strong>measure the same sound on dBC, then dBA, and read the difference</strong>.</p>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>C − A small (≈ 0–5 dB):</strong> normal broadband sound — speech, traffic at distance, fans. The dBA number faithfully represents it.</li>
+      <li><strong>C − A medium (≈ 6–14 dB):</strong> meaningful low-frequency content — refinery-scale machines under load, wind noise at the microphone itself.</li>
+      <li><strong>C − A large (≥ 15 dB):</strong> bass-dominated source; expect wall penetration, neighbour complaints and residuals the dBA figure does not show.</li>
+    </ul>
+    <p class="mt-2">Caveat: this diagnostic only works on the same Leq/time-base, averaged steadily (Slow response) — and the microphone position matters, as fresh air-draughts and body reflections shift the low end. If the gap surprises you, our <a class="underline underline-offset-4" href="/frequency-analyzer/">frequency analyzer</a> shows the spectrum live so you can see <em>which</em> band is carrying the energy instead of inferring from two single numbers.</p>
+
+    <h2 class="text-white font-semibold mt-6">Where each appears in the standards</h2>
+    <ul class="list-disc pl-5 mt-2 space-y-1 text-sm">
+      <li><strong>OSHA</strong>: 8-hour limits, dose and hearing conservation are dBA; the ceiling for impulse/impact noise is 140 dBC peak.</li>
+      <li><strong>NIOSH REL</strong>: exposure guidance in dBA with a 3 dB exchange rate.</li>
+      <li><strong>EU Directive 2003/10/EC:</strong> daily limits in dBA; peak ceiling 135–140 dBC by framework tier.</li>
+      <li><strong>WHO environmental guidance:</strong> community and night protection values framed in dBA.</li>
+      <li><strong>IEC 61672 Class 1/2 meters:</strong> required to offer A and C weightings (Z optional on many units); the standard defines exactly the response tolerances behind the table above.</li>
+    </ul>
+    <p class="mt-2">As a quick rule of thumb for value-judgement numbers: if the question is about <em>hearing</em> or <em>annoyance</em>, the answer is an <strong>A-weighted</strong> number. If the question is about <em>physical bass level</em> or a regulation that says "peak", the answer is a <strong>C-weighted</strong> one. Our <a class="underline underline-offset-4" href="/noise-limits/">noise limits page</a> lists the thresholds side by side so you can slot your reading into whichever framework applies.</p>
+
+    <h2 class="text-white font-semibold mt-6">Measuring dBA and dBC in the browser</h2>
+    <p class="mt-2">This site's <a class="underline underline-offset-4" href="/#measure">live meter</a> computes dBA, dBC and dBZ from the same microphone stream, so the C−A gap is a one-tap comparison, no hardware needed. Two practical reminders before you read the gap anywhere: browser estimates are screening numbers until calibrated — the <a class="underline underline-offset-4" href="/calibration/">device-offset procedure</a> makes your phone comparable to a reference meter — and position matters terribly at the low end: hold the phone where a person's ears actually are, not on the floor next to the subwoofer.</p>
+
+    <h2 class="text-white font-semibold mt-6">dBA vs dBC FAQ</h2>
+    <div class="grid gap-2 mt-2">
+      {faq.map((f) => (
+        <details class="panel-raised px-4" style="border-radius:10px">
+          <summary class="cursor-pointer focus-ring font-medium text-[15px]" style="min-height:44px;display:flex;align-items:center">{f.q}</summary>
+          <p class="text-sm pb-4" style="color:var(--muted)">{f.a}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="mt-4"><a class="underline underline-offset-4" href="/#measure">Measure dBA and dBC live now →</a> · <a class="underline underline-offset-4" href="/db-vs-dba/">Full dB vs dBA explainer →</a> · <a class="underline underline-offset-4" href="/dbfs-vs-db-spl/">dBFS vs dB SPL scale difference →</a> · <a class="underline underline-offset-4" href="/noise-limits/">Where the limits live →</a></p>
+  </Article>
+</Layout>
